@@ -1,13 +1,22 @@
 import { Pool } from 'pg';
 
 // Database configuration
-const pool = new Pool({
-  user: process.env.POSTGRES_USER || 'postgres',
-  password: process.env.POSTGRES_PASSWORD,
-  host: process.env.POSTGRES_HOST || 'localhost',
-  port: parseInt(process.env.POSTGRES_PORT || '5432'),
-  database: process.env.POSTGRES_DB || 'in_focus',
-});
+const pool = new Pool(
+  process.env.VERCEL_ENV === 'production'
+    ? { 
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+          rejectUnauthorized: true
+        }
+      }
+    : {
+        user: process.env.POSTGRES_USER || 'postgres',
+        password: process.env.POSTGRES_PASSWORD,
+        host: process.env.POSTGRES_HOST || 'localhost',
+        port: parseInt(process.env.POSTGRES_PORT || '5432'),
+        database: process.env.POSTGRES_DB || 'in_focus',
+      }
+);
 
 // Helper function to get a client from the pool
 export async function getClient() {
