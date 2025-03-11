@@ -39,7 +39,7 @@ const styles = {
   },
   subtitle: {
     fontSize: "1.1rem",
-    color: "#666",
+    color: "#444",
     margin: 0,
     fontFamily: "var(--font-geist-sans)",
   },
@@ -78,7 +78,7 @@ const styles = {
       backgroundColor: "#333",
     },
     "&:disabled": {
-      backgroundColor: "#999",
+      backgroundColor: "#666",
       cursor: "not-allowed",
     },
   },
@@ -94,7 +94,7 @@ const styles = {
     borderTop: "1px solid #eaeaea",
   },
   link: {
-    color: "#666",
+    color: "#444",
     textDecoration: "none",
     fontFamily: "var(--font-geist-sans)",
     transition: "color 0.2s",

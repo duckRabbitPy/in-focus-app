@@ -51,7 +51,7 @@ const rollCardStyles = {
   },
   label: {
     fontSize: '0.85rem',
-    color: '#666',
+    color: '#444',
     margin: 0,
   },
   value: {
@@ -90,8 +90,7 @@ function RollsPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, [user_id]);
-
+  }, [user_id])
 
   if (loading) {
     return (

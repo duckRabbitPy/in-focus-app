@@ -9,21 +9,11 @@ export const sharedStyles = {
     flex: 1,
     display: "flex",
     flexDirection: "column" as const,
-    alignItems: "center",
-    padding: "1rem",
-    gap: "1rem",
+    padding: "2rem",
+    maxWidth: "1200px",
     width: "100%",
-    maxWidth: "100%",
     margin: "0 auto",
-    "@media (min-width: 640px)": {
-      padding: "1.5rem",
-      gap: "1.5rem",
-    },
-    "@media (min-width: 768px)": {
-      padding: "2rem",
-      gap: "2rem",
-      maxWidth: "1200px",
-    },
+    gap: "2rem",
   },
   header: {
     width: "100%",
@@ -40,7 +30,7 @@ export const sharedStyles = {
     },
   },
   title: {
-    fontSize: "1.75rem",
+    fontSize: "2rem",
     fontWeight: 700,
     margin: 0,
     fontFamily: "var(--font-geist-mono)",
@@ -53,8 +43,8 @@ export const sharedStyles = {
     },
   },
   subtitle: {
-    fontSize: "1rem",
-    color: "#666",
+    fontSize: "1.1rem",
+    color: "#444",
     margin: 0,
     fontFamily: "var(--font-geist-sans)",
     "@media (min-width: 640px)": {
@@ -172,8 +162,8 @@ export const sharedStyles = {
     },
   },
   error: {
-    color: "#ff3333",
-    fontSize: "0.85rem",
+    color: "#dc2626",
+    fontSize: "0.9rem",
     margin: 0,
     fontFamily: "var(--font-geist-sans)",
     "@media (min-width: 640px)": {
@@ -201,7 +191,7 @@ export const sharedStyles = {
     },
   },
   link: {
-    color: "#666",
+    color: "#444",
     textDecoration: "none",
     fontFamily: "var(--font-geist-sans)",
     transition: "color 0.2s",
