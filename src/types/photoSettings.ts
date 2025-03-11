@@ -21,6 +21,7 @@ export interface PhotoSettingsData {
   roll_id: string;
   photo_id: string;
   subject: string;
+  photoUrl?: string;
   fStop: FStop;
   focalDistance: number | "infinity";
   shutterSpeed: ShutterSpeed;

@@ -1,26 +1,44 @@
-import { userRollsMockDB } from "@/mocks/userRollsMock";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from 'next';
+import { query } from '@/utils/db';
+import { withAuth, AuthenticatedRequest } from '@/utils/middleware';
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+interface Roll {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+async function handler(
+  req: AuthenticatedRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   const { user_id } = req.query;
 
-  if (typeof user_id !== "string") {
-    return res.status(400).json({ error: "Invalid user_id" });
+  // Verify that the requested user_id matches the authenticated user's ID
+  if (user_id !== req.user?.userId) {
+    return res.status(403).json({ error: 'Unauthorized access' });
   }
 
-  switch (req.method) {
-    case "GET":
-      console.log(`Getting all roll ids for user ${user_id}`);
-      // Get all roll ids for a user
-      return res.status(200).json(Object.keys(userRollsMockDB[user_id] || []));
+  try {
+    const rolls = await query<Roll>(
+      'SELECT id, name, created_at, updated_at FROM rolls WHERE user_id = $1 ORDER BY created_at DESC',
+      [user_id]
+    );
 
-    case "POST":
-      // Create a new roll
-      const newRoll = { roll_id: Date.now().toString(), user_id, ...req.body };
-      userRollsMockDB[user_id] = [...(userRollsMockDB[user_id] || []), newRoll];
-      return res.status(201).json(newRoll);
+    if (rolls.length === 0) {
+      return res.status(200).json([]);
+    }
 
-    default:
-      return res.status(405).json({ error: "Method Not Allowed" });
+    return res.status(200).json(rolls);
+  } catch (error) {
+    console.error('Error fetching rolls:', error);
+    return res.status(500).json({ error: 'Failed to fetch rolls' });
   }
 }
+
+export default withAuth(handler);
