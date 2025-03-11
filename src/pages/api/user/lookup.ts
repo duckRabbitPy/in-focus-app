@@ -28,6 +28,7 @@ async function handler(
     }
 
     // Don't send the password hash back to the client
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password_hash, ...userWithoutPassword } = user;
     res.status(200).json(userWithoutPassword);
   } catch (error) {

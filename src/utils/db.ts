@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import { Pool, PoolClient } from 'pg';
 
 // Database configuration
 const pool = new Pool(
@@ -25,7 +25,7 @@ export async function getClient() {
 }
 
 // Helper function to execute a query and return the results
-export async function query<T>(text: string, params?: any[]): Promise<T[]> {
+export async function query<T>(text: string, params?: unknown[]): Promise<T[]> {
   const client = await getClient();
   try {
     const result = await client.query(text, params);
@@ -36,13 +36,13 @@ export async function query<T>(text: string, params?: any[]): Promise<T[]> {
 }
 
 // Helper function to execute a single-row query
-export async function queryOne<T>(text: string, params?: any[]): Promise<T | null> {
+export async function queryOne<T>(text: string, params?: unknown[]): Promise<T | null> {
   const rows = await query<T>(text, params);
   return rows[0] || null;
 }
 
 // Helper function to execute a transaction
-export async function transaction<T>(callback: (client: any) => Promise<T>): Promise<T> {
+export async function transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
   const client = await getClient();
   try {
     await client.query('BEGIN');

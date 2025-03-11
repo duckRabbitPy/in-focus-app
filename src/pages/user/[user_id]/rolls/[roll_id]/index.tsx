@@ -83,6 +83,7 @@ function RollPage() {
         setLoading(false);
       })
       .catch((err) => {
+        console.error(err);
         setError("Failed to load roll data");
         setPhotos([]);
         setLoading(false);

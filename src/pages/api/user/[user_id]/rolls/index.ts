@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiResponse } from 'next';
 import { query } from '@/utils/db';
 import { withAuth, AuthenticatedRequest } from '@/utils/middleware';
 

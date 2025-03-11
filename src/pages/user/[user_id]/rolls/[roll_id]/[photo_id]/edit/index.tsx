@@ -121,7 +121,8 @@ function EditPhotoSettingsPage() {
         }
         setLoading(false);
       })
-      .catch((err) => {
+      .catch((error: Error) => {
+        console.error('Failed to load photo data:', error);
         setError("Failed to load photo data");
         setPhoto(null);
         setLoading(false);
@@ -149,7 +150,8 @@ function EditPhotoSettingsPage() {
       } else {
         router.push(`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`);
       }
-    } catch (err) {
+    } catch (error: unknown) {
+      console.error('Failed to save changes:', error);
       setError("Failed to save changes");
     } finally {
       setSaving(false);

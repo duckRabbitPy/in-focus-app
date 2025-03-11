@@ -42,6 +42,7 @@ function ViewPhotoSettingsPage() {
         setLoading(false);
       })
       .catch((err) => {
+        console.error(err);
         setError("Failed to load photo data");
         setPhoto(null);
         setLoading(false);

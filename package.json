@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "db:migrate": "psql -U postgres -d in_focus -f schema.sql",
-    "db:seed": "psql -U postgres -d in_focus -f seed.sql"
+    "db:seed": "psql -U postgres -d in_focus -f seed.sql",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",

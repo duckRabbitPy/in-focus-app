@@ -67,36 +67,31 @@ function RollsPage() {
   const { user_id } = router.query;
   const [rolls, setRolls] = useState<Roll[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!user_id) return;
 
-    const fetchRolls = async () => {
-      try {
-        const response = await fetchWithAuth(`/api/user/${user_id}/rolls`);
-        if (!response.ok) {
-          if (response.status === 401) {
-            router.push('/');
-            return;
-          }
-          throw new Error(`Error fetching rolls: ${response.statusText}`);
+    fetchWithAuth(`/api/user/${user_id}/rolls`)
+      .then(async (res) => {
+        if (!res.ok) {
+          throw new Error(await res.text());
         }
-        const data = await response.json();
+        return res.json();
+      })
+      .then((data) => {
         setRolls(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch rolls');
-      } finally {
+        setError("");
+      })
+      .catch((err) => {
+        console.error('Error fetching rolls:', err);
+        setError("Failed to load rolls");
+      })
+      .finally(() => {
         setLoading(false);
-      }
-    };
+      });
+  }, [user_id]);
 
-    fetchRolls();
-  }, [user_id, router]);
-
-  const handleViewRoll = (rollId: number) => {
-    router.push(`/user/${user_id}/rolls/${rollId}`);
-  };
 
   if (loading) {
     return (

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { query, queryOne } from "@/utils/db";
+import { queryOne } from "@/utils/db";
 import { DBPhoto } from "@/utils/db";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

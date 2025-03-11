@@ -1,14 +1,13 @@
 import { jwtDecode } from 'jwt-decode';
+import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET || 'your-secret-key';
+const isBrowser = typeof window !== 'undefined';
 
 interface JWTPayload {
   userId: string;
   username: string;
   exp: number;
 }
-
-const isBrowser = typeof window !== 'undefined';
 
 function verifyToken(token: string): JWTPayload | null {
   try {
@@ -80,15 +79,10 @@ export function logout() {
   window.location.href = '/';
 }
 
-export function getUserIdFromToken(): string | null {
+export function getUserIdFromToken(token: string): string | null {
   try {
-    if (!isBrowser) return null;
-    
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-
-    const decoded = verifyToken(token);
-    return decoded?.userId || null;
+    const decoded = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET!) as { userId: string };
+    return decoded.userId;
   } catch (error) {
     console.error('Error getting user ID from token:', error);
     return null;

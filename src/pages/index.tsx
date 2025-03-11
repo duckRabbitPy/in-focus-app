@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Geist, Geist_Mono } from "next/font/google";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { getUserFromToken, fetchWithAuth } from '@/utils/auth';
+import { getUserFromToken} from '@/utils/auth';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -105,45 +105,26 @@ const styles = {
 };
 
 export default function Home() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Check if there's an existing token
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (token) {
-      // Verify the token is valid by looking up the user
-      fetchWithAuth("/api/user/lookup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        }
-      })
-        .then((res) => {
-          if (res.ok) {
-            const user = getUserFromToken();
-            if (user) {
-              router.push(`/user/${user.userId}`);
-            } else {
-              localStorage.removeItem("token");
-            }
-          } else {
-            localStorage.removeItem("token");
-          }
-        })
-        .catch(() => {
-          localStorage.removeItem("token");
-        });
+      const user = getUserFromToken();
+      if (user) {
+        router.push(`/user/${user.userId}/rolls`);
+      }
     }
   }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setIsLoading(true);
+    setLoading(true);
 
     try {
       console.log('Attempting login with username:', username);
@@ -179,14 +160,11 @@ export default function Home() {
       console.error('Login error:', error);
       setError(error instanceof Error ? error.message : "Authentication failed");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  // Get just the user ID
-  const userId = getUserFromToken();
-
-  // Or get both user ID and username
+  
   const user = getUserFromToken();
   if (user) {
     console.log(user.userId, user.username);
@@ -215,7 +193,7 @@ export default function Home() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               style={styles.input}
-              disabled={isLoading}
+              disabled={loading}
               required
             />
             <input
@@ -224,11 +202,11 @@ export default function Home() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               style={styles.input}
-              disabled={isLoading}
+              disabled={loading}
               required
             />
-            <button type="submit" style={styles.button} disabled={isLoading}>
-              {isLoading ? "Logging in..." : "Log in"}
+            <button type="submit" style={styles.button} disabled={loading}>
+              {loading ? "Logging in..." : "Log in"}
             </button>
             {error && <p style={styles.error}>{error}</p>}
           </form>
