@@ -62,6 +62,31 @@ const rollCardStyles = {
   },
 };
 
+const headerButtonStyles = {
+  container: {
+    display: 'flex', 
+    gap: '0.75rem', 
+    alignItems: 'center',
+    '@media (min-width: 640px)': {
+      gap: '1rem'
+    }
+  },
+  linkWrapper: {
+    display: 'inline-block'
+  },
+  newRollButton: {
+    ...sharedStyles.button,
+    whiteSpace: 'nowrap' as const,
+    padding: '0.75rem 1.25rem'
+  },
+  logoutButton: {
+    ...sharedStyles.secondaryButton,
+    whiteSpace: 'nowrap' as const,
+    fontSize: '0.9rem',
+    padding: '0.75rem 1.25rem'
+  }
+};
+
 function RollsPage() {
   const router = useRouter();
   const { user_id } = router.query;
@@ -134,17 +159,15 @@ function RollsPage() {
 
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>Film Rolls</h1>
-            <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-              <Link href={`/user/${user_id}/rolls/new`}>
-                <button style={sharedStyles.button}>New Roll</button>
+            <div style={headerButtonStyles.container}>
+              <Link href={`/user/${user_id}/rolls/new`} style={headerButtonStyles.linkWrapper}>
+                <button style={headerButtonStyles.newRollButton}>
+                  New Roll
+                </button>
               </Link>
               <button 
                 onClick={logout}
-                style={{
-                  ...sharedStyles.secondaryButton,
-                  fontSize: '0.9rem',
-                  padding: '0.5rem 1rem'
-                }}
+                style={headerButtonStyles.logoutButton}
               >
                 Logout
               </button>

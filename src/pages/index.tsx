@@ -186,9 +186,11 @@ export default function Home() {
           <h1 style={styles.title}>In-focus</h1>
           <p style={styles.subtitle}>Photography settings app</p>
 
-          <form onSubmit={handleSubmit} style={styles.form}>
+          <form onSubmit={handleSubmit} style={styles.form} autoComplete="on">
             <input
               type="text"
+              name="username"
+              autoComplete="username"
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -198,6 +200,8 @@ export default function Home() {
             />
             <input
               type="password"
+              name="current-password"
+              autoComplete="current-password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
