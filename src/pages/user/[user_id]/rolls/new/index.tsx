@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { useState } from "react";
+import { withAuth } from "@/utils/withAuth";
+import { fetchWithAuth } from "@/utils/auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +17,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export default function NewRollPage() {
+export default withAuth(function NewRollPage() {
   const router = useRouter();
   const { user_id } = router.query;
   const [error, setError] = useState("");
@@ -27,18 +29,23 @@ export default function NewRollPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`/api/user/${user_id}/rolls`, {
+      const response = await fetchWithAuth(`/api/user/${user_id}/rolls`, {
         method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create new roll");
+        const data = await response.json();
+        throw new Error(data.error || "Failed to create new roll");
       }
 
       const data = await response.json();
-      router.push(`/user/${user_id}/rolls/${data.roll_id}`);
+      router.push(`/user/${user_id}/rolls/${data.id}`);
     } catch (error) {
       setError(error instanceof Error ? error.message : "Failed to create roll");
+    } finally {
       setLoading(false);
     }
   };
@@ -107,4 +114,4 @@ export default function NewRollPage() {
       </div>
     </>
   );
-}
+});
