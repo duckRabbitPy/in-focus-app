@@ -64,8 +64,6 @@ export default withAuth(function NewRollPage() {
       >
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
-            <Link href="/" style={sharedStyles.link}>Home</Link>
-            <span style={sharedStyles.separator}>/</span>
             <Link href={`/user/${user_id}`} style={sharedStyles.link}>Account</Link>
             <span style={sharedStyles.separator}>/</span>
             <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>Rolls</Link>

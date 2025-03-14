@@ -38,16 +38,23 @@ const photoCardStyles = {
   actions: {
     display: 'flex',
     gap: '0.5rem',
+    alignItems: 'stretch',
   },
   viewButton: {
     ...sharedStyles.secondaryButton,
     padding: '0.5rem 1rem',
     fontSize: '0.9rem',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
   },
   editButton: {
     ...sharedStyles.button,
     padding: '0.5rem 1rem',
     fontSize: '0.9rem',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
   },
 };
 
@@ -125,8 +132,6 @@ function RollPage() {
       >
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
-            <Link href="/" style={sharedStyles.link}>Home</Link>
-            <span style={sharedStyles.separator}>/</span>
             <Link href={`/user/${user_id}`} style={sharedStyles.link}>Account</Link>
             <span style={sharedStyles.separator}>/</span>
             <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>Rolls</Link>

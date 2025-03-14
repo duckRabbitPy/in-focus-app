@@ -21,14 +21,14 @@ export interface PhotoSettingsData {
   roll_id: string;
   photo_id: string;
   subject: string;
-  photoUrl?: string;
-  fStop: FStop;
-  focalDistance: number | "infinity";
-  shutterSpeed: ShutterSpeed;
-  exposureValue: number;
-  phoneLightMeter: PhoneLightMeter;
+  photo_url?: string;
+  f_stop: FStop;
+  focal_distance: number | "infinity";
+  shutter_speed: ShutterSpeed;
+  exposure_value: number;
+  phone_light_meter: PhoneLightMeter;
   timer: boolean;
   flash: boolean;
   stabilisation: Stabilisation;
-  exposureMemory: boolean;
+  exposure_memory: boolean;
 }

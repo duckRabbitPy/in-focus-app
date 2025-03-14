@@ -8,6 +8,7 @@ import styles from "@/styles/ViewPhoto.module.css";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
+import { ImageModal } from "@/components/ImageModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,6 +27,7 @@ function ViewPhotoSettingsPage() {
   const [photo, setPhoto] = useState<PhotoSettingsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user_id || !roll_id || !photo_id) return;
@@ -82,26 +84,42 @@ function ViewPhotoSettingsPage() {
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
       >
-        <main style={sharedStyles.main}>
-          <div style={sharedStyles.breadcrumbs}>
-            <Link href="/" style={sharedStyles.link}>Home</Link>
-            <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}`} style={sharedStyles.link}>Account</Link>
-            <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>Rolls</Link>
-            <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}/rolls/${roll_id}`} style={sharedStyles.link}>Roll #{roll_id}</Link>
-            <span style={sharedStyles.separator}>/</span>
-            <span>Photo #{photo_id}</span>
-          </div>
+        {photo?.photo_url && (
+          <ImageModal
+            imageUrl={photo.photo_url}
+            altText={photo.subject || "Photo"}
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+          />
+        )}
+        <main style={{
+          ...sharedStyles.main,
+          display: 'flex',
+          flexDirection: 'column' as const,
+          alignItems: 'center',
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: '800px',
+          }}>
+            <div style={sharedStyles.breadcrumbs}>
+              <Link href={`/user/${user_id}`} style={sharedStyles.link}>Account</Link>
+              <span style={sharedStyles.separator}>/</span>
+              <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>Rolls</Link>
+              <span style={sharedStyles.separator}>/</span>
+              <Link href={`/user/${user_id}/rolls/${roll_id}`} style={sharedStyles.link}>Roll #{roll_id}</Link>
+              <span style={sharedStyles.separator}>/</span>
+              <span>Photo #{photo_id}</span>
+            </div>
 
-          <div style={sharedStyles.header}>
-            <h1 style={sharedStyles.title}>Photo #{photo_id}</h1>
-            {!loading && photo && (
-              <Link href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/edit`} className={styles.linkContainer}>
-                <button style={sharedStyles.button}>Edit Photo</button>
-              </Link>
-            )}
+            <div style={sharedStyles.header}>
+              <h1 style={sharedStyles.title}>Photo #{photo_id}</h1>
+              {!loading && photo && (
+                <Link href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/edit`} className={styles.linkContainer}>
+                  <button style={sharedStyles.button}>Edit Photo</button>
+                </Link>
+              )}
+            </div>
           </div>
 
           {loading ? (
@@ -109,7 +127,53 @@ function ViewPhotoSettingsPage() {
           ) : !photo ? (
             <ErrorState />
           ) : (
-            <div className={styles.detailsCard}>
+            <div className={styles.detailsCard} style={{
+              width: '100%',
+              maxWidth: '800px',
+            }}>
+              {photo.photo_url && (
+                <div style={{
+                  width: '100%',
+                  height: '30vh',
+                  marginBottom: '1.5rem',
+                  position: 'relative' as const,
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: '0.5rem',
+                  overflow: 'hidden',
+                }}>
+                  <button
+                    onClick={() => setIsModalOpen(true)}
+                    style={{
+                      position: 'absolute',
+                      top: '0.5rem',
+                      right: '0.5rem',
+                      background: 'rgba(255, 255, 255, 0.9)',
+                      border: 'none',
+                      borderRadius: '0.25rem',
+                      padding: '0.5rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      zIndex: 1,
+                    }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                    </svg>
+                  </button>
+                  <img
+                    src={photo.photo_url}
+                    alt={photo.subject || "Photo"}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                    }}
+                  />
+                </div>
+              )}
+
               <h2 className={styles.title}>
                 {photo.subject || "Untitled"}
               </h2>
@@ -122,9 +186,9 @@ function ViewPhotoSettingsPage() {
 
                 <div className={styles.detailItem}>
                   <span className={styles.label}>Photo URL</span>
-                  {photo.photoUrl ? (
+                  {photo.photo_url ? (
                     <a 
-                      href={photo.photoUrl} 
+                      href={photo.photo_url} 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className={styles.valueLink}
@@ -138,29 +202,29 @@ function ViewPhotoSettingsPage() {
 
                 <div className={styles.detailItem}>
                   <span className={styles.label}>F-Stop</span>
-                  <p className={styles.value}>f/{photo.fStop || "Not set"}</p>
+                  <p className={styles.value}>f/{photo.f_stop || "Not set"}</p>
                 </div>
 
                 <div className={styles.detailItem}>
                   <span className={styles.label}>Focal Distance</span>
                   <p className={styles.value}>
-                    {photo.focalDistance === "infinity" ? "∞" : photo.focalDistance ? `${photo.focalDistance}m` : "Not set"}
+                    {photo.focal_distance === "infinity" ? "∞" : photo.focal_distance ? `${photo.focal_distance}m` : "Not set"}
                   </p>
                 </div>
 
                 <div className={styles.detailItem}>
                   <span className={styles.label}>Shutter Speed</span>
-                  <p className={styles.value}>{photo.shutterSpeed || "Not set"}</p>
+                  <p className={styles.value}>{photo.shutter_speed || "Not set"}</p>
                 </div>
 
                 <div className={styles.detailItem}>
                   <span className={styles.label}>Exposure Value</span>
-                  <p className={styles.value}>{photo.exposureValue?.toString() || "Not set"}</p>
+                  <p className={styles.value}>{photo.exposure_value?.toString() || "Not set"}</p>
                 </div>
 
                 <div className={styles.detailItem}>
                   <span className={styles.label}>Phone Light Meter</span>
-                  <p className={styles.value}>{photo.phoneLightMeter || "Not set"}</p>
+                  <p className={styles.value}>{photo.phone_light_meter || "Not set"}</p>
                 </div>
 
                 <div className={styles.detailItem}>
@@ -184,7 +248,7 @@ function ViewPhotoSettingsPage() {
 
                 <div className={styles.detailItem}>
                   <span className={styles.label}>Exposure Memory</span>
-                  <p className={styles.value}>{typeof photo.exposureMemory === 'boolean' ? (photo.exposureMemory ? "Yes" : "No") : "Not set"}</p>
+                  <p className={styles.value}>{typeof photo.exposure_memory === 'boolean' ? (photo.exposure_memory ? "Yes" : "No") : "Not set"}</p>
                 </div>
               </div>
 

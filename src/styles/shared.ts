@@ -86,7 +86,8 @@ export const sharedStyles = {
   },
   button: {
     width: "100%",
-    padding: "0.75rem 1rem",
+    height: "2.5rem",
+    padding: "0 1.25rem",
     backgroundColor: "#000",
     color: "#fff",
     border: "none",
@@ -96,9 +97,12 @@ export const sharedStyles = {
     fontFamily: "var(--font-geist-sans)",
     transition: "background-color 0.2s",
     touchAction: "manipulation",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    whiteSpace: "nowrap",
     "@media (min-width: 640px)": {
       width: "auto",
-      padding: "0.8rem 1.5rem",
       fontSize: "1rem",
     },
     "&:hover": {
@@ -110,7 +114,8 @@ export const sharedStyles = {
   },
   secondaryButton: {
     width: "100%",
-    padding: "0.75rem 1rem",
+    height: "2.5rem",
+    padding: "0 1.25rem",
     backgroundColor: "#fff",
     color: "#000",
     border: "2px solid #000",
@@ -120,9 +125,12 @@ export const sharedStyles = {
     fontFamily: "var(--font-geist-sans)",
     transition: "all 0.2s",
     touchAction: "manipulation",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    whiteSpace: "nowrap",
     "@media (min-width: 640px)": {
       width: "auto",
-      padding: "0.8rem 1.5rem",
       fontSize: "1rem",
     },
     "&:hover": {

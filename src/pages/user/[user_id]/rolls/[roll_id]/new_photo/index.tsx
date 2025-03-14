@@ -41,6 +41,7 @@ const formStyles = {
     ...sharedStyles.input,
     backgroundColor: '#fff',
     width: '100%',
+    paddingRight: '2rem',
   },
   checkbox: {
     display: 'flex',
@@ -93,20 +94,41 @@ const formStyles = {
       alignItems: 'flex-start',
     },
   },
+  segmentedControl: {
+    display: 'flex',
+    gap: '0.5rem',
+    marginBottom: '0.5rem',
+  },
+  segment: {
+    padding: '0.5rem 1rem',
+    border: '1px solid #e5e5e5',
+    borderRadius: '4px',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    backgroundColor: '#fff',
+    color: '#666',
+    flex: 1,
+    textAlign: 'center' as const,
+  },
+  activeSegment: {
+    backgroundColor: '#0070f3',
+    color: '#fff',
+    borderColor: '#0070f3',
+  },
 };
 
 const initialPhotoState: Partial<PhotoSettingsData> = {
   subject: "",
-  photoUrl: "",
-  fStop: 2.8,
-  focalDistance: 1,
-  shutterSpeed: "1/125",
-  exposureValue: 0,
-  phoneLightMeter: "1/125",
+  photo_url: "",
+  f_stop: 2.8,
+  focal_distance: 1,
+  shutter_speed: "1/125",
+  exposure_value: 0,
+  phone_light_meter: "1/125",
   stabilisation: "handheld",
   timer: false,
   flash: false,
-  exposureMemory: false,
+  exposure_memory: false,
 };
 
 function NewPhotoPage() {
@@ -158,8 +180,6 @@ function NewPhotoPage() {
       >
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
-            <Link href="/" style={sharedStyles.link}>Home</Link>
-            <span style={sharedStyles.separator}>/</span>
             <Link href={`/user/${user_id}`} style={sharedStyles.link}>Account</Link>
             <span style={sharedStyles.separator}>/</span>
             <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>Rolls</Link>
@@ -193,9 +213,9 @@ function NewPhotoPage() {
                 <label style={formStyles.label}>Photo URL</label>
                 <input
                   type="url"
-                  name="photoUrl"
-                  value={photo.photoUrl}
-                  onChange={(e) => setPhoto({ ...photo, photoUrl: e.target.value })}
+                  name="photo_url"
+                  value={photo.photo_url}
+                  onChange={(e) => setPhoto({ ...photo, photo_url: e.target.value })}
                   style={sharedStyles.input}
                   placeholder="https://example.com/photo.jpg"
                 />
@@ -204,9 +224,9 @@ function NewPhotoPage() {
               <div style={formStyles.group}>
                 <label style={formStyles.label}>F-Stop</label>
                 <select 
-                  name="fStop" 
-                  value={photo.fStop} 
-                  onChange={(e) => setPhoto({ ...photo, fStop: parseFloat(e.target.value) as FStop })}
+                  name="f_stop" 
+                  value={photo.f_stop} 
+                  onChange={(e) => setPhoto({ ...photo, f_stop: parseFloat(e.target.value) as FStop })}
                   style={formStyles.select}
                 >
                   {[1.4, 2, 2.8, 4, 5.6, 8, 11, 16, 22, 32].map((f) => (
@@ -216,31 +236,48 @@ function NewPhotoPage() {
               </div>
 
               <div style={formStyles.group}>
-                <label style={formStyles.label}>Focal Distance (m)</label>
-                <div style={formStyles.inputWithButton}>
-                  <input
-                    type="number"
-                    name="focalDistance"
-                    value={photo.focalDistance}
-                    onChange={(e) => setPhoto({ ...photo, focalDistance: parseFloat(e.target.value) })}
-                    style={sharedStyles.input}
-                  />
+                <label style={formStyles.label}>Focal Distance</label>
+                <div style={formStyles.segmentedControl}>
                   <button
                     type="button"
-                    onClick={() => setPhoto({ ...photo, focalDistance: "infinity" })}
-                    style={{...sharedStyles.secondaryButton, minWidth: '44px'}}
+                    onClick={() => setPhoto({ ...photo, focal_distance: photo.focal_distance === "infinity" ? 1 : photo.focal_distance as number })}
+                    style={{
+                      ...formStyles.segment,
+                      ...(photo.focal_distance !== "infinity" ? formStyles.activeSegment : {})
+                    }}
                   >
-                    ∞
+                    Meters
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPhoto({ ...photo, focal_distance: "infinity" })}
+                    style={{
+                      ...formStyles.segment,
+                      ...(photo.focal_distance === "infinity" ? formStyles.activeSegment : {})
+                    }}
+                  >
+                    Infinity (∞)
                   </button>
                 </div>
+                {photo.focal_distance !== "infinity" && (
+                  <input
+                    type="number"
+                    name="focal_distance"
+                    value={photo.focal_distance}
+                    onChange={(e) => setPhoto({ ...photo, focal_distance: parseFloat(e.target.value) })}
+                    style={sharedStyles.input}
+                    min="0.1"
+                    step="0.1"
+                  />
+                )}
               </div>
 
               <div style={formStyles.group}>
                 <label style={formStyles.label}>Shutter Speed</label>
                 <select
-                  name="shutterSpeed"
-                  value={photo.shutterSpeed}
-                  onChange={(e) => setPhoto({ ...photo, shutterSpeed: e.target.value as ShutterSpeed })}
+                  name="shutter_speed"
+                  value={photo.shutter_speed}
+                  onChange={(e) => setPhoto({ ...photo, shutter_speed: e.target.value as ShutterSpeed })}
                   style={formStyles.select}
                 >
                   {["1/8000", "1/4000", "1/2000", "1/1000", "1/500", "1/250", "1/125", "1/60", "1/30", "1/15", "1/8", "1/4", "1/2", "1"].map((s) => (
@@ -253,9 +290,9 @@ function NewPhotoPage() {
                 <label style={formStyles.label}>Exposure Value</label>
                 <input
                   type="number"
-                  name="exposureValue"
-                  value={photo.exposureValue}
-                  onChange={(e) => setPhoto({ ...photo, exposureValue: parseFloat(e.target.value) })}
+                  name="exposure_value"
+                  value={photo.exposure_value}
+                  onChange={(e) => setPhoto({ ...photo, exposure_value: parseFloat(e.target.value) })}
                   style={sharedStyles.input}
                 />
               </div>
@@ -263,9 +300,9 @@ function NewPhotoPage() {
               <div style={formStyles.group}>
                 <label style={formStyles.label}>Phone Light Meter</label>
                 <select
-                  name="phoneLightMeter"
-                  value={photo.phoneLightMeter}
-                  onChange={(e) => setPhoto({ ...photo, phoneLightMeter: e.target.value as ShutterSpeed })}
+                  name="phone_light_meter"
+                  value={photo.phone_light_meter}
+                  onChange={(e) => setPhoto({ ...photo, phone_light_meter: e.target.value as ShutterSpeed })}
                   style={formStyles.select}
                 >
                   {["1/8000", "1/4000", "1/2000", "1/1000", "1/500", "1/250", "1/125", "1/60", "1/30", "1/15", "1/8", "1/4", "1/2", "1"].map((s) => (
@@ -314,9 +351,9 @@ function NewPhotoPage() {
                 <div style={formStyles.checkbox}>
                   <input
                     type="checkbox"
-                    name="exposureMemory"
-                    checked={photo.exposureMemory}
-                    onChange={(e) => setPhoto({ ...photo, exposureMemory: e.target.checked })}
+                    name="exposure_memory"
+                    checked={photo.exposure_memory}
+                    onChange={(e) => setPhoto({ ...photo, exposure_memory: e.target.checked })}
                     style={formStyles.checkboxInput}
                   />
                   <label style={formStyles.label}>Exposure Memory</label>

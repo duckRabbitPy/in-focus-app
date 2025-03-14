@@ -98,17 +98,13 @@ function UserPage() {
 
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>Account Settings</h1>
-            <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+            <div style={{display: 'flex', gap: '1rem', alignItems: 'center' , whiteSpace: 'nowrap'}}>
               <Link href={`/user/${user_id}/rolls`}>
                 <button style={sharedStyles.button}>View Rolls</button>
               </Link>
               <button 
                 onClick={logout}
-                style={{
-                  ...sharedStyles.secondaryButton,
-                  fontSize: '0.9rem',
-                  padding: '0.5rem 1rem'
-                }}
+                style={sharedStyles.secondaryButton}
               >
                 Logout
               </button>
