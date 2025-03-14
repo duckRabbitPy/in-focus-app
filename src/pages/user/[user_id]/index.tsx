@@ -82,8 +82,8 @@ function UserPage() {
   return (
     <>
       <Head>
-        <title>Account Settings - In-focus</title>
-        <meta name="description" content="User account settings" />
+        <title>Account Home - In-focus</title>
+        <meta name="description" content="User account home" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -93,11 +93,11 @@ function UserPage() {
       >
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
-            <span>Account Settings</span>
+            <span>Account home</span>
           </div>
 
           <div style={sharedStyles.header}>
-            <h1 style={sharedStyles.title}>Account Settings</h1>
+            <h1 style={sharedStyles.title}>Account Home</h1>
             <div style={{display: 'flex', gap: '1rem', alignItems: 'center' , whiteSpace: 'nowrap'}}>
               <Link href={`/user/${user_id}/rolls`}>
                 <button style={sharedStyles.button}>View Rolls</button>

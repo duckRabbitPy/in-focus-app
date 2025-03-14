@@ -8,7 +8,6 @@ import styles from "@/styles/ViewPhoto.module.css";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
-import { ImageModal } from "@/components/ImageModal";
 import { ConfirmModal } from "@/components/ConfirmModal";
 
 const geistSans = Geist({
@@ -73,7 +72,6 @@ function ViewPhotoSettingsPage() {
   const [photo, setPhoto] = useState<PhotoSettingsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -156,14 +154,6 @@ function ViewPhotoSettingsPage() {
           title="Delete Photo"
           message="Are you sure you want to delete this photo? This action cannot be undone."
         />
-        {photo?.photo_url && (
-          <ImageModal
-            imageUrl={photo.photo_url}
-            altText={photo.subject || "Photo"}
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-          />
-        )}
         <main style={{
           ...sharedStyles.main,
           display: 'flex',
@@ -248,34 +238,37 @@ function ViewPhotoSettingsPage() {
               {photo.photo_url && (
                 <div style={{
                   width: '100%',
-                  height: '30vh',
+                  minHeight: '30vh',
+                  maxHeight: '50vh',
                   marginBottom: '1.5rem',
                   position: 'relative' as const,
                   backgroundColor: '#f5f5f5',
                   borderRadius: '0.5rem',
                   overflow: 'hidden',
                 }}>
-                  <button
-                    onClick={() => setIsModalOpen(true)}
+                  <Link 
+                    href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/maxi`}
+                    target="_blank"
                     style={{
                       position: 'absolute',
                       top: '0.5rem',
                       right: '0.5rem',
                       background: 'rgba(255, 255, 255, 0.9)',
-                      border: 'none',
                       borderRadius: '0.25rem',
                       padding: '0.5rem',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      zIndex: 1,
+                      zIndex: 2,
+                      border: 'none',
                     }}
+                    className={styles.maximizeButton}
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
                     </svg>
-                  </button>
+                  </Link>
                   <img
                     src={photo.photo_url}
                     alt={photo.subject || "Photo"}
