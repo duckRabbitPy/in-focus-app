@@ -9,6 +9,7 @@ import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
 import { ImageModal } from "@/components/ImageModal";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,6 +21,51 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Add our menu styles separately to avoid conflict with the module
+const menuStyles = {
+  menuButton: {
+    background: 'none',
+    border: 'none',
+    padding: '0.5rem',
+    cursor: 'pointer',
+    borderRadius: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '&:hover': {
+      backgroundColor: '#f5f5f5',
+    },
+  },
+  menuDropdown: {
+    position: 'absolute' as const,
+    right: 'auto',
+    left: '100%',
+    top: 0,
+    marginLeft: '0.5rem',
+    backgroundColor: '#fff',
+    border: '1px solid #e5e5e5',
+    borderRadius: '4px',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+    zIndex: 10,
+  },
+  menuItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    padding: '0.5rem 1rem',
+    color: '#dc2626',
+    cursor: 'pointer',
+    width: '100%',
+    border: 'none',
+    background: 'none',
+    fontSize: '0.9rem',
+    whiteSpace: 'nowrap' as const,
+    '&:hover': {
+      backgroundColor: '#f5f5f5',
+    },
+  },
+};
+
 function ViewPhotoSettingsPage() {
   const router = useRouter();
   const { user_id, roll_id, photo_id } = router.query;
@@ -28,6 +74,8 @@ function ViewPhotoSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!user_id || !roll_id || !photo_id) return;
@@ -50,6 +98,23 @@ function ViewPhotoSettingsPage() {
         setLoading(false);
       });
   }, [user_id, roll_id, photo_id]);
+
+  const handleDeletePhoto = async () => {
+    try {
+      const response = await fetchWithAuth(`/api/user/${user_id}/rolls/${roll_id}/${photo_id}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete photo');
+      }
+
+      router.push(`/user/${user_id}/rolls/${roll_id}`);
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+      setError('Failed to delete photo');
+    }
+  };
 
   const LoadingState = () => (
     <div style={{textAlign: 'center', padding: '2rem'}}>
@@ -84,6 +149,13 @@ function ViewPhotoSettingsPage() {
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
       >
+        <ConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={handleDeletePhoto}
+          title="Delete Photo"
+          message="Are you sure you want to delete this photo? This action cannot be undone."
+        />
         {photo?.photo_url && (
           <ImageModal
             imageUrl={photo.photo_url}
@@ -114,11 +186,53 @@ function ViewPhotoSettingsPage() {
 
             <div style={sharedStyles.header}>
               <h1 style={sharedStyles.title}>Photo #{photo_id}</h1>
-              {!loading && photo && (
+              <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
                 <Link href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/edit`} className={styles.linkContainer}>
                   <button style={sharedStyles.button}>Edit Photo</button>
                 </Link>
-              )}
+                <div style={{ position: 'relative' }}>
+                  <button 
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    style={menuStyles.menuButton}
+                    aria-label="More options"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <circle cx="12" cy="12" r="2" />
+                      <circle cx="19" cy="12" r="2" />
+                      <circle cx="5" cy="12" r="2" />
+                    </svg>
+                  </button>
+                  {isMenuOpen && (
+                    <>
+                      <div 
+                        style={{ 
+                          position: 'fixed',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          zIndex: 5,
+                        }} 
+                        onClick={() => setIsMenuOpen(false)}
+                      />
+                      <div style={menuStyles.menuDropdown}>
+                        <button 
+                          onClick={() => {
+                            setIsMenuOpen(false);
+                            setIsDeleteModalOpen(true);
+                          }}
+                          style={menuStyles.menuItem}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                          </svg>
+                          Delete Photo
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 

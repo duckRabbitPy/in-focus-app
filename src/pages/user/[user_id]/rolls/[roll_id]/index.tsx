@@ -6,6 +6,8 @@ import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
+import { ConfirmModal } from "@/components/ConfirmModal";
+import { EllipsisMenu, MenuItem } from "@/components/EllipsisMenu";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +19,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const photoCardStyles = {
+const styles = {
   card: {
     ...sharedStyles.card,
     display: 'flex',
@@ -74,6 +76,10 @@ function RollPage() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
+  const [isPhotoMenuOpen, setIsPhotoMenuOpen] = useState<number | null>(null);
 
   useEffect(() => {
     if (!user_id || !roll_id) return;
@@ -96,6 +102,46 @@ function RollPage() {
         setLoading(false);
       });
   }, [user_id, roll_id]);
+
+  const handleDeleteRoll = async () => {
+    try {
+      const response = await fetchWithAuth(`/api/user/${user_id}/rolls/${roll_id}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete roll');
+      }
+
+      router.push(`/user/${user_id}/rolls`);
+    } catch (error) {
+      console.error('Error deleting roll:', error);
+      setError('Failed to delete roll');
+    }
+  };
+
+  const handleDeletePhoto = async (photoId: number) => {
+    try {
+      const response = await fetchWithAuth(`/api/user/${user_id}/rolls/${roll_id}/${photoId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete photo');
+      }
+
+      setPhotos(photos.filter(p => p.id !== photoId));
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+      setError('Failed to delete photo');
+    }
+  };
+
+  const TrashIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+    </svg>
+  );
 
   if (loading) {
     return (
@@ -130,6 +176,29 @@ function RollPage() {
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
       >
+        <ConfirmModal
+          isOpen={isDeleteModalOpen && !selectedPhotoId}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={handleDeleteRoll}
+          title="Delete Roll"
+          message="Are you sure you want to delete this roll? This will also delete all photos in this roll. This action cannot be undone."
+        />
+        <ConfirmModal
+          isOpen={isDeleteModalOpen && selectedPhotoId !== null}
+          onClose={() => {
+            setIsDeleteModalOpen(false);
+            setSelectedPhotoId(null);
+          }}
+          onConfirm={() => {
+            if (selectedPhotoId) {
+              handleDeletePhoto(selectedPhotoId);
+            }
+            setIsDeleteModalOpen(false);
+            setSelectedPhotoId(null);
+          }}
+          title="Delete Photo"
+          message="Are you sure you want to delete this photo? This action cannot be undone."
+        />
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
             <Link href={`/user/${user_id}`} style={sharedStyles.link}>Account</Link>
@@ -141,9 +210,27 @@ function RollPage() {
 
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>Roll #{roll_id}</h1>
-            <Link href={`/user/${user_id}/rolls/${roll_id}/new_photo`}>
-              <button style={sharedStyles.button}>Add Photo</button>
-            </Link>
+            <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+              <Link href={`/user/${user_id}/rolls/${roll_id}/new_photo`}>
+                <button style={sharedStyles.button}>Add Photo</button>
+              </Link>
+              <EllipsisMenu
+                isOpen={isMenuOpen}
+                onToggle={() => setIsMenuOpen(!isMenuOpen)}
+                onClose={() => setIsMenuOpen(false)}
+                direction="right"
+              >
+                <MenuItem
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setIsDeleteModalOpen(true);
+                  }}
+                  icon={<TrashIcon />}
+                >
+                  Delete Roll
+                </MenuItem>
+              </EllipsisMenu>
+            </div>
           </div>
 
           {photos.length === 0 ? (
@@ -158,16 +245,33 @@ function RollPage() {
           ) : (
             <div style={sharedStyles.grid}>
               {photos.map((photo) => (
-                <div key={photo.id} style={photoCardStyles.card}>
-                  <div style={photoCardStyles.photoHeader}>
-                    <span style={photoCardStyles.photoId}>Photo #{photo.sequence_number}</span>
-                    <div style={photoCardStyles.actions}>
+                <div key={photo.id} style={styles.card}>
+                  <div style={styles.photoHeader}>
+                    <span style={styles.photoId}>Photo #{photo.sequence_number}</span>
+                    <div style={styles.actions}>
                       <Link href={`/user/${user_id}/rolls/${roll_id}/${photo.id}/view`}>
-                        <button style={photoCardStyles.viewButton}>View</button>
+                        <button style={styles.viewButton}>View</button>
                       </Link>
                       <Link href={`/user/${user_id}/rolls/${roll_id}/${photo.id}/edit`}>
-                        <button style={photoCardStyles.editButton}>Edit</button>
+                        <button style={styles.editButton}>Edit</button>
                       </Link>
+                      <EllipsisMenu
+                        isOpen={isPhotoMenuOpen === photo.id}
+                        onToggle={() => setIsPhotoMenuOpen(isPhotoMenuOpen === photo.id ? null : photo.id)}
+                        onClose={() => setIsPhotoMenuOpen(null)}
+                        direction="bottom"
+                      >
+                        <MenuItem
+                          onClick={() => {
+                            setIsPhotoMenuOpen(null);
+                            setSelectedPhotoId(photo.id);
+                            setIsDeleteModalOpen(true);
+                          }}
+                          icon={<TrashIcon />}
+                        >
+                          Delete Photo
+                        </MenuItem>
+                      </EllipsisMenu>
                     </div>
                   </div>
                   <div style={{
