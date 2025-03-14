@@ -59,7 +59,7 @@ async function handler(
     case "PUT":
       try {
         const result = await queryOne<DBPhoto>(
-          'UPDATE photos SET subject = $1, photo_url = $2, f_stop = $3, focal_distance = $4, shutter_speed = $5, exposure_value = $6, phone_light_meter = $7, stabilisation = $8, timer = $9, flash = $10, exposure_memory = $11 WHERE id = $12 AND roll_id = $13 AND roll_id IN (SELECT id FROM rolls WHERE user_id = $14) RETURNING *',
+          'UPDATE photos SET subject = $1, photo_url = $2, f_stop = $3, focal_distance = $4, shutter_speed = $5, exposure_value = $6, phone_light_meter = $7, stabilisation = $8, timer = $9, flash = $10, exposure_memory = $11, notes = $12 WHERE id = $13 AND roll_id = $14 AND roll_id IN (SELECT id FROM rolls WHERE user_id = $15) RETURNING *',
           [
             req.body.subject,
             req.body.photo_url,
@@ -72,6 +72,7 @@ async function handler(
             req.body.timer,
             req.body.flash,
             req.body.exposure_memory,
+            req.body.notes,
             parseInt(photo_id),
             parseInt(roll_id),
             user_id

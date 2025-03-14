@@ -340,6 +340,13 @@ function ViewPhotoSettingsPage() {
                     {photo.stabilisation ? photo.stabilisation.charAt(0).toUpperCase() + photo.stabilisation.slice(1) : "Not set"}
                   </p>
                 </div>
+
+                <div className={styles.detailItem}>
+                  <span className={styles.label}>Notes</span>
+                  <p className={styles.value} style={{ whiteSpace: 'pre-wrap' }}>
+                    {photo.notes || "Not set"}
+                  </p>
+                </div>
               </div>
 
               <div className={styles.booleanGroup}>

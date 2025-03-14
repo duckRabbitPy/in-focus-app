@@ -402,6 +402,21 @@ function EditPhotoSettingsPage() {
                   </div>
                 </div>
 
+                <div style={formStyles.group}>
+                  <label style={formStyles.label}>Notes</label>
+                  <textarea
+                    name="notes"
+                    value={photo.notes || ''}
+                    onChange={(e) => setPhoto({ ...photo, notes: e.target.value })}
+                    style={{
+                      ...sharedStyles.input,
+                      minHeight: '100px',
+                      resize: 'vertical',
+                    }}
+                    placeholder="Add any notes about this photo..."
+                  />
+                </div>
+
                 <div style={formStyles.buttonGroup}>
                   <Link href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`}>
                     <button type="button" style={sharedStyles.secondaryButton}>

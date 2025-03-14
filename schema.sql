@@ -41,6 +41,7 @@ CREATE TABLE photos (
     timer BOOLEAN DEFAULT false,
     flash BOOLEAN DEFAULT false,
     exposure_memory BOOLEAN DEFAULT false,
+    notes TEXT,
     sequence_number INTEGER NOT NULL, -- To maintain photo order in roll
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

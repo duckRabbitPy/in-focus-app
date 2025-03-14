@@ -31,4 +31,5 @@ export interface PhotoSettingsData {
   flash: boolean;
   stabilisation: Stabilisation;
   exposure_memory: boolean;
+  notes?: string;
 }
