@@ -21,50 +21,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Add our menu styles separately to avoid conflict with the module
-const menuStyles = {
-  menuButton: {
-    background: "none",
-    border: "none",
-    padding: "0.5rem",
-    cursor: "pointer",
-    borderRadius: "4px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    "&:hover": {
-      backgroundColor: "#f5f5f5",
-    },
-  },
-  menuDropdown: {
-    position: "absolute" as const,
-    right: "auto",
-    left: "100%",
-    top: 0,
-    marginLeft: "0.5rem",
-    backgroundColor: "#fff",
-    border: "1px solid #e5e5e5",
-    borderRadius: "4px",
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-    zIndex: 10,
-  },
-  menuItem: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-    padding: "0.5rem 1rem",
-    color: "#dc2626",
-    cursor: "pointer",
-    width: "100%",
-    border: "none",
-    background: "none",
-    fontSize: "0.9rem",
-    whiteSpace: "nowrap" as const,
-    "&:hover": {
-      backgroundColor: "#f5f5f5",
-    },
-  },
-};
 
 function ViewPhotoSettingsPage() {
   const router = useRouter();
@@ -74,7 +30,6 @@ function ViewPhotoSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!user_id || !roll_id || !photo_id) return;
@@ -210,60 +165,32 @@ function ViewPhotoSettingsPage() {
                 >
                   <button style={sharedStyles.button}>Edit Photo</button>
                 </Link>
-                <div style={{ position: "relative" }}>
-                  <button
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    style={menuStyles.menuButton}
-                    aria-label="More options"
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <circle cx="12" cy="12" r="2" />
-                      <circle cx="19" cy="12" r="2" />
-                      <circle cx="5" cy="12" r="2" />
-                    </svg>
-                  </button>
-                  {isMenuOpen && (
-                    <>
-                      <div
-                        style={{
-                          position: "fixed",
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          zIndex: 5,
-                        }}
-                        onClick={() => setIsMenuOpen(false)}
-                      />
-                      <div style={menuStyles.menuDropdown}>
-                        <button
-                          onClick={() => {
-                            setIsMenuOpen(false);
-                            setIsDeleteModalOpen(true);
-                          }}
-                          style={menuStyles.menuItem}
-                        >
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                          >
-                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-                          </svg>
-                          Delete Photo
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
+                <button
+                  onClick={() => setIsDeleteModalOpen(true)}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    cursor: "pointer",
+                    borderRadius: "4px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#dc2626",
+                    backgroundColor: "transparent",
+                    border: "2px solid #dc2626",
+                    fontSize: "0.9rem",
+                    fontFamily: "var(--font-geist-sans)",
+                    transition: "all 0.2s",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "rgba(220, 38, 38, 0.1)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                  aria-label="Delete photo"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           </div>

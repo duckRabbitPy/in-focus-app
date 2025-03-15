@@ -6,6 +6,7 @@ import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth, logout } from "@/utils/auth";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -93,6 +94,8 @@ function RollsPage() {
   const [rolls, setRolls] = useState<Roll[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedRollId, setSelectedRollId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!user_id) return;
@@ -116,6 +119,30 @@ function RollsPage() {
         setLoading(false);
       });
   }, [user_id])
+
+  const handleDeleteRoll = async () => {
+    if (!selectedRollId) return;
+
+    try {
+      const response = await fetchWithAuth(
+        `/api/user/${user_id}/rolls/${selectedRollId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete roll");
+      }
+
+      setRolls(rolls.filter((roll) => roll.id !== selectedRollId));
+      setSelectedRollId(null);
+      setIsDeleteModalOpen(false);
+    } catch (error) {
+      console.error("Error deleting roll:", error);
+      setError("Failed to delete roll");
+    }
+  };
 
   if (loading) {
     return (
@@ -150,6 +177,16 @@ function RollsPage() {
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
       >
+        <ConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            setIsDeleteModalOpen(false);
+            setSelectedRollId(null);
+          }}
+          onConfirm={handleDeleteRoll}
+          title="Delete Roll"
+          message="Are you sure you want to delete this roll? This will also delete all photos in this roll. This action cannot be undone."
+        />
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
             <Link href={`/user/${user_id}`} style={sharedStyles.link}>Account</Link>
@@ -189,9 +226,40 @@ function RollsPage() {
                 <div key={roll.id} style={rollCardStyles.card}>
                   <div style={rollCardStyles.header}>
                     <h2 style={rollCardStyles.title}>{roll.name}</h2>
-                    <Link href={`/user/${user_id}/rolls/${roll.id}`}>
-                      <button style={sharedStyles.button}>View Roll</button>
-                    </Link>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                      <Link href={`/user/${user_id}/rolls/${roll.id}`}>
+                        <button style={sharedStyles.button}>View Roll</button>
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setSelectedRollId(roll.id);
+                          setIsDeleteModalOpen(true);
+                        }}
+                        style={{
+                          padding: "0.5rem 1rem",
+                          cursor: "pointer",
+                          borderRadius: "4px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "#dc2626",
+                          backgroundColor: "transparent",
+                          border: "2px solid #dc2626",
+                          fontSize: "0.9rem",
+                          fontFamily: "var(--font-geist-sans)",
+                          transition: "all 0.2s",
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = "rgba(220, 38, 38, 0.1)";
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                        }}
+                        aria-label="Delete roll"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                   <div style={rollCardStyles.details}>
                     {roll.film_type && (
