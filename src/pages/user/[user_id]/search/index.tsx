@@ -23,10 +23,12 @@ function SearchPage() {
   const router = useRouter();
   const { user_id } = router.query;
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [hasSearched, setHasSearched] = useState(false);
   const { photos, isLoading, error, searchPhotos } = usePhotoSearch(user_id as string);
 
   const handleSearch = () => {
     if (selectedTags.length > 0) {
+      setHasSearched(true);
       searchPhotos(selectedTags);
     }
   };
@@ -140,7 +142,7 @@ function SearchPage() {
             </div>
           )}
 
-          {!isLoading && !error && photos.length === 0 && selectedTags.length > 0 && (
+          {!isLoading && !error && photos.length === 0 && hasSearched && (
             <p style={sharedStyles.subtitle}>No photos found with the selected tags.</p>
           )}
         </main>
