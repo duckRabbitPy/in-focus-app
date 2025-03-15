@@ -5,16 +5,19 @@ import Head from "next/head";
 import { withAuth } from "@/utils/withAuth";
 import { geistMono, geistSans } from "@/styles/font";
 import TagPicker from "@/components/TagPicker";
+import { useState } from "react";
+
+type SearchQuery = {
+  tags: string[];
+};
 
 function SearchPage() {
   const router = useRouter();
   const { user_id } = router.query;
-  const onSearchQueryChange = (searchQuery: unknown) => {
-    console.log(searchQuery);
-  };
+  const [searchQuery, setSearchQuery] = useState<SearchQuery>({ tags: [] });
 
-  const searchQuery = {
-    tags: [],
+  const onSearchQueryChange = (newSearchQuery: SearchQuery) => {
+    setSearchQuery(newSearchQuery);
   };
 
   if (!user_id || Array.isArray(user_id)) {
@@ -46,14 +49,20 @@ function SearchPage() {
 
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>Search</h1>
-            <TagPicker
-              selectedTags={searchQuery.tags || []}
-              onTagsChange={(tags) =>
-                onSearchQueryChange({ ...searchQuery, tags })
-              }
-              disableAdd
-              userId={user_id}
-            />
+            <div
+              style={{
+                maxWidth: "400px",
+              }}
+            >
+              <TagPicker
+                selectedTags={searchQuery.tags || []}
+                onTagsChange={(tags) =>
+                  onSearchQueryChange({ ...searchQuery, tags })
+                }
+                disableAdd
+                userId={user_id}
+              />
+            </div>
           </div>
         </main>
         <footer style={sharedStyles.footer}>
