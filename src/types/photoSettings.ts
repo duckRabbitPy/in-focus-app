@@ -53,6 +53,7 @@ export interface PhotoSettingsData {
   stabilisation: Stabilisation;
   exposure_memory: boolean;
   notes?: string;
+  tags: string[];
 }
 
 // Form data type - same as PhotoSettingsData but without photo_id

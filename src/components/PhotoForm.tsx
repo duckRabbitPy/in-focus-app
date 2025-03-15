@@ -5,6 +5,8 @@ import {
   PhotoSettingsFormData,
 } from "@/types/photoSettings";
 import { sharedStyles } from "@/styles/shared";
+import { useRouter } from "next/router";
+import TagPicker from "./TagPicker";
 
 const formStyles = {
   group: {
@@ -114,6 +116,13 @@ export default function PhotoForm({
   error,
   isSubmitting = false,
 }: PhotoFormProps) {
+  const router = useRouter();
+  const { user_id } = router.query;
+
+  if (!user_id || Array.isArray(user_id)) {
+    return <p style={sharedStyles.error}>Invalid user ID</p>;
+  }
+
   return (
     <form onSubmit={onSubmit}>
       <div style={{ ...sharedStyles.card, cursor: "default" }}>
@@ -146,6 +155,12 @@ export default function PhotoForm({
             placeholder="https://example.com/photo.jpg"
           />
         </div>
+
+        <TagPicker
+          selectedTags={photo.tags || []}
+          onTagsChange={(tags) => onPhotoChange({ ...photo, tags })}
+          userId={user_id}
+        />
 
         <div style={formStyles.group}>
           <label style={formStyles.label}>F-Stop</label>
