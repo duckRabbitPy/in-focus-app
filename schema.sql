@@ -4,6 +4,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Drop existing tables if they exist
 DROP TABLE IF EXISTS photos;
 DROP TABLE IF EXISTS rolls;
+DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS users;
 
 -- Users table
@@ -13,6 +14,16 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tags table
+CREATE TABLE tags (
+    id SERIAL PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, name)
 );
 
 -- Rolls table
@@ -51,6 +62,7 @@ CREATE TABLE photos (
 CREATE INDEX idx_rolls_user_id ON rolls(user_id);
 CREATE INDEX idx_photos_roll_id ON photos(roll_id);
 CREATE INDEX idx_photos_sequence ON photos(roll_id, sequence_number);
+CREATE INDEX idx_tags_user_id ON tags(user_id);
 
 -- Trigger to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -73,5 +85,10 @@ CREATE TRIGGER update_rolls_updated_at
 
 CREATE TRIGGER update_photos_updated_at
     BEFORE UPDATE ON photos
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_tags_updated_at
+    BEFORE UPDATE ON tags
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column(); 

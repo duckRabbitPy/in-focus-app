@@ -1,6 +1,7 @@
 -- Delete existing test data if it exists
 DELETE FROM photos;
 DELETE FROM rolls;
+DELETE FROM tags;
 DELETE FROM users WHERE username = 'testuser';
 
 -- Insert a test user
@@ -11,6 +12,20 @@ VALUES (
   '$2b$12$FTlQd8u22rD.DDQ0IN2jt.2cAkpCQ7hkfsHIX4vstoAa7sh3m',  -- This is a hashed version of 'password123'
   CURRENT_TIMESTAMP
 );
+
+-- Insert example tags for the test user
+INSERT INTO tags (user_id, name, created_at)
+VALUES
+  ('123e4567-e89b-12d3-a456-426614174000', 'outdoors', CURRENT_TIMESTAMP),
+  ('123e4567-e89b-12d3-a456-426614174000', 'street', CURRENT_TIMESTAMP),
+  ('123e4567-e89b-12d3-a456-426614174000', 'nature', CURRENT_TIMESTAMP),
+  ('123e4567-e89b-12d3-a456-426614174000', 'urban', CURRENT_TIMESTAMP),
+  ('123e4567-e89b-12d3-a456-426614174000', 'monotone', CURRENT_TIMESTAMP),
+  ('123e4567-e89b-12d3-a456-426614174000', 'color', CURRENT_TIMESTAMP),
+  ('123e4567-e89b-12d3-a456-426614174000', 'portrait', CURRENT_TIMESTAMP),
+  ('123e4567-e89b-12d3-a456-426614174000', 'landscape', CURRENT_TIMESTAMP),
+  ('123e4567-e89b-12d3-a456-426614174000', 'summer', CURRENT_TIMESTAMP),
+  ('123e4567-e89b-12d3-a456-426614174000', 'winter', CURRENT_TIMESTAMP);
 
 -- Insert two rolls for the test user with explicit IDs
 INSERT INTO rolls (id, user_id, name, film_type, iso, created_at)
