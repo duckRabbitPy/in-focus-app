@@ -105,9 +105,9 @@ export const sharedStyles = {
   },
   button: {
     width: "100%",
-    height: "2.5rem",
-    padding: "0 1.25rem",
-    backgroundColor: "#000",
+    height: "2rem",
+    padding: "0 1rem",
+    backgroundColor: "#8E5D94",
     color: "#fff",
     border: "none",
     borderRadius: "4px",
@@ -122,6 +122,7 @@ export const sharedStyles = {
     whiteSpace: "nowrap",
     "@media (minWidth: 640px)": {
       width: "auto",
+      padding: "0 1.25rem",
       fontSize: "1rem",
     },
     "&:hover": {
@@ -133,8 +134,8 @@ export const sharedStyles = {
   },
   secondaryButton: {
     width: "100%",
-    height: "2.5rem",
-    padding: "0 1.25rem",
+    height: "2rem",
+    padding: "0 1rem",
     backgroundColor: "#fff",
     color: "#000",
     border: "2px solid #000",

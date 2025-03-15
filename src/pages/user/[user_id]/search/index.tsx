@@ -1,21 +1,22 @@
 import { useRouter } from "next/router";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
-import Head from "next/head";
 import { withAuth } from "@/utils/withAuth";
 import { geistMono, geistSans } from "@/styles/font";
 import TagPicker from "@/components/TagPicker";
 import { useState } from "react";
-import { usePhotoSearch } from '@/hooks/usePhotoSearch';
-import { formatDate } from '@/utils/date';
-
+import { usePhotoSearch } from "@/hooks/usePhotoSearch";
+import { formatDate } from "@/utils/date";
+import { PageHead } from "@/components/PageHead";
 
 function SearchPage() {
   const router = useRouter();
   const { user_id } = router.query;
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
-  const { photos, isLoading, error, searchPhotos } = usePhotoSearch(user_id as string);
+  const { photos, isLoading, error, searchPhotos } = usePhotoSearch(
+    user_id as string
+  );
 
   const handleSearch = () => {
     if (selectedTags.length > 0) {
@@ -30,12 +31,7 @@ function SearchPage() {
 
   return (
     <>
-      <Head>
-        <title>Search - In-focus</title>
-        <meta name="description" content="Add a new photo" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <PageHead title="Search" description="Search photos by tags" />
       <div
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
@@ -43,7 +39,7 @@ function SearchPage() {
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
             <Link href={`/user/${user_id}`} style={sharedStyles.link}>
-              Account
+              Home
             </Link>
             <span style={sharedStyles.separator}>/</span>
             <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>
@@ -55,7 +51,7 @@ function SearchPage() {
             <h1 style={sharedStyles.title}>Search Photos by Tags</h1>
           </div>
 
-          <div style={{ marginBottom: '2rem' }}>
+          <div style={{ marginBottom: "2rem" }}>
             <TagPicker
               selectedTags={selectedTags}
               onTagsChange={setSelectedTags}
@@ -67,25 +63,25 @@ function SearchPage() {
               disabled={selectedTags.length === 0 || isLoading}
               style={{
                 ...sharedStyles.button,
-                marginTop: '1rem',
-                width: '100%'
+                marginTop: "1rem",
+                width: "100%",
               }}
             >
-              {isLoading ? 'Searching...' : 'Search Photos'}
+              {isLoading ? "Searching..." : "Search Photos"}
             </button>
           </div>
 
-          {error && (
-            <p style={sharedStyles.error}>{error}</p>
-          )}
+          {error && <p style={sharedStyles.error}>{error}</p>}
 
           {photos.length > 0 && (
-            <div style={{ overflowX: 'auto', width: '100%' }}>
-              <table style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-                marginTop: '1rem'
-              }}>
+            <div style={{ overflowX: "auto", width: "100%" }}>
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  marginTop: "1rem",
+                }}
+              >
                 <thead>
                   <tr>
                     <th style={tableHeaderStyle}>Subject</th>
@@ -100,17 +96,25 @@ function SearchPage() {
                     <tr key={photo.id} style={tableRowStyle}>
                       <td style={tableCellStyle}>{photo.subject}</td>
                       <td style={tableCellStyle}>{photo.roll_name}</td>
-                      <td style={tableCellStyle}>{formatDate(photo.created_at)}</td>
                       <td style={tableCellStyle}>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        {formatDate(photo.created_at)}
+                      </td>
+                      <td style={tableCellStyle}>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "0.5rem",
+                          }}
+                        >
                           {photo.tags.map((tag) => (
                             <span
                               key={tag}
                               style={{
-                                backgroundColor: '#f3f4f6',
-                                padding: '0.25rem 0.5rem',
-                                borderRadius: '0.5rem',
-                                fontSize: '0.875rem'
+                                backgroundColor: "#f3f4f6",
+                                padding: "0.25rem 0.5rem",
+                                borderRadius: "0.5rem",
+                                fontSize: "0.875rem",
                               }}
                             >
                               {tag}
@@ -134,7 +138,9 @@ function SearchPage() {
           )}
 
           {!isLoading && !error && photos.length === 0 && hasSearched && (
-            <p style={sharedStyles.subtitle}>No photos found with the selected tags.</p>
+            <p style={sharedStyles.subtitle}>
+              No photos found with the selected tags.
+            </p>
           )}
         </main>
         <footer style={sharedStyles.footer}>
@@ -153,22 +159,22 @@ function SearchPage() {
 }
 
 const tableHeaderStyle = {
-  textAlign: 'left' as const,
-  padding: '0.75rem',
-  borderBottom: '2px solid #e5e7eb',
-  backgroundColor: '#f9fafb'
+  textAlign: "left" as const,
+  padding: "0.75rem",
+  borderBottom: "2px solid #e5e7eb",
+  backgroundColor: "#f9fafb",
 };
 
 const tableRowStyle = {
-  borderBottom: '1px solid #e5e7eb',
-  '&:hover': {
-    backgroundColor: '#f9fafb'
-  }
+  borderBottom: "1px solid #e5e7eb",
+  "&:hover": {
+    backgroundColor: "#f9fafb",
+  },
 };
 
 const tableCellStyle = {
-  padding: '0.75rem',
-  fontSize: '0.875rem'
+  padding: "0.75rem",
+  fontSize: "0.875rem",
 };
 
 export default withAuth(SearchPage);

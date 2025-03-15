@@ -1,13 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Head from "next/head";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
 
 import { geistSans } from "@/styles/font";
+import { PageHead } from "@/components/PageHead";
 
 function MaxiPhotoPage() {
   const router = useRouter();
@@ -77,12 +77,10 @@ function MaxiPhotoPage() {
 
   return (
     <>
-      <Head>
-        <title>Photo #{photo_id} - Full Size - In-focus</title>
-        <meta name="description" content="View full size photo" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <PageHead
+        title={`Photo #${photo_id}`}
+        description="View full size photo"
+      />
       <div className={geistSans.variable} style={sharedStyles.page}>
         <main
           style={{

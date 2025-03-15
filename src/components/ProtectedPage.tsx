@@ -1,9 +1,9 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, ReactNode } from "react";
-import Head from "next/head";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { geistSans, geistMono } from "@/styles/font";
+import { PageHead } from "./PageHead";
 
 interface ProtectedPageProps {
   children: ReactNode;
@@ -59,12 +59,7 @@ export default function ProtectedPage({
 
   return (
     <>
-      <Head>
-        <title>{title} - In-focus</title>
-        <meta name="description" content={description} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <PageHead title={title} description={description} />
       <div
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}

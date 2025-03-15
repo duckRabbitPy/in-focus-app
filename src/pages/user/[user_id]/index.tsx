@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Head from "next/head";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth, logout } from "@/utils/auth";
 import { geistSans, geistMono } from "@/styles/font";
+import { PageHead } from "@/components/PageHead";
 
 interface UserData {
   id: string;
@@ -83,12 +83,7 @@ function UserPage() {
 
   return (
     <>
-      <Head>
-        <title>Account Home - In-focus</title>
-        <meta name="description" content="User account home" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <PageHead title="Account Home" description="User account home" />
       <div
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
@@ -112,7 +107,11 @@ function UserPage() {
                 <button style={sharedStyles.button}>View Rolls</button>
               </Link>
               <Link href={`/user/${user_id}/search`}>
-                <button style={sharedStyles.button}>Search</button>
+                <button
+                  style={{ ...sharedStyles.button, backgroundColor: "#3962b4" }}
+                >
+                  Search
+                </button>
               </Link>
               <button onClick={logout} style={sharedStyles.secondaryButton}>
                 Logout

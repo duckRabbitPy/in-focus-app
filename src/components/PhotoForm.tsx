@@ -13,6 +13,7 @@ const formStyles = {
     display: "flex",
     flexDirection: "column" as const,
     gap: "0.5rem",
+    marginTop: "1rem",
     marginBottom: "1rem",
     width: "100%",
     "@media (minWidth: 640px)": {
@@ -91,9 +92,9 @@ const formStyles = {
     textAlign: "center" as const,
   },
   activeSegment: {
-    backgroundColor: "#0070f3",
+    backgroundColor: "#8E5D94",
     color: "#fff",
-    borderColor: "#0070f3",
+    borderColor: "#8E5D94",
   },
 };
 
@@ -152,7 +153,6 @@ export default function PhotoForm({
               onPhotoChange({ ...photo, photo_url: e.target.value })
             }
             style={sharedStyles.input}
-
           />
         </div>
 
@@ -298,9 +298,10 @@ export default function PhotoForm({
               style={{
                 ...formStyles.segment,
                 ...(photo.exposure_value >= 0 ? formStyles.activeSegment : {}),
-                minWidth: "3rem",
+                width: "44px",
+                height: "44px",
                 flex: "0 0 auto",
-                fontSize: "1.25rem",
+                fontSize: "1.5rem",
                 fontWeight: 500,
                 padding: "0.5rem 0",
               }}
@@ -323,6 +324,8 @@ export default function PhotoForm({
                 fontSize: "1.25rem",
                 fontWeight: 500,
                 padding: "0.5rem 0",
+                width: "44px",
+                height: "44px",
               }}
             >
               −

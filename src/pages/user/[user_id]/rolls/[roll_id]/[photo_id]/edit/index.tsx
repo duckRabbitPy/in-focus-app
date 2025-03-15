@@ -3,10 +3,10 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
-import Head from "next/head";
 import { withAuth } from "@/utils/withAuth";
 import PhotoForm from "@/components/PhotoForm";
 import { geistSans, geistMono } from "@/styles/font";
+import { PageHead } from "@/components/PageHead";
 
 function EditPhotoSettingsPage() {
   const router = useRouter();
@@ -106,12 +106,10 @@ function EditPhotoSettingsPage() {
 
   return (
     <>
-      <Head>
-        <title>Edit Photo #{photo_id} - In-focus</title>
-        <meta name="description" content="Edit photo settings" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <PageHead
+        title={`Edit Photo #${photo_id}`}
+        description="Edit photo settings"
+      />
       <div
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
@@ -119,7 +117,7 @@ function EditPhotoSettingsPage() {
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
             <Link href={`/user/${user_id}`} style={sharedStyles.link}>
-              Account
+              Home
             </Link>
             <span style={sharedStyles.separator}>/</span>
             <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>

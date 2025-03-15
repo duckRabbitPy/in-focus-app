@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Head from "next/head";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
+import { PageHead } from "@/components/PageHead";
 
 const styles = {
   card: {
@@ -165,15 +165,10 @@ function RollPage() {
 
   return (
     <>
-      <Head>
-        <title>Roll #{roll_id} - In-focus</title>
-        <meta
-          name="description"
-          content="View and manage your film roll photos"
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <PageHead
+        title={`Roll #${roll_id}`}
+        description="View and manage your film roll photos"
+      />
       <div
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
@@ -204,7 +199,7 @@ function RollPage() {
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
             <Link href={`/user/${user_id}`} style={sharedStyles.link}>
-              Account
+              Home
             </Link>
             <span style={sharedStyles.separator}>/</span>
             <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>
@@ -228,7 +223,7 @@ function RollPage() {
           </div>
 
           {photos.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "2rem" }}>
+            <div style={{ textAlign: "center", padding: "4rem" }}>
               <p style={sharedStyles.subtitle}>No photos in this roll yet</p>
               <Link href={`/user/${user_id}/rolls/${roll_id}/new_photo`}>
                 <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>

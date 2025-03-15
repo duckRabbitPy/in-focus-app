@@ -1,8 +1,9 @@
-import Head from "next/head";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { getUserFromToken } from "@/utils/auth";
 import { geistSans, geistMono } from "@/styles/font";
+import { PageHead } from "@/components/PageHead";
+import Image from "next/image";
 
 const styles = {
   page: {
@@ -56,7 +57,7 @@ const styles = {
   },
   button: {
     padding: "0.8rem 1rem",
-    backgroundColor: "#000",
+    backgroundColor: "#8E5D94",
     color: "#fff",
     border: "none",
     borderRadius: "4px",
@@ -94,7 +95,7 @@ const styles = {
   },
 };
 
-export default function Home() {
+export default function LandingPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -165,18 +166,34 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <title>In-focus</title>
-        <meta name="description" content="Photography settings app" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <PageHead title={"In-focus"} description={"Photography settings app"} />
       <div
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={styles.page}
       >
         <main style={styles.main}>
-          <h1 style={styles.title}>In-focus</h1>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <h1
+              style={{
+                ...styles.title,
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              In-focus
+              <span style={{ display: "inline-flex", alignItems: "center" }}>
+                <Image src="/camera.png" alt="Camera" width={50} height={50} />
+              </span>
+            </h1>
+          </div>
+
           <p style={styles.subtitle}>Photography settings app</p>
 
           <form onSubmit={handleSubmit} style={styles.form} autoComplete="on">

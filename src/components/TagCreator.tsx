@@ -102,13 +102,14 @@ export const TagCreator = ({
         <button
           onClick={() => setIsCreating(true)}
           style={{
-            ...sharedStyles.secondaryButton,
+            ...sharedStyles.button,
             padding: "0.75rem",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             width: "44px",
             minWidth: "44px",
+            fontSize: "1.25rem",
             height: "44px",
           }}
         >

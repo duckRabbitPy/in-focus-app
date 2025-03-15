@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Head from "next/head";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
@@ -9,6 +8,7 @@ import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
 import CreateNewRollButton from "@/components/CreateNewRollButton";
 import { RollCard } from "@/components/RollCard";
+import { PageHead } from "@/components/PageHead";
 
 interface Roll {
   id: number;
@@ -141,12 +141,10 @@ function RollsPage() {
 
   return (
     <>
-      <Head>
-        <title>Film Rolls - In-focus</title>
-        <meta name="description" content="View and manage your film rolls" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <PageHead
+        title="Film Rolls"
+        description="View and manage your film rolls"
+      />
       <div
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
@@ -164,7 +162,7 @@ function RollsPage() {
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
             <Link href={`/user/${user_id}`} style={sharedStyles.link}>
-              Account
+              Home
             </Link>
             <span style={sharedStyles.separator}>/</span>
             <span>Rolls</span>

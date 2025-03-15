@@ -6,10 +6,10 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
-import Head from "next/head";
 import { withAuth } from "@/utils/withAuth";
 import PhotoForm from "@/components/PhotoForm";
 import { geistMono, geistSans } from "@/styles/font";
+import { PageHead } from "@/components/PageHead";
 
 function NewPhotoPage() {
   const router = useRouter();
@@ -75,12 +75,7 @@ function NewPhotoPage() {
 
   return (
     <>
-      <Head>
-        <title>New Photo - In-focus</title>
-        <meta name="description" content="Add a new photo" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <PageHead title={"New Photo"} description={"Add a new photo"} />
       <div
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
@@ -88,7 +83,7 @@ function NewPhotoPage() {
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
             <Link href={`/user/${user_id}`} style={sharedStyles.link}>
-              Account
+              Home
             </Link>
             <span style={sharedStyles.separator}>/</span>
             <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>

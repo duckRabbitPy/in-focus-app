@@ -1,7 +1,6 @@
 import { PhotoSettingsData } from "@/types/photoSettings";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Head from "next/head";
 import { sharedStyles } from "@/styles/shared";
 import styles from "@/styles/ViewPhoto.module.css";
 import Link from "next/link";
@@ -9,6 +8,7 @@ import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
+import { PageHead } from "@/components/PageHead";
 
 function ViewPhotoSettingsPage() {
   const router = useRouter();
@@ -92,12 +92,10 @@ function ViewPhotoSettingsPage() {
 
   return (
     <>
-      <Head>
-        <title>Photo #{photo_id} - In-focus</title>
-        <meta name="description" content="View photo settings" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <PageHead
+        title={`Photo #${photo_id}`}
+        description="View photo settings"
+      />
       <div
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
@@ -125,7 +123,7 @@ function ViewPhotoSettingsPage() {
           >
             <div style={sharedStyles.breadcrumbs}>
               <Link href={`/user/${user_id}`} style={sharedStyles.link}>
-                Account
+                Home
               </Link>
               <span style={sharedStyles.separator}>/</span>
               <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>
@@ -156,18 +154,9 @@ function ViewPhotoSettingsPage() {
                 <button
                   onClick={() => setIsDeleteModalOpen(true)}
                   style={{
-                    padding: "0.5rem 1rem",
-                    cursor: "pointer",
-                    borderRadius: "4px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    ...sharedStyles.secondaryButton,
                     color: "#dc2626",
-                    backgroundColor: "transparent",
                     border: "2px solid #dc2626",
-                    fontSize: "0.9rem",
-                    fontFamily: "var(--font-geist-sans)",
-                    transition: "all 0.2s",
                   }}
                   onMouseOver={(e) => {
                     e.currentTarget.style.backgroundColor =
