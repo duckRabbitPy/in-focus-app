@@ -9,6 +9,7 @@ import Link from "next/link";
 import Head from "next/head";
 import { withAuth } from "@/utils/withAuth";
 import PhotoForm from "@/components/PhotoForm";
+import { geistMono, geistSans } from "@/styles/font";
 
 function NewPhotoPage() {
   const router = useRouter();

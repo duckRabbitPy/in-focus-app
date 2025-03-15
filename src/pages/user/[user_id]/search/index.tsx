@@ -51,6 +51,7 @@ function SearchPage() {
             <h1 style={sharedStyles.title}>Search</h1>
             <div
               style={{
+                width: "100%",
                 maxWidth: "400px",
               }}
             >

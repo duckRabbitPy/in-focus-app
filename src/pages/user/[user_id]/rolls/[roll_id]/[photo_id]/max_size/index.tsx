@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Head from "next/head";
@@ -5,7 +6,7 @@ import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
-import Image from "next/image";
+
 import { geistSans } from "@/styles/font";
 
 function MaxiPhotoPage() {
@@ -117,12 +118,14 @@ function MaxiPhotoPage() {
               padding: "1rem",
             }}
           >
-            {/* Next image max width */}
-            <Image
+            <img
               src={photo.photo_url}
-              alt={photo.subject || "Photo"}
-              width={800}
-              height={800}
+              alt={photo.subject}
+              style={{
+                width: "100%",
+                height: "800px",
+                objectFit: "contain",
+              }}
             />
           </div>
         </main>

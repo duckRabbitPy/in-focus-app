@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Tag } from "@/types/tag";
+import { Tag } from "@/types/shared";
 import { sharedStyles } from "@/styles/shared";
 import TagCreator from "./TagCreator";
 

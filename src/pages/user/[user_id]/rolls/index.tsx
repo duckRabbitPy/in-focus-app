@@ -246,18 +246,9 @@ function RollsPage() {
                           setIsDeleteModalOpen(true);
                         }}
                         style={{
-                          padding: "0.5rem 1rem",
-                          cursor: "pointer",
-                          borderRadius: "4px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
+                          ...sharedStyles.secondaryButton,
                           color: "#dc2626",
-                          backgroundColor: "transparent",
                           border: "2px solid #dc2626",
-                          fontSize: "0.9rem",
-                          fontFamily: "var(--font-geist-sans)",
-                          transition: "all 0.2s",
                         }}
                         onMouseOver={(e) => {
                           e.currentTarget.style.backgroundColor =

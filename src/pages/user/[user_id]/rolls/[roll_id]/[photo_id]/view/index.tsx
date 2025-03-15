@@ -8,7 +8,6 @@ import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
-import Image from "next/image";
 import { geistMono, geistSans } from "@/styles/font";
 
 function ViewPhotoSettingsPage() {
@@ -244,11 +243,15 @@ function ViewPhotoSettingsPage() {
                     </svg>
                   </Link>
                   {photo.photo_url && (
-                    <Image
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
                       src={photo.photo_url}
-                      alt={photo.subject || "Photo"}
-                      layout="fill"
-                      objectFit="contain"
+                      alt={photo.subject}
+                      style={{
+                        width: "100%",
+                        height: "300px",
+                        objectFit: "contain",
+                      }}
                     />
                   )}
                 </div>

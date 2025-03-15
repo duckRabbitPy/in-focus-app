@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
+import { geistMono, geistSans } from "@/styles/font";
 
 export default withAuth(function NewRollPage() {
   const router = useRouter();
@@ -85,7 +86,7 @@ export default withAuth(function NewRollPage() {
                 </Link>
                 <button
                   type="submit"
-                  style={sharedStyles.button}
+                  style={{ ...sharedStyles.button, maxWidth: "200px" }}
                   disabled={loading}
                 >
                   {loading ? "Creating..." : "Create Roll"}
