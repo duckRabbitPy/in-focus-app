@@ -8,7 +8,7 @@ INSERT INTO users (id, username, password_hash, created_at)
 VALUES (
   '123e4567-e89b-12d3-a456-426614174000',
   'testuser',
-  '$2b$12$FTlQd8u22rD.DDQ0IN2jt.2cAkpCQ7hkfsHIX4vstoAjSwEa7sh3m',  -- This is a hashed version of 'password123'
+  '$2b$12$FTlQd8u22rD.DDQ0IN2jt.2cAkpCQ7hkfsHIX4vstoAa7sh3m',  -- This is a hashed version of 'password123'
   CURRENT_TIMESTAMP
 );
 
@@ -17,6 +17,9 @@ INSERT INTO rolls (id, user_id, name, film_type, iso, created_at)
 VALUES
   (1, '123e4567-e89b-12d3-a456-426614174000', 'Street Photography', 'Kodak Portra', 400, CURRENT_TIMESTAMP),
   (2, '123e4567-e89b-12d3-a456-426614174000', 'Nature Walk', 'Fujifilm Pro 400H', 400, CURRENT_TIMESTAMP);
+
+-- Update the sequence to start after our explicit IDs
+SELECT setval('rolls_id_seq', (SELECT MAX(id) FROM rolls));
 
 -- Insert 3 photos for the first roll (roll_id = 1)
 INSERT INTO photos (
