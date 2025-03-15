@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Geist, Geist_Mono } from "next/font/google";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { getUserFromToken} from '@/utils/auth';
+import { getUserFromToken } from "@/utils/auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -106,13 +106,13 @@ const styles = {
 
 export default function Home() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       const user = getUserFromToken();
       if (user) {
@@ -127,7 +127,7 @@ export default function Home() {
     setLoading(true);
 
     try {
-      console.log('Attempting login with username:', username);
+      console.log("Attempting login with username:", username);
       const response = await fetch("/api/auth", {
         method: "POST",
         headers: {
@@ -137,19 +137,21 @@ export default function Home() {
       });
 
       const data = await response.json();
-      console.log('Auth response status:', response.status);
+      console.log("Auth response status:", response.status);
 
       if (!response.ok) {
-        console.error('Auth error:', data);
-        throw new Error(data.error || `Authentication failed (${response.status})`);
+        console.error("Auth error:", data);
+        throw new Error(
+          data.error || `Authentication failed (${response.status})`
+        );
       }
 
       if (!data.token) {
-        throw new Error('No token received from server');
+        throw new Error("No token received from server");
       }
 
       localStorage.setItem("token", data.token);
-      
+
       // Get user ID from token and redirect
       const user = getUserFromToken();
       if (!user) {
@@ -157,14 +159,15 @@ export default function Home() {
       }
       router.push(`/user/${user.userId}`);
     } catch (error) {
-      console.error('Login error:', error);
-      setError(error instanceof Error ? error.message : "Authentication failed");
+      console.error("Login error:", error);
+      setError(
+        error instanceof Error ? error.message : "Authentication failed"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  
   const user = getUserFromToken();
   if (user) {
     console.log(user.userId, user.username);

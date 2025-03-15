@@ -6,6 +6,7 @@ import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
+import Image from "next/image";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,7 +17,10 @@ function MaxiPhotoPage() {
   const router = useRouter();
   const { user_id, roll_id, photo_id } = router.query;
 
-  const [photo, setPhoto] = useState<{ photo_url: string | null; subject: string } | null>(null);
+  const [photo, setPhoto] = useState<{
+    photo_url: string | null;
+    subject: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -44,7 +48,13 @@ function MaxiPhotoPage() {
 
   if (loading) {
     return (
-      <div style={{...sharedStyles.page, justifyContent: 'center', alignItems: 'center'}}>
+      <div
+        style={{
+          ...sharedStyles.page,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <p style={sharedStyles.subtitle}>Loading...</p>
       </div>
     );
@@ -52,10 +62,16 @@ function MaxiPhotoPage() {
 
   if (error || !photo?.photo_url) {
     return (
-      <div style={{...sharedStyles.page, justifyContent: 'center', alignItems: 'center'}}>
+      <div
+        style={{
+          ...sharedStyles.page,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <p style={sharedStyles.error}>{error || "Photo not found"}</p>
         <Link href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`}>
-          <button style={{...sharedStyles.button, marginTop: '1rem'}}>
+          <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>
             Back to Photo
           </button>
         </Link>
@@ -72,42 +88,46 @@ function MaxiPhotoPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className={geistSans.variable} style={sharedStyles.page}>
-        <main style={{
-          ...sharedStyles.main,
-          padding: '1rem',
-          width: '100%',
-          maxWidth: 'none',
-          display: 'flex',
-          flexDirection: 'column' as const,
-          gap: '1rem',
-        }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-          }}>
+        <main
+          style={{
+            ...sharedStyles.main,
+            padding: "1rem",
+            width: "100%",
+            maxWidth: "none",
+            display: "flex",
+            flexDirection: "column" as const,
+            gap: "1rem",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
             <Link href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`}>
               <button style={sharedStyles.secondaryButton}>
                 ← Back to Photo
               </button>
             </Link>
           </div>
-          <div style={{
-            width: '100%',
-            overflow: 'auto',
-            backgroundColor: '#f5f5f5',
-            borderRadius: '0.5rem',
-            padding: '1rem',
-          }}>
-            <img
+          <div
+            style={{
+              width: "100%",
+              overflow: "auto",
+              backgroundColor: "#f5f5f5",
+              borderRadius: "0.5rem",
+              padding: "1rem",
+            }}
+          >
+            {/* Next image max width */}
+            <Image
               src={photo.photo_url}
               alt={photo.subject || "Photo"}
-              style={{
-                width: '100%',
-                height: 'auto',
-                display: 'block',
-              }}
+              width={800}
+              height={800}
             />
           </div>
         </main>
@@ -116,4 +136,4 @@ function MaxiPhotoPage() {
   );
 }
 
-export default withAuth(MaxiPhotoPage); 
+export default withAuth(MaxiPhotoPage);

@@ -44,7 +44,7 @@ export const sharedStyles = {
   },
   subtitle: {
     fontSize: "1.1rem",
-    color: "#444",
+    color: "#333",
     margin: 0,
     fontFamily: "var(--font-geist-sans)",
     "@media (min-width: 640px)": {
@@ -199,7 +199,7 @@ export const sharedStyles = {
     },
   },
   link: {
-    color: "#444",
+    color: "#333",
     textDecoration: "none",
     fontFamily: "var(--font-geist-sans)",
     transition: "color 0.2s",
@@ -243,4 +243,4 @@ export const sharedStyles = {
     color: "#666",
     userSelect: "none" as const,
   },
-}; 
+};

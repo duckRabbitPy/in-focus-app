@@ -1,92 +1,97 @@
-import { PhotoSettingsData, FStop, ShutterSpeed, Stabilisation, PhotoSettingsFormData } from "@/types/photoSettings";
+import {
+  FStop,
+  ShutterSpeed,
+  Stabilisation,
+  PhotoSettingsFormData,
+} from "@/types/photoSettings";
 import { sharedStyles } from "@/styles/shared";
 
 const formStyles = {
   group: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '0.5rem',
-    marginBottom: '1rem',
-    width: '100%',
-    '@media (min-width: 640px)': {
-      marginBottom: '1.5rem',
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "0.5rem",
+    marginBottom: "1rem",
+    width: "100%",
+    "@media (min-width: 640px)": {
+      marginBottom: "1.5rem",
     },
   },
   label: {
-    fontSize: '0.85rem',
-    color: '#333',
-    fontFamily: 'var(--font-geist-sans)',
-    '@media (min-width: 640px)': {
-      fontSize: '0.9rem',
+    fontSize: "0.85rem",
+    color: "#333",
+    fontFamily: "var(--font-geist-sans)",
+    "@media (min-width: 640px)": {
+      fontSize: "0.9rem",
     },
   },
   select: {
     ...sharedStyles.input,
-    backgroundColor: '#fff',
-    width: '100%',
-    paddingRight: '2rem',
+    backgroundColor: "#fff",
+    width: "100%",
+    paddingRight: "2rem",
   },
   checkbox: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    padding: '0.5rem',
-    borderRadius: '4px',
-    '&:active': {
-      backgroundColor: '#f5f5f5',
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    padding: "0.5rem",
+    borderRadius: "4px",
+    "&:active": {
+      backgroundColor: "#f5f5f5",
     },
   },
   checkboxInput: {
-    width: '1.4rem',
-    height: '1.4rem',
-    cursor: 'pointer',
-    '@media (min-width: 640px)': {
-      width: '1.2rem',
-      height: '1.2rem',
+    width: "1.4rem",
+    height: "1.4rem",
+    cursor: "pointer",
+    "@media (min-width: 640px)": {
+      width: "1.2rem",
+      height: "1.2rem",
     },
   },
   buttonGroup: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '0.75rem',
-    marginTop: '1.5rem',
-    width: '100%',
-    '@media (min-width: 640px)': {
-      flexDirection: 'row',
-      gap: '1rem',
-      marginTop: '2rem',
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "0.75rem",
+    marginTop: "1.5rem",
+    width: "100%",
+    "@media (min-width: 640px)": {
+      flexDirection: "row",
+      gap: "1rem",
+      marginTop: "2rem",
     },
   },
   checkboxGrid: {
-    display: 'grid',
-    gridTemplateColumns: '1fr',
-    gap: '0.5rem',
-    marginTop: '1rem',
-    width: '100%',
-    '@media (min-width: 480px)': {
-      gridTemplateColumns: '1fr 1fr',
+    display: "grid",
+    gridTemplateColumns: "1fr",
+    gap: "0.5rem",
+    marginTop: "1rem",
+    width: "100%",
+    "@media (min-width: 480px)": {
+      gridTemplateColumns: "1fr 1fr",
     },
   },
   segmentedControl: {
-    display: 'flex',
-    gap: '0.5rem',
-    marginBottom: '0.5rem',
+    display: "flex",
+    gap: "0.5rem",
+    marginBottom: "0.5rem",
   },
   segment: {
-    padding: '0.5rem 1rem',
-    border: '1px solid #e5e5e5',
-    borderRadius: '4px',
-    fontSize: '0.9rem',
-    cursor: 'pointer',
-    backgroundColor: '#fff',
-    color: '#666',
+    padding: "0.5rem 1rem",
+    border: "1px solid #e5e5e5",
+    borderRadius: "4px",
+    fontSize: "0.9rem",
+    cursor: "pointer",
+    backgroundColor: "#fff",
+    color: "#666",
     flex: 1,
-    textAlign: 'center' as const,
+    textAlign: "center" as const,
   },
   activeSegment: {
-    backgroundColor: '#0070f3',
-    color: '#fff',
-    borderColor: '#0070f3',
+    backgroundColor: "#0070f3",
+    color: "#fff",
+    borderColor: "#0070f3",
   },
 };
 
@@ -111,16 +116,18 @@ export default function PhotoForm({
 }: PhotoFormProps) {
   return (
     <form onSubmit={onSubmit}>
-      <div style={{...sharedStyles.card, cursor: 'default'}}>
+      <div style={{ ...sharedStyles.card, cursor: "default" }}>
         {error && <p style={sharedStyles.error}>{error}</p>}
-        
+
         <div style={formStyles.group}>
           <label style={formStyles.label}>Subject</label>
           <input
             type="text"
             name="subject"
             value={photo.subject}
-            onChange={(e) => onPhotoChange({ ...photo, subject: e.target.value })}
+            onChange={(e) =>
+              onPhotoChange({ ...photo, subject: e.target.value })
+            }
             style={sharedStyles.input}
             required
           />
@@ -131,8 +138,10 @@ export default function PhotoForm({
           <input
             type="url"
             name="photo_url"
-            value={photo.photo_url || ''}
-            onChange={(e) => onPhotoChange({ ...photo, photo_url: e.target.value })}
+            value={photo.photo_url || ""}
+            onChange={(e) =>
+              onPhotoChange({ ...photo, photo_url: e.target.value })
+            }
             style={sharedStyles.input}
             placeholder="https://example.com/photo.jpg"
           />
@@ -140,14 +149,21 @@ export default function PhotoForm({
 
         <div style={formStyles.group}>
           <label style={formStyles.label}>F-Stop</label>
-          <select 
-            name="f_stop" 
-            value={photo.f_stop} 
-            onChange={(e) => onPhotoChange({ ...photo, f_stop: parseFloat(e.target.value) as FStop })}
+          <select
+            name="f_stop"
+            value={photo.f_stop}
+            onChange={(e) =>
+              onPhotoChange({
+                ...photo,
+                f_stop: parseFloat(e.target.value) as FStop,
+              })
+            }
             style={formStyles.select}
           >
             {[1.4, 1.7, 2, 2.5, 2.8, 4, 5.6, 8, 11, 16, 22, 32].map((f) => (
-              <option key={f} value={f}>{f}</option>
+              <option key={f} value={f}>
+                {f}
+              </option>
             ))}
           </select>
         </div>
@@ -157,20 +173,34 @@ export default function PhotoForm({
           <div style={formStyles.segmentedControl}>
             <button
               type="button"
-              onClick={() => onPhotoChange({ ...photo, focal_distance: photo.focal_distance === "infinity" ? 1 : photo.focal_distance as number })}
+              onClick={() =>
+                onPhotoChange({
+                  ...photo,
+                  focal_distance:
+                    photo.focal_distance === "infinity"
+                      ? 1
+                      : (photo.focal_distance as number),
+                })
+              }
               style={{
                 ...formStyles.segment,
-                ...(photo.focal_distance !== "infinity" ? formStyles.activeSegment : {})
+                ...(photo.focal_distance !== "infinity"
+                  ? formStyles.activeSegment
+                  : {}),
               }}
             >
               Meters
             </button>
             <button
               type="button"
-              onClick={() => onPhotoChange({ ...photo, focal_distance: "infinity" })}
+              onClick={() =>
+                onPhotoChange({ ...photo, focal_distance: "infinity" })
+              }
               style={{
                 ...formStyles.segment,
-                ...(photo.focal_distance === "infinity" ? formStyles.activeSegment : {})
+                ...(photo.focal_distance === "infinity"
+                  ? formStyles.activeSegment
+                  : {}),
               }}
             >
               Infinity (∞)
@@ -181,7 +211,12 @@ export default function PhotoForm({
               type="number"
               name="focal_distance"
               value={photo.focal_distance}
-              onChange={(e) => onPhotoChange({ ...photo, focal_distance: parseFloat(e.target.value) })}
+              onChange={(e) =>
+                onPhotoChange({
+                  ...photo,
+                  focal_distance: parseFloat(e.target.value),
+                })
+              }
               style={sharedStyles.input}
               min="0.1"
               step="0.1"
@@ -194,76 +229,115 @@ export default function PhotoForm({
           <select
             name="shutter_speed"
             value={photo.shutter_speed}
-            onChange={(e) => onPhotoChange({ ...photo, shutter_speed: e.target.value as ShutterSpeed })}
+            onChange={(e) =>
+              onPhotoChange({
+                ...photo,
+                shutter_speed: e.target.value as ShutterSpeed,
+              })
+            }
             style={formStyles.select}
           >
-            {["8", "4", "2", "1", "1/2", "1/4", "1/8", "1/15", "1/30", "1/60", "1/125", "1/250", "1/500", "1/1000", "1/2000", "1/4000", "1/8000"].map((s) => (
-              <option key={s} value={s}>{s}</option>
+            {[
+              "8",
+              "4",
+              "2",
+              "1",
+              "1/2",
+              "1/4",
+              "1/8",
+              "1/15",
+              "1/30",
+              "1/60",
+              "1/125",
+              "1/250",
+              "1/500",
+              "1/1000",
+              "1/2000",
+              "1/4000",
+              "1/8000",
+            ].map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
         </div>
 
         <div style={formStyles.group}>
           <label style={formStyles.label}>Exposure Value</label>
-          <div style={{
-            ...formStyles.segmentedControl,
-            justifyContent: 'flex-start',
-            marginBottom: '0.5rem'
-          }}>
+          <div
+            style={{
+              ...formStyles.segmentedControl,
+              justifyContent: "flex-start",
+              marginBottom: "0.5rem",
+            }}
+          >
             <button
               type="button"
-              onClick={() => onPhotoChange({ ...photo, exposure_value: Math.abs(photo.exposure_value) })}
+              onClick={() =>
+                onPhotoChange({
+                  ...photo,
+                  exposure_value: Math.abs(photo.exposure_value),
+                })
+              }
               style={{
                 ...formStyles.segment,
                 ...(photo.exposure_value >= 0 ? formStyles.activeSegment : {}),
-                minWidth: '3rem',
-                flex: '0 0 auto',
-                fontSize: '1.25rem',
+                minWidth: "3rem",
+                flex: "0 0 auto",
+                fontSize: "1.25rem",
                 fontWeight: 500,
-                padding: '0.5rem 0'
+                padding: "0.5rem 0",
               }}
             >
               +
             </button>
             <button
               type="button"
-              onClick={() => onPhotoChange({ ...photo, exposure_value: Math.abs(photo.exposure_value) * -1 })}
+              onClick={() =>
+                onPhotoChange({
+                  ...photo,
+                  exposure_value: Math.abs(photo.exposure_value) * -1,
+                })
+              }
               style={{
                 ...formStyles.segment,
                 ...(photo.exposure_value < 0 ? formStyles.activeSegment : {}),
-                minWidth: '3rem',
-                flex: '0 0 auto',
-                fontSize: '1.25rem',
+                minWidth: "3rem",
+                flex: "0 0 auto",
+                fontSize: "1.25rem",
                 fontWeight: 500,
-                padding: '0.5rem 0'
+                padding: "0.5rem 0",
               }}
             >
               −
             </button>
           </div>
-          <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <input
               type="number"
               name="exposure_value"
               value={Math.abs(photo.exposure_value)}
               onChange={(e) => {
                 const value = parseFloat(e.target.value);
-                onPhotoChange({ 
-                  ...photo, 
-                  exposure_value: photo.exposure_value < 0 ? -value : value 
+                onPhotoChange({
+                  ...photo,
+                  exposure_value: photo.exposure_value < 0 ? -value : value,
                 });
               }}
-              style={{...sharedStyles.input, flex: 1}}
+              style={{ ...sharedStyles.input, flex: 1 }}
               min="0"
               step="0.5"
             />
-            <span style={{
-              fontFamily: 'var(--font-geist-mono)',
-              fontSize: '0.9rem',
-              color: '#666',
-              width: '3rem',
-              textAlign: 'right'
-            }}>
+            <span
+              style={{
+                fontFamily: "var(--font-geist-mono)",
+                fontSize: "0.9rem",
+                color: "#666",
+                width: "3rem",
+                textAlign: "right",
+              }}
+            >
               EV
             </span>
           </div>
@@ -274,11 +348,36 @@ export default function PhotoForm({
           <select
             name="phone_light_meter"
             value={photo.phone_light_meter}
-            onChange={(e) => onPhotoChange({ ...photo, phone_light_meter: e.target.value as ShutterSpeed })}
+            onChange={(e) =>
+              onPhotoChange({
+                ...photo,
+                phone_light_meter: e.target.value as ShutterSpeed,
+              })
+            }
             style={formStyles.select}
           >
-            {["8", "4", "2", "1", "1/2", "1/4", "1/8", "1/15", "1/30", "1/60", "1/125", "1/250", "1/500", "1/1000", "1/2000", "1/4000", "1/8000"].map((s) => (
-              <option key={s} value={s}>{s}</option>
+            {[
+              "8",
+              "4",
+              "2",
+              "1",
+              "1/2",
+              "1/4",
+              "1/8",
+              "1/15",
+              "1/30",
+              "1/60",
+              "1/125",
+              "1/250",
+              "1/500",
+              "1/1000",
+              "1/2000",
+              "1/4000",
+              "1/8000",
+            ].map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
         </div>
@@ -288,11 +387,18 @@ export default function PhotoForm({
           <select
             name="stabilisation"
             value={photo.stabilisation}
-            onChange={(e) => onPhotoChange({ ...photo, stabilisation: e.target.value as Stabilisation })}
+            onChange={(e) =>
+              onPhotoChange({
+                ...photo,
+                stabilisation: e.target.value as Stabilisation,
+              })
+            }
             style={formStyles.select}
           >
-            {["handheld", "rested" , "tripod"].map((s) => (
-              <option key={s} value={s}>{s}</option>
+            {["handheld", "rested", "tripod"].map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
         </div>
@@ -303,7 +409,9 @@ export default function PhotoForm({
               type="checkbox"
               name="timer"
               checked={photo.timer}
-              onChange={(e) => onPhotoChange({ ...photo, timer: e.target.checked })}
+              onChange={(e) =>
+                onPhotoChange({ ...photo, timer: e.target.checked })
+              }
               style={formStyles.checkboxInput}
             />
             <label style={formStyles.label}>Timer</label>
@@ -314,7 +422,9 @@ export default function PhotoForm({
               type="checkbox"
               name="flash"
               checked={photo.flash}
-              onChange={(e) => onPhotoChange({ ...photo, flash: e.target.checked })}
+              onChange={(e) =>
+                onPhotoChange({ ...photo, flash: e.target.checked })
+              }
               style={formStyles.checkboxInput}
             />
             <label style={formStyles.label}>Flash</label>
@@ -325,7 +435,9 @@ export default function PhotoForm({
               type="checkbox"
               name="exposure_memory"
               checked={photo.exposure_memory}
-              onChange={(e) => onPhotoChange({ ...photo, exposure_memory: e.target.checked })}
+              onChange={(e) =>
+                onPhotoChange({ ...photo, exposure_memory: e.target.checked })
+              }
               style={formStyles.checkboxInput}
             />
             <label style={formStyles.label}>Exposure Memory</label>
@@ -336,12 +448,12 @@ export default function PhotoForm({
           <label style={formStyles.label}>Notes</label>
           <textarea
             name="notes"
-            value={photo.notes || ''}
+            value={photo.notes || ""}
             onChange={(e) => onPhotoChange({ ...photo, notes: e.target.value })}
             style={{
               ...sharedStyles.input,
-              minHeight: '100px',
-              resize: 'vertical',
+              minHeight: "100px",
+              resize: "vertical",
             }}
             placeholder="Add any notes about this photo..."
           />
@@ -353,8 +465,8 @@ export default function PhotoForm({
               Cancel
             </button>
           </a>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             style={sharedStyles.button}
             disabled={isSubmitting}
           >
@@ -364,4 +476,4 @@ export default function PhotoForm({
       </div>
     </form>
   );
-} 
+}

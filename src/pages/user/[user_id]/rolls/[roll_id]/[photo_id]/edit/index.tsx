@@ -1,4 +1,4 @@
-import { PhotoSettingsData, PhotoSettingsFormData } from "@/types/photoSettings";
+import { PhotoSettingsFormData } from "@/types/photoSettings";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { sharedStyles } from "@/styles/shared";
@@ -32,8 +32,8 @@ function EditPhotoSettingsPage() {
 
     fetch(`/api/user/${user_id}/rolls/${roll_id}/${photo_id}`, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     })
       .then((res) => res.json())
       .then((data) => {
@@ -46,7 +46,7 @@ function EditPhotoSettingsPage() {
         setLoading(false);
       })
       .catch((error: Error) => {
-        console.error('Failed to load photo data:', error);
+        console.error("Failed to load photo data:", error);
         setError("Failed to load photo data");
         setPhoto(null);
         setLoading(false);
@@ -58,14 +58,17 @@ function EditPhotoSettingsPage() {
     setSaving(true);
 
     try {
-      const response = await fetch(`/api/user/${user_id}/rolls/${roll_id}/${photo_id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(photo)
-      });
+      const response = await fetch(
+        `/api/user/${user_id}/rolls/${roll_id}/${photo_id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(photo),
+        }
+      );
 
       const data = await response.json();
 
@@ -75,7 +78,7 @@ function EditPhotoSettingsPage() {
         router.push(`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`);
       }
     } catch (error: unknown) {
-      console.error('Failed to save changes:', error);
+      console.error("Failed to save changes:", error);
       setError("Failed to save changes");
     } finally {
       setSaving(false);
@@ -83,21 +86,29 @@ function EditPhotoSettingsPage() {
   };
 
   const LoadingState = () => (
-    <div style={{textAlign: 'center', padding: '2rem'}}>
+    <div style={{ textAlign: "center", padding: "2rem" }}>
       <p style={sharedStyles.subtitle}>Loading...</p>
     </div>
   );
 
   const ErrorState = () => (
-    <div style={{textAlign: 'center', padding: '2rem'}}>
+    <div style={{ textAlign: "center", padding: "2rem" }}>
       <p style={sharedStyles.error}>
-        {error === "Missing authentication token" ? 
-          "Please log in to edit this page" : 
-          error || "Photo not found"}
+        {error === "Missing authentication token"
+          ? "Please log in to edit this page"
+          : error || "Photo not found"}
       </p>
-      <Link href={error === "Missing authentication token" ? "/" : `/user/${user_id}/rolls/${roll_id}`}>
-        <button style={{...sharedStyles.button, marginTop: '1rem'}}>
-          {error === "Missing authentication token" ? "Go to Home Page" : "Back to Roll"}
+      <Link
+        href={
+          error === "Missing authentication token"
+            ? "/"
+            : `/user/${user_id}/rolls/${roll_id}`
+        }
+      >
+        <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>
+          {error === "Missing authentication token"
+            ? "Go to Home Page"
+            : "Back to Roll"}
         </button>
       </Link>
     </div>
@@ -117,13 +128,27 @@ function EditPhotoSettingsPage() {
       >
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
-            <Link href={`/user/${user_id}`} style={sharedStyles.link}>Account</Link>
+            <Link href={`/user/${user_id}`} style={sharedStyles.link}>
+              Account
+            </Link>
             <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>Rolls</Link>
+            <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>
+              Rolls
+            </Link>
             <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}/rolls/${roll_id}`} style={sharedStyles.link}>Roll #{roll_id}</Link>
+            <Link
+              href={`/user/${user_id}/rolls/${roll_id}`}
+              style={sharedStyles.link}
+            >
+              Roll #{roll_id}
+            </Link>
             <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`} style={sharedStyles.link}>Photo #{photo_id}</Link>
+            <Link
+              href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`}
+              style={sharedStyles.link}
+            >
+              Photo #{photo_id}
+            </Link>
             <span style={sharedStyles.separator}>/</span>
             <span>Edit</span>
           </div>

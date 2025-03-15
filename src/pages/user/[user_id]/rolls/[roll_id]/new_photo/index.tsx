@@ -1,6 +1,9 @@
-import { PhotoSettingsData, PhotoSettingsFormData } from "@/types/photoSettings";
+import {
+  PhotoSettingsData,
+  PhotoSettingsFormData,
+} from "@/types/photoSettings";
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import Head from "next/head";
@@ -21,34 +24,6 @@ const geistMono = Geist_Mono({
 function NewPhotoPage() {
   const router = useRouter();
   const { user_id, roll_id } = router.query;
-  const [highestPhotoId, setHighestPhotoId] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!user_id || !roll_id) return;
-
-    // Fetch the highest photo ID for this roll
-    fetch(`/api/user/${user_id}/rolls/${roll_id}/photos`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.error && Array.isArray(data)) {
-          const maxId = data.reduce((max, photo) => {
-            const currentId = parseInt(photo.photo_id);
-            return currentId > max ? currentId : max;
-          }, 0);
-          setHighestPhotoId(maxId);
-        }
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Failed to fetch photos:', error);
-        setLoading(false);
-      });
-  }, [user_id, roll_id]);
 
   const [photo, setPhoto] = useState<PhotoSettingsFormData>({
     roll_id: roll_id as string,
@@ -77,17 +52,20 @@ function NewPhotoPage() {
       // Convert form data to PhotoSettingsData
       const photoData: PhotoSettingsData = {
         ...photo,
-        photo_id: "0" // Server will assign the actual ID
+        photo_id: "0", // Server will assign the actual ID
       };
 
-      const response = await fetch(`/api/user/${user_id}/rolls/${roll_id}/photos`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(photoData)
-      });
+      const response = await fetch(
+        `/api/user/${user_id}/rolls/${roll_id}/photos`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(photoData),
+        }
+      );
 
       const data = await response.json();
 
@@ -97,21 +75,12 @@ function NewPhotoPage() {
         router.push(`/user/${user_id}/rolls/${roll_id}`);
       }
     } catch (error: unknown) {
-      console.error('Failed to create photo:', error);
+      console.error("Failed to create photo:", error);
       setError("Failed to create photo");
     } finally {
       setSubmitting(false);
     }
   };
-
-  // Show loading state while fetching highest photo ID
-  if (loading) {
-    return (
-      <div style={{textAlign: 'center', padding: '2rem'}}>
-        <p style={sharedStyles.subtitle}>Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -127,11 +96,20 @@ function NewPhotoPage() {
       >
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
-            <Link href={`/user/${user_id}`} style={sharedStyles.link}>Account</Link>
+            <Link href={`/user/${user_id}`} style={sharedStyles.link}>
+              Account
+            </Link>
             <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>Rolls</Link>
+            <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>
+              Rolls
+            </Link>
             <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}/rolls/${roll_id}`} style={sharedStyles.link}>Roll #{roll_id}</Link>
+            <Link
+              href={`/user/${user_id}/rolls/${roll_id}`}
+              style={sharedStyles.link}
+            >
+              Roll #{roll_id}
+            </Link>
             <span style={sharedStyles.separator}>/</span>
             <span>New Photo</span>
           </div>
