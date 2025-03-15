@@ -247,7 +247,7 @@ function ViewPhotoSettingsPage() {
                   overflow: 'hidden',
                 }}>
                   <Link 
-                    href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/maxi`}
+                    href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/max_size`}
                     target="_blank"
                     style={{
                       position: 'absolute',
@@ -265,10 +265,12 @@ function ViewPhotoSettingsPage() {
                     }}
                     className={styles.maximizeButton}
                   >
+                    {/* Maximize button */}
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
                     </svg>
                   </Link>
+                  {photo.photo_url && (
                   <img
                     src={photo.photo_url}
                     alt={photo.subject || "Photo"}
@@ -278,6 +280,7 @@ function ViewPhotoSettingsPage() {
                       objectFit: 'contain',
                     }}
                   />
+                  )}
                 </div>
               )}
 
@@ -294,14 +297,12 @@ function ViewPhotoSettingsPage() {
                 <div className={styles.detailItem}>
                   <span className={styles.label}>Photo URL</span>
                   {photo.photo_url ? (
-                    <a 
-                      href={photo.photo_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                      <Link 
                       className={styles.valueLink}
-                    >
+                      href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/max_size`}
+                      target="_blank">
                       View Photo
-                    </a>
+                      </Link>
                   ) : (
                     <p className={styles.valueDisabled}>Not set</p>
                   )}
