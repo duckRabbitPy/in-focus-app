@@ -9,15 +9,6 @@ import { useState } from "react";
 import { usePhotoSearch } from '@/hooks/usePhotoSearch';
 import { formatDate } from '@/utils/date';
 
-interface PhotoSearchResult {
-  id: string;
-  roll_id: string;
-  subject: string;
-  photo_url?: string;
-  created_at: string;
-  roll_name: string;
-  tags: string[];
-}
 
 function SearchPage() {
   const router = useRouter();
