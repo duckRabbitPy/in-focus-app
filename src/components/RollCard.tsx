@@ -64,6 +64,7 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
       flexDirection: "column" as const,
       gap: "1rem",
       cursor: "default",
+      overflow: "scroll",
     },
     header: {
       display: "flex",
@@ -137,6 +138,7 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
               style={{
                 ...sharedStyles.button,
                 backgroundColor: "#047857",
+                marginLeft: "0.5rem",
               }}
               onClick={handleSave}
               disabled={isSaving}

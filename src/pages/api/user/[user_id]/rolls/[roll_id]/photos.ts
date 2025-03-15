@@ -1,27 +1,31 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { query, queryOne,} from "@/utils/db";
+import { query, queryOne } from "@/utils/db";
 import { DBPhoto } from "@/utils/db";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { roll_id, user_id } = req.query;
-  console.log({
-    roll_id,
-    user_id
-  })
+
   // Validate basic UUID format (5 groups of hex chars separated by hyphens)
   const uuidRegex = /^[0-9a-f-]{36}$/i;
   if (typeof user_id !== "string" || !uuidRegex.test(user_id)) {
-    return res.status(400).json({ error: "Invalid user_id format. Must be a UUID-like string." });
+    return res
+      .status(400)
+      .json({ error: "Invalid user_id format. Must be a UUID-like string." });
   }
 
   // Validate roll_id is a number
   if (typeof roll_id !== "string" || !/^\d+$/.test(roll_id)) {
-    return res.status(400).json({ error: "Invalid roll_id format. Must be a number." });
+    return res
+      .status(400)
+      .json({ error: "Invalid roll_id format. Must be a number." });
   }
 
   // Verify that the roll belongs to the user
   const rollCheck = await queryOne<{ id: number }>(
-    'SELECT r.id FROM rolls r WHERE r.id = $1 AND r.user_id = $2',
+    "SELECT r.id FROM rolls r WHERE r.id = $1 AND r.user_id = $2",
     [parseInt(roll_id), user_id]
   );
 
@@ -41,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         return res.status(200).json(photos);
       } catch (error) {
-        console.error('Error fetching photos:', error);
+        console.error("Error fetching photos:", error);
         return res.status(500).json({ error: "Error fetching photos" });
       }
 
@@ -66,7 +70,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           stabilisation,
           timer,
           flash,
-          exposure_memory
+          exposure_memory,
         } = req.body;
 
         const newPhoto = await queryOne<DBPhoto>(
@@ -99,13 +103,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             timer,
             flash,
             exposure_memory,
-            nextSequence?.next_sequence || 1
+            nextSequence?.next_sequence || 1,
           ]
         );
 
         return res.status(201).json(newPhoto);
       } catch (error) {
-        console.error('Error creating photo:', error);
+        console.error("Error creating photo:", error);
         return res.status(500).json({ error: "Error creating photo" });
       }
 
