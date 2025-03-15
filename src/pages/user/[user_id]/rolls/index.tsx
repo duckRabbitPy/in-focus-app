@@ -8,6 +8,7 @@ import { fetchWithAuth, logout } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
 import CreateNewRollButton from "@/components/CreateNewRollButton";
+import { RollCard } from "@/components/RollCard";
 
 interface Roll {
   id: number;
@@ -17,42 +18,6 @@ interface Roll {
   created_at: string;
   updated_at: string;
 }
-
-const rollCardStyles = {
-  card: {
-    ...sharedStyles.card,
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "1rem",
-    cursor: "default",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  title: {
-    ...sharedStyles.subtitle,
-    fontFamily: "var(--font-geist-mono)",
-    fontSize: "1.1rem",
-    margin: 0,
-  },
-  details: {
-    display: "grid",
-    gap: "0.5rem",
-  },
-  label: {
-    fontSize: "0.85rem",
-    color: "#444",
-    margin: 0,
-  },
-  value: {
-    fontSize: "0.95rem",
-    color: "#000",
-    margin: 0,
-    fontFamily: "var(--font-geist-mono)",
-  },
-};
 
 const headerButtonStyles = {
   container: {
@@ -133,6 +98,12 @@ function RollsPage() {
       console.error("Error deleting roll:", error);
       setError("Failed to delete roll");
     }
+  };
+
+  const handleUpdateRoll = (updatedRoll: Roll) => {
+    setRolls(
+      rolls.map((roll) => (roll.id === updatedRoll.id ? updatedRoll : roll))
+    );
   };
 
   if (loading) {
@@ -221,64 +192,16 @@ function RollsPage() {
           ) : (
             <div style={sharedStyles.grid}>
               {rolls.map((roll) => (
-                <div key={roll.id} style={rollCardStyles.card}>
-                  <div style={rollCardStyles.header}>
-                    <h2 style={rollCardStyles.title}>{roll.name}</h2>
-                    <div
-                      style={{
-                        
-                        display: "flex",
-                        gap: "0.5rem",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Link href={`/user/${user_id}/rolls/${roll.id}`}>
-                        <button style={sharedStyles.button}>View Roll</button>
-                      </Link>
-                      <button
-                        onClick={() => {
-                          setSelectedRollId(roll.id);
-                          setIsDeleteModalOpen(true);
-                        }}
-                        style={{
-                          ...sharedStyles.secondaryButton,
-                          color: "#dc2626",
-                          border: "2px solid #dc2626",
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.backgroundColor =
-                            "rgba(220, 38, 38, 0.1)";
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.backgroundColor = "transparent";
-                        }}
-                        aria-label="Delete roll"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                  <div style={rollCardStyles.details}>
-                    {roll.film_type && (
-                      <div>
-                        <p style={rollCardStyles.label}>Film Type</p>
-                        <p style={rollCardStyles.value}>{roll.film_type}</p>
-                      </div>
-                    )}
-                    {roll.iso && (
-                      <div>
-                        <p style={rollCardStyles.label}>ISO</p>
-                        <p style={rollCardStyles.value}>{roll.iso}</p>
-                      </div>
-                    )}
-                    <div>
-                      <p style={rollCardStyles.label}>Created</p>
-                      <p style={rollCardStyles.value}>
-                        {new Date(roll.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <RollCard
+                  key={roll.id}
+                  roll={roll}
+                  user_id={user_id as string}
+                  onDelete={(rollId: number) => {
+                    setSelectedRollId(rollId);
+                    setIsDeleteModalOpen(true);
+                  }}
+                  onUpdate={handleUpdateRoll}
+                />
               ))}
             </div>
           )}
