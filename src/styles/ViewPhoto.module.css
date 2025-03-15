@@ -5,7 +5,7 @@
   padding: 1rem;
 }
 
-@media (min-width: 640px) {
+@media (minwidth: 640px) {
   .detailsCard {
     max-width: 600px;
     padding: 1.5rem;
@@ -19,13 +19,13 @@
   margin-bottom: 1.5rem;
 }
 
-@media (min-width: 480px) {
+@media (minwidth: 480px) {
   .detailsGroup {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (min-width: 768px) {
+@media (minwidth: 768px) {
   .detailsGroup {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
@@ -39,7 +39,7 @@
   gap: 0.25rem;
 }
 
-@media (min-width: 640px) {
+@media (minwidth: 640px) {
   .detailItem {
     gap: 0.5rem;
   }
@@ -51,7 +51,7 @@
   font-family: var(--font-geist-sans);
 }
 
-@media (min-width: 640px) {
+@media (minwidth: 640px) {
   .label {
     font-size: 0.9rem;
   }
@@ -64,7 +64,7 @@
   margin: 0;
 }
 
-@media (min-width: 640px) {
+@media (minwidth: 640px) {
   .value {
     font-size: 1.1rem;
   }
@@ -78,7 +78,7 @@
   width: 100%;
 }
 
-@media (min-width: 640px) {
+@media (minwidth: 640px) {
   .buttonGroup {
     flex-direction: row;
     gap: 1rem;
@@ -96,7 +96,7 @@
   margin-top: 1rem;
 }
 
-@media (min-width: 480px) {
+@media (minwidth: 480px) {
   .booleanGroup {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1rem;
@@ -108,7 +108,7 @@
   margin-bottom: 1.5rem;
 }
 
-@media (min-width: 640px) {
+@media (minwidth: 640px) {
   .title {
     margin-bottom: 2rem;
   }
@@ -118,7 +118,7 @@
   width: 100%;
 }
 
-@media (min-width: 640px) {
+@media (minwidth: 640px) {
   .linkContainer {
     width: auto;
   }

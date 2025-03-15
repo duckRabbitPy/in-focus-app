@@ -4,7 +4,7 @@ export const sharedStyles = {
     display: "flex",
     flexDirection: "column" as const,
     backgroundColor: "#ffffff",
-    "@media (prefers-color-scheme: dark)": {
+    "@media (prefersColorScheme: dark)": {
       backgroundColor: "#000000",
       color: "#ffffff",
     },
@@ -26,7 +26,7 @@ export const sharedStyles = {
     gap: "1rem",
     alignItems: "flex-start",
     marginBottom: "1rem",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
@@ -40,13 +40,13 @@ export const sharedStyles = {
     fontFamily: "var(--font-geist-mono)",
     letterSpacing: "-0.03em",
     color: "#000",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       fontSize: "2rem",
     },
-    "@media (min-width: 768px)": {
+    "@media (minWidth: 768px)": {
       fontSize: "2.5rem",
     },
-    "@media (prefers-color-scheme: dark)": {
+    "@media (prefersColorScheme: dark)": {
       color: "#fff",
     },
   },
@@ -55,10 +55,10 @@ export const sharedStyles = {
     color: "#333",
     margin: 0,
     fontFamily: "var(--font-geist-sans)",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       fontSize: "1.1rem",
     },
-    "@media (prefers-color-scheme: dark)": {
+    "@media (prefersColorScheme: dark)": {
       color: "#fff",
     },
   },
@@ -67,11 +67,11 @@ export const sharedStyles = {
     gridTemplateColumns: "1fr",
     gap: "1rem",
     width: "100%",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
       gap: "1.5rem",
     },
-    "@media (min-width: 768px)": {
+    "@media (minWidth: 768px)": {
       gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
       gap: "2rem",
     },
@@ -84,17 +84,17 @@ export const sharedStyles = {
     cursor: "pointer",
     backgroundColor: "#fff",
     width: "100%",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       padding: "1.25rem",
     },
-    "@media (min-width: 768px)": {
+    "@media (minWidth: 768px)": {
       padding: "1.5rem",
       "&:hover": {
         transform: "translateY(-2px)",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
       },
     },
-    "@media (prefers-color-scheme: dark)": {
+    "@media (prefersColorScheme: dark)": {
       backgroundColor: "#1a1a1a",
       border: "1px solid #333",
       color: "#fff",
@@ -120,7 +120,7 @@ export const sharedStyles = {
     alignItems: "center",
     justifyContent: "center",
     whiteSpace: "nowrap",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       width: "auto",
       fontSize: "1rem",
     },
@@ -148,7 +148,7 @@ export const sharedStyles = {
     alignItems: "center",
     justifyContent: "center",
     whiteSpace: "nowrap",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       width: "auto",
       fontSize: "1rem",
     },
@@ -172,11 +172,11 @@ export const sharedStyles = {
     outline: "none",
     backgroundColor: "#fff",
     color: "#000",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       fontSize: "1rem",
       padding: "0.8rem 1rem",
     },
-    "@media (prefers-color-scheme: dark)": {
+    "@media (prefersColorScheme: dark)": {
       backgroundColor: "#1a1a1a",
       color: "#fff",
       border: "2px solid #333",
@@ -191,7 +191,7 @@ export const sharedStyles = {
     gap: "1rem",
     width: "100%",
     maxWidth: "100%",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       maxWidth: "500px",
     },
   },
@@ -200,7 +200,7 @@ export const sharedStyles = {
     fontSize: "0.9rem",
     margin: 0,
     fontFamily: "var(--font-geist-sans)",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       fontSize: "0.9rem",
     },
   },
@@ -209,7 +209,7 @@ export const sharedStyles = {
     fontSize: "0.85rem",
     margin: 0,
     fontFamily: "var(--font-geist-sans)",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       fontSize: "0.9rem",
     },
   },
@@ -217,10 +217,10 @@ export const sharedStyles = {
     padding: "1rem",
     textAlign: "center" as const,
     borderTop: "1px solid #eaeaea",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       padding: "1.5rem",
     },
-    "@media (min-width: 768px)": {
+    "@media (minWidth: 768px)": {
       padding: "2rem",
     },
   },
@@ -234,7 +234,7 @@ export const sharedStyles = {
     "&:hover": {
       color: "#000",
     },
-    "@media (prefers-color-scheme: dark)": {
+    "@media (prefersColorScheme: dark)": {
       color: "#ccc",
       "&:hover": {
         color: "#fff",
@@ -247,7 +247,7 @@ export const sharedStyles = {
     gap: "0.75rem",
     alignItems: "stretch",
     width: "100%",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       flexDirection: "row",
       gap: "1rem",
       alignItems: "center",
@@ -266,11 +266,11 @@ export const sharedStyles = {
     backgroundColor: "#f5f5f5",
     borderRadius: "4px",
     overflowX: "auto" as const,
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       marginBottom: "2rem",
       padding: "1rem",
     },
-    "@media (prefers-color-scheme: dark)": {
+    "@media (prefersColorScheme: dark)": {
       backgroundColor: "#1a1a1a",
       color: "#ccc",
     },
@@ -278,7 +278,7 @@ export const sharedStyles = {
   separator: {
     color: "#666",
     userSelect: "none" as const,
-    "@media (prefers-color-scheme: dark)": {
+    "@media (prefersColorScheme: dark)": {
       color: "#ccc",
     },
   },

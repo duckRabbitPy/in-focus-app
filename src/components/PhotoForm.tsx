@@ -15,7 +15,7 @@ const formStyles = {
     gap: "0.5rem",
     marginBottom: "1rem",
     width: "100%",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       marginBottom: "1.5rem",
     },
   },
@@ -23,7 +23,7 @@ const formStyles = {
     fontSize: "0.85rem",
     color: "#333",
     fontFamily: "var(--font-geist-sans)",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       fontSize: "0.9rem",
     },
   },
@@ -47,7 +47,7 @@ const formStyles = {
     width: "1.4rem",
     height: "1.4rem",
     cursor: "pointer",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       width: "1.2rem",
       height: "1.2rem",
     },
@@ -58,7 +58,7 @@ const formStyles = {
     gap: "0.75rem",
     marginTop: "1.5rem",
     width: "100%",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       flexDirection: "row",
       gap: "1rem",
       marginTop: "2rem",
@@ -70,7 +70,7 @@ const formStyles = {
     gap: "0.5rem",
     marginTop: "1rem",
     width: "100%",
-    "@media (min-width: 480px)": {
+    "@media (minWidth: 480px)": {
       gridTemplateColumns: "1fr 1fr",
     },
   },

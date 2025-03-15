@@ -216,11 +216,15 @@ function RollPage() {
 
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>Roll #{roll_id}</h1>
-            <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-              <Link href={`/user/${user_id}/rolls/${roll_id}/new_photo`}>
-                <button style={sharedStyles.button}>Add Photo</button>
-              </Link>
-            </div>
+            {photos.length > 0 && (
+              <div
+                style={{ display: "flex", gap: "1rem", alignItems: "center" }}
+              >
+                <Link href={`/user/${user_id}/rolls/${roll_id}/new_photo`}>
+                  <button style={sharedStyles.button}>Add Photo</button>
+                </Link>
+              </div>
+            )}
           </div>
 
           {photos.length === 0 ? (

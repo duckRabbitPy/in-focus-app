@@ -7,6 +7,7 @@ import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth, logout } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
+import CreateNewRollButton from "@/components/CreateNewRollButton";
 
 interface Roll {
   id: number;
@@ -58,7 +59,7 @@ const headerButtonStyles = {
     display: "flex",
     gap: "0.75rem",
     alignItems: "center",
-    "@media (min-width: 640px)": {
+    "@media (minWidth: 640px)": {
       gap: "1rem",
     },
   },
@@ -201,14 +202,7 @@ function RollsPage() {
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>Film Rolls</h1>
             <div style={headerButtonStyles.container}>
-              <Link
-                href={`/user/${user_id}/rolls/new`}
-                style={headerButtonStyles.linkWrapper}
-              >
-                <button style={headerButtonStyles.newRollButton}>
-                  New Roll
-                </button>
-              </Link>
+              <CreateNewRollButton user_id={user_id as string} />
               <button onClick={logout} style={headerButtonStyles.logoutButton}>
                 Logout
               </button>
