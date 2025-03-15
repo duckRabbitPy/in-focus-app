@@ -1,19 +1,107 @@
 // search all photos, by user_id and tags
 
-import { arrayFromQueryParam } from "@/pages/api/server_helpers/requests";
-import { AuthenticatedRequest } from "@/utils/middleware";
-import { NextApiResponse } from "next";
+import { NextApiResponse } from 'next';
+import { query } from '@/utils/db';
+import { withAuth, AuthenticatedRequest } from '@/utils/middleware';
 
-export default async function handler(
+interface DBPhotoResult {
+  id: number;
+  roll_id: number;
+  subject: string;
+  photo_url: string | null;
+  created_at: string;
+  roll_name: string;
+  tags: string[];
+}
+
+interface PhotoSearchResult {
+  id: string;
+  roll_id: string;
+  subject: string;
+  photo_url?: string;
+  created_at: string;
+  roll_name: string;
+  tags: string[];
+}
+
+function transformDBResultToSearchResult(photo: DBPhotoResult): PhotoSearchResult {
+  return {
+    id: photo.id.toString(),
+    roll_id: photo.roll_id.toString(),
+    subject: photo.subject,
+    photo_url: photo.photo_url || undefined,
+    created_at: photo.created_at,
+    roll_name: photo.roll_name,
+    tags: photo.tags || []
+  };
+}
+
+async function handler(
   req: AuthenticatedRequest,
   res: NextApiResponse
 ) {
-  const { user_id, tags } = req.query;
-
-  // Verify that the requested user_id matches the authenticated user's ID
-  if (user_id !== req.user?.userId) {
-    return res.status(403).json({ error: "Unauthorized access" });
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const tagsArray = arrayFromQueryParam(tags);
+  const { user_id } = req.query;
+  const tags = req.query.tags ? (Array.isArray(req.query.tags) ? req.query.tags : [req.query.tags]) : [];
+
+  try {
+    if (user_id !== req.user?.userId) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    if (tags.length === 0) {
+      return res.json({ photos: [] });
+    }
+
+    // Query photos that have any of the provided tags
+    const result = await query<DBPhotoResult>(`
+      SELECT DISTINCT 
+        p.id,
+        p.roll_id,
+        p.subject,
+        p.photo_url,
+        p.created_at,
+        r.name as roll_name,
+        ARRAY_AGG(t.name) as tags
+      FROM photos p
+      JOIN rolls r ON p.roll_id = r.id
+      JOIN photo_tags pt ON p.id = pt.photo_id
+      JOIN tags t ON pt.tag_id = t.id
+      WHERE r.user_id = $1
+        AND EXISTS (
+          SELECT 1 
+          FROM photo_tags pt2
+          JOIN tags t2 ON pt2.tag_id = t2.id
+          WHERE pt2.photo_id = p.id
+            AND t2.name = ANY($2)
+        )
+      GROUP BY 
+        p.id,
+        p.roll_id,
+        p.subject,
+        p.photo_url,
+        p.created_at,
+        r.name
+      ORDER BY p.created_at DESC
+    `, [user_id, tags]);
+
+    // Transform results to match PhotoSearchResult
+    const transformedPhotos = result.map(transformDBResultToSearchResult);
+    return res.json({ photos: transformedPhotos });
+
+  } catch (error) {
+    console.error('Search error:', error);
+    return res.status(500).json({ error: 'Failed to search photos' });
+  }
 }
+
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
+
+export default withAuth(handler);

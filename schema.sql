@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS photos;
 DROP TABLE IF EXISTS rolls;
 DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS photo_tags;
 
 -- Users table
 CREATE TABLE users (
@@ -58,11 +59,21 @@ CREATE TABLE photos (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Photo tags table
+CREATE TABLE photo_tags (
+    photo_id INTEGER NOT NULL REFERENCES photos(id) ON DELETE CASCADE,
+    tag_id INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (photo_id, tag_id)
+);
+
 -- Indexes for better query performance
 CREATE INDEX idx_rolls_user_id ON rolls(user_id);
 CREATE INDEX idx_photos_roll_id ON photos(roll_id);
 CREATE INDEX idx_photos_sequence ON photos(roll_id, sequence_number);
 CREATE INDEX idx_tags_user_id ON tags(user_id);
+CREATE INDEX idx_photo_tags_tag_id ON photo_tags(tag_id);
+CREATE INDEX idx_photo_tags_photo_id ON photo_tags(photo_id);
 
 -- Trigger to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()

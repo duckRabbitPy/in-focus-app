@@ -1,83 +1,74 @@
--- Delete existing test data if it exists
+-- Delete existing test data
+DELETE FROM photo_tags;
 DELETE FROM photos;
 DELETE FROM rolls;
 DELETE FROM tags;
-DELETE FROM users WHERE username = 'testuser';
+DELETE FROM users;
 
--- Insert a test user
-INSERT INTO users (id, username, password_hash, created_at)
+-- Insert test user
+INSERT INTO users (id, username, password_hash)
 VALUES (
-  '123e4567-e89b-12d3-a456-426614174000',
-  'testuser',
-  '$2b$12$FTlQd8u22rD.DDQ0IN2jt.2cAkpCQ7hkfsHIX4vstoAa7sh3m',  -- This is a hashed version of 'password123'
-  CURRENT_TIMESTAMP
+    '123e4567-e89b-12d3-a456-426614174000',
+    'testuser',
+    '$2b$10$6bEwGpqvKXxsICRz0e.Pn.Cn.YX2qYgm5DqgGGNFEqNVe3ZYnfh2e'
 );
 
--- Insert example tags for the test user
-INSERT INTO tags (user_id, name, created_at)
-VALUES
-  ('123e4567-e89b-12d3-a456-426614174000', 'outdoors', CURRENT_TIMESTAMP),
-  ('123e4567-e89b-12d3-a456-426614174000', 'street', CURRENT_TIMESTAMP),
-  ('123e4567-e89b-12d3-a456-426614174000', 'nature', CURRENT_TIMESTAMP),
-  ('123e4567-e89b-12d3-a456-426614174000', 'urban', CURRENT_TIMESTAMP),
-  ('123e4567-e89b-12d3-a456-426614174000', 'monotone', CURRENT_TIMESTAMP),
-  ('123e4567-e89b-12d3-a456-426614174000', 'color', CURRENT_TIMESTAMP),
-  ('123e4567-e89b-12d3-a456-426614174000', 'portrait', CURRENT_TIMESTAMP),
-  ('123e4567-e89b-12d3-a456-426614174000', 'landscape', CURRENT_TIMESTAMP),
-  ('123e4567-e89b-12d3-a456-426614174000', 'summer', CURRENT_TIMESTAMP),
-  ('123e4567-e89b-12d3-a456-426614174000', 'winter', CURRENT_TIMESTAMP);
+-- Insert test tags
+INSERT INTO tags (id, user_id, name) VALUES
+    (1, '123e4567-e89b-12d3-a456-426614174000', 'portrait'),
+    (2, '123e4567-e89b-12d3-a456-426614174000', 'landscape'),
+    (3, '123e4567-e89b-12d3-a456-426614174000', 'street'),
+    (4, '123e4567-e89b-12d3-a456-426614174000', 'architecture'),
+    (5, '123e4567-e89b-12d3-a456-426614174000', 'nature'),
+    (6, '123e4567-e89b-12d3-a456-426614174000', 'night'),
+    (7, '123e4567-e89b-12d3-a456-426614174000', 'macro'),
+    (8, '123e4567-e89b-12d3-a456-426614174000', 'urban'),
+    (9, '123e4567-e89b-12d3-a456-426614174000', 'experimental'),
+    (10, '123e4567-e89b-12d3-a456-426614174000', 'black and white');
 
--- Insert two rolls for the test user with explicit IDs
-INSERT INTO rolls (id, user_id, name, film_type, iso, created_at)
-VALUES
-  (1, '123e4567-e89b-12d3-a456-426614174000', 'Street Photography', 'Kodak Portra', 400, CURRENT_TIMESTAMP),
-  (2, '123e4567-e89b-12d3-a456-426614174000', 'Nature Walk', 'Fujifilm Pro 400H', 400, CURRENT_TIMESTAMP);
+-- Insert test roll
+INSERT INTO rolls (id, user_id, name, film_type, iso)
+VALUES (
+    1,
+    '123e4567-e89b-12d3-a456-426614174000',
+    'Test Roll 1',
+    'Kodak Portra',
+    400
+);
 
--- Update the sequence to start after our explicit IDs
-SELECT setval('rolls_id_seq', (SELECT MAX(id) FROM rolls));
-
--- Insert 3 photos for the first roll (roll_id = 1)
+-- Insert test photos
 INSERT INTO photos (
-  roll_id,
-  sequence_number,
-  subject,
-  photo_url,
-  f_stop,
-  focal_distance,
-  shutter_speed,
-  exposure_value,
-  phone_light_meter,
-  stabilisation,
-  timer,
-  flash,
-  exposure_memory,
-  notes,
-  created_at
-)
-VALUES
-  (1, 1, 'Street Corner', 'https://example.com/photo1.jpg', 2.8, '1m', '1/125', 0, '1/125', 'handheld', false, false, true, 'Busy intersection during rush hour. Good light from setting sun.', CURRENT_TIMESTAMP),
-  (1, 2, 'Coffee Shop', 'https://example.com/photo2.jpg', 4.0, '2m', '1/60', -1, '1/60', 'handheld', false, false, false, 'Interior shot through window. Challenging lighting conditions.', CURRENT_TIMESTAMP),
-  (1, 3, 'Street Art', 'https://example.com/photo3.jpg', 5.6, '3m', '1/250', 1, '1/250', 'tripod', false, false, true, 'Large mural on brick wall. Used tripod for precise framing.', CURRENT_TIMESTAMP);
+    id,
+    roll_id,
+    subject,
+    photo_url,
+    f_stop,
+    focal_distance,
+    shutter_speed,
+    exposure_value,
+    phone_light_meter,
+    stabilisation,
+    timer,
+    flash,
+    exposure_memory,
+    notes,
+    sequence_number
+) VALUES
+    (1, 1, 'City Building', 'https://example.com/photo1.jpg', 5.6, '10m', '1/125', 0, 'sunny', 'tripod', false, false, true, 'Test photo 1', 1),
+    (2, 1, 'Street Scene', 'https://example.com/photo2.jpg', 8, '5m', '1/250', 1, 'sunny', 'handheld', false, false, false, 'Test photo 2', 2),
+    (3, 1, 'Night Sky', 'https://example.com/photo3.jpg', 2.8, 'infinity', '1/30', -2, 'dark', 'tripod', true, false, true, 'Test photo 3', 3);
 
--- Insert 3 photos for the second roll (roll_id = 2)
-INSERT INTO photos (
-  roll_id,
-  sequence_number,
-  subject,
-  photo_url,
-  f_stop,
-  focal_distance,
-  shutter_speed,
-  exposure_value,
-  phone_light_meter,
-  stabilisation,
-  timer,
-  flash,
-  exposure_memory,
-  notes,
-  created_at
-)
-VALUES
-  (2, 1, 'Forest Path', 'https://example.com/photo4.jpg', 8.0, '5m', '1/60', 0, '1/60', 'handheld', true, false, true, 'Early morning shot in dense forest. Used timer to avoid camera shake.', CURRENT_TIMESTAMP),
-  (2, 2, 'Waterfall', 'https://example.com/photo5.jpg', 11.0, 'infinity', '1/125', 1, '1/125', 'tripod', false, false, true, 'Long exposure of waterfall. Small aperture for maximum depth of field.', CURRENT_TIMESTAMP),
-  (2, 3, 'Wildflowers', 'https://example.com/photo6.jpg', 2.8, '30cm', '1/500', -1, '1/500', 'handheld', false, false, false, 'Close-up of purple wildflowers. Wide aperture for background blur.', CURRENT_TIMESTAMP); 
+-- Insert photo-tag associations
+INSERT INTO photo_tags (photo_id, tag_id) VALUES
+    -- City Building photo tags
+    (1, 4),  -- architecture
+    (1, 8),  -- urban
+    
+    -- Street Scene photo tags
+    (2, 3),  -- street
+    (2, 8),  -- urban
+    (2, 10), -- black and white
+    
+    -- Night Sky photo tags
+    (3, 6),  -- night
+    (3, 9);  -- experimental 
