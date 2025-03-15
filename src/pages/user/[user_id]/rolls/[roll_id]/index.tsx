@@ -241,15 +241,14 @@ function RollPage() {
               {photos.map((photo) => (
                 <div key={photo.id} style={styles.card}>
                   <div style={styles.photoHeader}>
-                    <span style={styles.photoId}>
-                      Photo #{photo.sequence_number}
-                    </span>
+                    <Link
+                      href={`/user/${user_id}/rolls/${roll_id}/${photo.id}/view`}
+                    >
+                      <span style={styles.photoId}>
+                        Photo #{photo.sequence_number}
+                      </span>
+                    </Link>
                     <div style={styles.actions}>
-                      <Link
-                        href={`/user/${user_id}/rolls/${roll_id}/${photo.id}/view`}
-                      >
-                        <button style={styles.viewButton}>View</button>
-                      </Link>
                       <Link
                         href={`/user/${user_id}/rolls/${roll_id}/${photo.id}/edit`}
                       >
@@ -288,7 +287,11 @@ function RollPage() {
                       color: "#666",
                     }}
                   >
-                    {photo.subject || "No subject"}
+                    <Link
+                      href={`/user/${user_id}/rolls/${roll_id}/${photo.id}/view`}
+                    >
+                      {photo.subject || "No subject"}
+                    </Link>
                     {photo.photo_url && (
                       <div style={{ marginTop: "0.5rem" }}>
                         <a

@@ -113,7 +113,17 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
             required
           />
         ) : (
-          <h2 style={rollCardStyles.title}>{roll.name}</h2>
+          <Link href={`/user/${user_id}/rolls/${roll.id}`}>
+            <h2
+              style={{
+                ...rollCardStyles.title,
+                whiteSpace: "wrap",
+                marginRight: "0.5rem",
+              }}
+            >
+              {roll.name}
+            </h2>
+          </Link>
         )}
         <div
           style={{
@@ -122,12 +132,6 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
             alignItems: "center",
           }}
         >
-          {!isEditing && (
-            <Link href={`/user/${user_id}/rolls/${roll.id}`}>
-              <button style={sharedStyles.button}>View Roll</button>
-            </Link>
-          )}
-
           {isEditing ? (
             <button
               style={{
