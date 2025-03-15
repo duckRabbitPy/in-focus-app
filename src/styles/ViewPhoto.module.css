@@ -1,5 +1,4 @@
 .detailsCard {
-  composes: card from './shared.module.css';
   cursor: default;
   width: 100%;
   max-width: 100%;
@@ -106,7 +105,6 @@
 }
 
 .title {
-  composes: subtitle from './shared.module.css';
   margin-bottom: 1.5rem;
 }
 
@@ -127,12 +125,10 @@
 }
 
 .valueLink {
-  composes: value;
   color: #0070f3;
   text-decoration: underline;
 }
 
 .valueDisabled {
-  composes: value;
   color: #666;
-} 
+}

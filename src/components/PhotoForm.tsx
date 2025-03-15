@@ -329,17 +329,6 @@ export default function PhotoForm({
               min="0"
               step="0.5"
             />
-            <span
-              style={{
-                fontFamily: "var(--font-geist-mono)",
-                fontSize: "0.9rem",
-                color: "#666",
-                width: "3rem",
-                textAlign: "right",
-              }}
-            >
-              EV
-            </span>
           </div>
         </div>
 

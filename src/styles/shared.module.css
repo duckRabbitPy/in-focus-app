@@ -83,7 +83,6 @@
 }
 
 .secondaryButton {
-  composes: button;
   background-color: white;
   color: #0070f3;
   border: 1px solid #0070f3;
@@ -146,4 +145,4 @@
 
 .separator {
   color: #999;
-} 
+}

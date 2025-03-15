@@ -4,6 +4,10 @@ export const sharedStyles = {
     display: "flex",
     flexDirection: "column" as const,
     backgroundColor: "#ffffff",
+    "@media (prefers-color-scheme: dark)": {
+      backgroundColor: "#000000",
+      color: "#ffffff",
+    },
   },
   main: {
     flex: 1,
@@ -35,11 +39,15 @@ export const sharedStyles = {
     margin: 0,
     fontFamily: "var(--font-geist-mono)",
     letterSpacing: "-0.03em",
+    color: "#000",
     "@media (min-width: 640px)": {
       fontSize: "2rem",
     },
     "@media (min-width: 768px)": {
       fontSize: "2.5rem",
+    },
+    "@media (prefers-color-scheme: dark)": {
+      color: "#fff",
     },
   },
   subtitle: {
@@ -49,6 +57,9 @@ export const sharedStyles = {
     fontFamily: "var(--font-geist-sans)",
     "@media (min-width: 640px)": {
       fontSize: "1.1rem",
+    },
+    "@media (prefers-color-scheme: dark)": {
+      color: "#fff",
     },
   },
   grid: {
@@ -81,6 +92,14 @@ export const sharedStyles = {
       "&:hover": {
         transform: "translateY(-2px)",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+      },
+    },
+    "@media (prefers-color-scheme: dark)": {
+      backgroundColor: "#1a1a1a",
+      border: "1px solid #333",
+      color: "#fff",
+      "&:hover": {
+        boxShadow: "0 4px 12px rgba(255, 255, 255, 0.1)",
       },
     },
   },
@@ -149,11 +168,18 @@ export const sharedStyles = {
     fontSize: "0.9rem",
     width: "100%",
     fontFamily: "var(--font-geist-sans)",
-    transition: "border-color 0.2s",
+    transition: "all 0.2s",
     outline: "none",
+    backgroundColor: "#fff",
+    color: "#000",
     "@media (min-width: 640px)": {
       fontSize: "1rem",
       padding: "0.8rem 1rem",
+    },
+    "@media (prefers-color-scheme: dark)": {
+      backgroundColor: "#1a1a1a",
+      color: "#fff",
+      border: "2px solid #333",
     },
     "&:focus": {
       borderColor: "#666",
@@ -208,6 +234,12 @@ export const sharedStyles = {
     "&:hover": {
       color: "#000",
     },
+    "@media (prefers-color-scheme: dark)": {
+      color: "#ccc",
+      "&:hover": {
+        color: "#fff",
+      },
+    },
   },
   nav: {
     display: "flex",
@@ -238,9 +270,16 @@ export const sharedStyles = {
       marginBottom: "2rem",
       padding: "1rem",
     },
+    "@media (prefers-color-scheme: dark)": {
+      backgroundColor: "#1a1a1a",
+      color: "#ccc",
+    },
   },
   separator: {
     color: "#666",
     userSelect: "none" as const,
+    "@media (prefers-color-scheme: dark)": {
+      color: "#ccc",
+    },
   },
 };
