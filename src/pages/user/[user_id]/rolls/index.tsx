@@ -226,6 +226,7 @@ function RollsPage() {
                     <h2 style={rollCardStyles.title}>{roll.name}</h2>
                     <div
                       style={{
+                        
                         display: "flex",
                         gap: "0.5rem",
                         alignItems: "center",

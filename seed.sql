@@ -10,7 +10,7 @@ INSERT INTO users (id, username, password_hash)
 VALUES (
     '123e4567-e89b-12d3-a456-426614174000',
     'testuser',
-    '$2b$10$6bEwGpqvKXxsICRz0e.Pn.Cn.YX2qYgm5DqgGGNFEqNVe3ZYnfh2e'
+    '$2b$12$FTlQd8u22rD.DDQ0IN2jt.2cAkpCQ7hkfsHIX4vstoAjSwEa7sh3m'
 );
 
 -- Insert test tags
@@ -54,9 +54,9 @@ INSERT INTO photos (
     notes,
     sequence_number
 ) VALUES
-    (1, 1, 'City Building', 'https://example.com/photo1.jpg', 5.6, '10m', '1/125', 0, 'sunny', 'tripod', false, false, true, 'Test photo 1', 1),
-    (2, 1, 'Street Scene', 'https://example.com/photo2.jpg', 8, '5m', '1/250', 1, 'sunny', 'handheld', false, false, false, 'Test photo 2', 2),
-    (3, 1, 'Night Sky', 'https://example.com/photo3.jpg', 2.8, 'infinity', '1/30', -2, 'dark', 'tripod', true, false, true, 'Test photo 3', 3);
+    (1, 1, 'City Building', 'https://www.juliatannerart.co.uk/wp-content/uploads/2021/03/City-Hall-London.-River-thames-South-bank-black-and-white-photo-Tower-Bridge-mounted-print-framed-print.jpg', 5.6, '10m', '1/125', 0, 'sunny', 'tripod', false, false, true, 'Test photo 1', 1),
+    (2, 1, 'Street Scene', 'https://images.squarespace-cdn.com/content/v1/53a2b3a1e4b0a5020bebe676/1611752063818-QWUZI3W92KLAXS66EIPT/london-street-photography-00008.jpg', 8, '5m', '1/250', 1, 'sunny', 'handheld', false, false, false, 'Test photo 2', 2),
+    (3, 1, 'Night Sky', 'https://streetphotographersfoundation.com/wp-content/uploads/2020/07/steve.jpg', 2.8, 'infinity', '1/30', -2, 'dark', 'tripod', true, false, true, 'Test photo 3', 3);
 
 -- Insert photo-tag associations
 INSERT INTO photo_tags (photo_id, tag_id) VALUES

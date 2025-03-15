@@ -152,7 +152,7 @@ export default function PhotoForm({
               onPhotoChange({ ...photo, photo_url: e.target.value })
             }
             style={sharedStyles.input}
-            placeholder="https://example.com/photo.jpg"
+
           />
         </div>
 
@@ -464,11 +464,6 @@ export default function PhotoForm({
         </div>
 
         <div style={formStyles.buttonGroup}>
-          <a href={cancelHref}>
-            <button type="button" style={sharedStyles.secondaryButton}>
-              Cancel
-            </button>
-          </a>
           <button
             type="submit"
             style={sharedStyles.button}
@@ -476,6 +471,11 @@ export default function PhotoForm({
           >
             {isSubmitting ? "Submitting..." : submitButtonText}
           </button>
+          <a href={cancelHref}>
+            <button type="button" style={sharedStyles.secondaryButton}>
+              Cancel
+            </button>
+          </a>
         </div>
       </div>
     </form>

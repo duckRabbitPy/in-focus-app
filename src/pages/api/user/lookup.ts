@@ -1,13 +1,10 @@
-import { NextApiResponse } from 'next';
-import { queryOne } from '@/utils/db';
-import { withAuth, AuthenticatedRequest } from '@/utils/middleware';
+import { NextApiResponse } from "next";
+import { queryOne } from "@/utils/db";
+import { withAuth, AuthenticatedRequest } from "@/utils/middleware";
 
-async function handler(
-  req: AuthenticatedRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
@@ -15,16 +12,19 @@ async function handler(
     const username = req.user?.username;
 
     if (!username) {
-      return res.status(400).json({ error: 'Username is required' });
+      return res.status(400).json({ error: "Username is required" });
     }
 
-    const user = await queryOne<{ id: string; username: string; password_hash: string }>(
-      'SELECT id, username, password_hash FROM users WHERE username = $1',
-      [username]
-    );
+    const user = await queryOne<{
+      id: string;
+      username: string;
+      password_hash: string;
+    }>("SELECT id, username, password_hash FROM users WHERE username = $1", [
+      username,
+    ]);
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Don't send the password hash back to the client
@@ -32,9 +32,9 @@ async function handler(
     const { password_hash, ...userWithoutPassword } = user;
     res.status(200).json(userWithoutPassword);
   } catch (error) {
-    console.error('User lookup error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("User lookup error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
-export default withAuth(handler); 
+export default withAuth(handler);
