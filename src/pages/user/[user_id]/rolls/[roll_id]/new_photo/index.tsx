@@ -7,19 +7,8 @@ import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import Head from "next/head";
-import { Geist, Geist_Mono } from "next/font/google";
 import { withAuth } from "@/utils/withAuth";
 import PhotoForm from "@/components/PhotoForm";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 function NewPhotoPage() {
   const router = useRouter();
@@ -39,6 +28,7 @@ function NewPhotoPage() {
     flash: false,
     exposure_memory: false,
     notes: "",
+    tags: [],
   });
 
   const [error, setError] = useState("");

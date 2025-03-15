@@ -1,21 +1,11 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import { Geist, Geist_Mono } from "next/font/google";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth, logout } from "@/utils/auth";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { geistSans, geistMono } from "@/styles/font";
 
 interface UserData {
   id: string;
@@ -36,7 +26,7 @@ function UserPage() {
       .then(async (res) => {
         if (!res.ok) {
           if (res.status === 401) {
-            router.push('/');
+            router.push("/");
             return;
           }
           throw new Error(await res.text());
@@ -50,7 +40,7 @@ function UserPage() {
         }
       })
       .catch((err) => {
-        console.error('Error fetching user data:', err);
+        console.error("Error fetching user data:", err);
         setError(err.message || "Failed to load user data");
       })
       .finally(() => {
@@ -60,7 +50,13 @@ function UserPage() {
 
   if (loading) {
     return (
-      <div style={{...sharedStyles.page, justifyContent: 'center', alignItems: 'center'}}>
+      <div
+        style={{
+          ...sharedStyles.page,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <p style={sharedStyles.subtitle}>Loading...</p>
       </div>
     );
@@ -68,10 +64,16 @@ function UserPage() {
 
   if (error) {
     return (
-      <div style={{...sharedStyles.page, justifyContent: 'center', alignItems: 'center'}}>
+      <div
+        style={{
+          ...sharedStyles.page,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <p style={sharedStyles.error}>{error}</p>
         <Link href="/">
-          <button style={{...sharedStyles.button, marginTop: '1rem'}}>
+          <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>
             Back to Home
           </button>
         </Link>
@@ -98,31 +100,69 @@ function UserPage() {
 
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>Account Home</h1>
-            <div style={{display: 'flex', gap: '1rem', alignItems: 'center' , whiteSpace: 'nowrap'}}>
+            <div
+              style={{
+                display: "flex",
+                gap: "1rem",
+                alignItems: "center",
+                whiteSpace: "nowrap",
+              }}
+            >
               <Link href={`/user/${user_id}/rolls`}>
                 <button style={sharedStyles.button}>View Rolls</button>
               </Link>
-              <button 
-                onClick={logout}
-                style={sharedStyles.secondaryButton}
-              >
+              <Link href={`/user/${user_id}/search`}>
+                <button style={sharedStyles.button}>Search</button>
+              </Link>
+              <button onClick={logout} style={sharedStyles.secondaryButton}>
                 Logout
               </button>
             </div>
           </div>
 
-          <div style={{...sharedStyles.card, cursor: 'default', width: '100%', maxWidth: '600px'}}>
-            <h2 style={{...sharedStyles.subtitle, marginBottom: '1rem', fontSize: '1.2rem'}}>
+          <div
+            style={{
+              ...sharedStyles.card,
+              cursor: "default",
+              width: "100%",
+              maxWidth: "600px",
+            }}
+          >
+            <h2
+              style={{
+                ...sharedStyles.subtitle,
+                marginBottom: "1rem",
+                fontSize: "1.2rem",
+              }}
+            >
               Account Information
             </h2>
-            <div style={{display: 'grid', gap: '1rem'}}>
+            <div style={{ display: "grid", gap: "1rem" }}>
               <div>
-                <label style={{...sharedStyles.subtitle, fontSize: '0.9rem'}}>User ID</label>
-                <p style={{margin: '0.5rem 0', fontFamily: 'var(--font-geist-mono)'}}>{userData?.id}</p>
+                <label style={{ ...sharedStyles.subtitle, fontSize: "0.9rem" }}>
+                  User ID
+                </label>
+                <p
+                  style={{
+                    margin: "0.5rem 0",
+                    fontFamily: "var(--font-geist-mono)",
+                  }}
+                >
+                  {userData?.id}
+                </p>
               </div>
               <div>
-                <label style={{...sharedStyles.subtitle, fontSize: '0.9rem'}}>Username</label>
-                <p style={{margin: '0.5rem 0', fontFamily: 'var(--font-geist-mono)'}}>{userData?.username}</p>
+                <label style={{ ...sharedStyles.subtitle, fontSize: "0.9rem" }}>
+                  Username
+                </label>
+                <p
+                  style={{
+                    margin: "0.5rem 0",
+                    fontFamily: "var(--font-geist-mono)",
+                  }}
+                >
+                  {userData?.username}
+                </p>
               </div>
             </div>
           </div>

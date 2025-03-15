@@ -1,18 +1,8 @@
 import Head from "next/head";
-import { Geist, Geist_Mono } from "next/font/google";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { getUserFromToken } from "@/utils/auth";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { geistSans, geistMono } from "@/styles/font";
 
 const styles = {
   page: {

@@ -1,22 +1,12 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import { Geist, Geist_Mono } from "next/font/google";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth, logout } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { geistMono, geistSans } from "@/styles/font";
 
 interface Roll {
   id: number;
@@ -30,62 +20,62 @@ interface Roll {
 const rollCardStyles = {
   card: {
     ...sharedStyles.card,
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '1rem',
-    cursor: 'default',
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "1rem",
+    cursor: "default",
   },
   header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   title: {
     ...sharedStyles.subtitle,
-    fontFamily: 'var(--font-geist-mono)',
-    fontSize: '1.1rem',
+    fontFamily: "var(--font-geist-mono)",
+    fontSize: "1.1rem",
     margin: 0,
   },
   details: {
-    display: 'grid',
-    gap: '0.5rem',
+    display: "grid",
+    gap: "0.5rem",
   },
   label: {
-    fontSize: '0.85rem',
-    color: '#444',
+    fontSize: "0.85rem",
+    color: "#444",
     margin: 0,
   },
   value: {
-    fontSize: '0.95rem',
-    color: '#000',
+    fontSize: "0.95rem",
+    color: "#000",
     margin: 0,
-    fontFamily: 'var(--font-geist-mono)',
+    fontFamily: "var(--font-geist-mono)",
   },
 };
 
 const headerButtonStyles = {
   container: {
-    display: 'flex', 
-    gap: '0.75rem', 
-    alignItems: 'center',
-    '@media (min-width: 640px)': {
-      gap: '1rem'
-    }
+    display: "flex",
+    gap: "0.75rem",
+    alignItems: "center",
+    "@media (min-width: 640px)": {
+      gap: "1rem",
+    },
   },
   linkWrapper: {
-    display: 'inline-block'
+    display: "inline-block",
   },
   newRollButton: {
     ...sharedStyles.button,
-    whiteSpace: 'nowrap' as const,
-    padding: '0.75rem 1.25rem'
+    whiteSpace: "nowrap" as const,
+    padding: "0.75rem 1.25rem",
   },
   logoutButton: {
     ...sharedStyles.secondaryButton,
-    whiteSpace: 'nowrap' as const,
-    fontSize: '0.9rem',
-    padding: '0.75rem 1.25rem'
-  }
+    whiteSpace: "nowrap" as const,
+    fontSize: "0.9rem",
+    padding: "0.75rem 1.25rem",
+  },
 };
 
 function RollsPage() {
@@ -112,13 +102,13 @@ function RollsPage() {
         setError("");
       })
       .catch((err) => {
-        console.error('Error fetching rolls:', err);
+        console.error("Error fetching rolls:", err);
         setError("Failed to load rolls");
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [user_id])
+  }, [user_id]);
 
   const handleDeleteRoll = async () => {
     if (!selectedRollId) return;
@@ -146,7 +136,13 @@ function RollsPage() {
 
   if (loading) {
     return (
-      <div style={{...sharedStyles.page, justifyContent: 'center', alignItems: 'center'}}>
+      <div
+        style={{
+          ...sharedStyles.page,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <p style={sharedStyles.subtitle}>Loading...</p>
       </div>
     );
@@ -154,10 +150,16 @@ function RollsPage() {
 
   if (error) {
     return (
-      <div style={{...sharedStyles.page, justifyContent: 'center', alignItems: 'center'}}>
+      <div
+        style={{
+          ...sharedStyles.page,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <p style={sharedStyles.error}>{error}</p>
         <Link href="/">
-          <button style={{...sharedStyles.button, marginTop: '1rem'}}>
+          <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>
             Back to Home
           </button>
         </Link>
@@ -189,7 +191,9 @@ function RollsPage() {
         />
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
-            <Link href={`/user/${user_id}`} style={sharedStyles.link}>Account</Link>
+            <Link href={`/user/${user_id}`} style={sharedStyles.link}>
+              Account
+            </Link>
             <span style={sharedStyles.separator}>/</span>
             <span>Rolls</span>
           </div>
@@ -197,25 +201,25 @@ function RollsPage() {
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>Film Rolls</h1>
             <div style={headerButtonStyles.container}>
-              <Link href={`/user/${user_id}/rolls/new`} style={headerButtonStyles.linkWrapper}>
+              <Link
+                href={`/user/${user_id}/rolls/new`}
+                style={headerButtonStyles.linkWrapper}
+              >
                 <button style={headerButtonStyles.newRollButton}>
                   New Roll
                 </button>
               </Link>
-              <button 
-                onClick={logout}
-                style={headerButtonStyles.logoutButton}
-              >
+              <button onClick={logout} style={headerButtonStyles.logoutButton}>
                 Logout
               </button>
             </div>
           </div>
 
           {rolls.length === 0 ? (
-            <div style={{textAlign: 'center', padding: '2rem'}}>
+            <div style={{ textAlign: "center", padding: "2rem" }}>
               <p style={sharedStyles.subtitle}>No rolls found</p>
               <Link href={`/user/${user_id}/rolls/new`}>
-                <button style={{...sharedStyles.button, marginTop: '1rem'}}>
+                <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>
                   Create Your First Roll
                 </button>
               </Link>
@@ -226,7 +230,13 @@ function RollsPage() {
                 <div key={roll.id} style={rollCardStyles.card}>
                   <div style={rollCardStyles.header}>
                     <h2 style={rollCardStyles.title}>{roll.name}</h2>
-                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "0.5rem",
+                        alignItems: "center",
+                      }}
+                    >
                       <Link href={`/user/${user_id}/rolls/${roll.id}`}>
                         <button style={sharedStyles.button}>View Roll</button>
                       </Link>
@@ -250,7 +260,8 @@ function RollsPage() {
                           transition: "all 0.2s",
                         }}
                         onMouseOver={(e) => {
-                          e.currentTarget.style.backgroundColor = "rgba(220, 38, 38, 0.1)";
+                          e.currentTarget.style.backgroundColor =
+                            "rgba(220, 38, 38, 0.1)";
                         }}
                         onMouseOut={(e) => {
                           e.currentTarget.style.backgroundColor = "transparent";

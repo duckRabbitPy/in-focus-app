@@ -1,21 +1,10 @@
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { Geist, Geist_Mono } from "next/font/google";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { useState } from "react";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export default withAuth(function NewRollPage() {
   const router = useRouter();
@@ -32,8 +21,8 @@ export default withAuth(function NewRollPage() {
       const response = await fetchWithAuth(`/api/user/${user_id}/rolls`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       });
 
       if (!response.ok) {
@@ -44,7 +33,9 @@ export default withAuth(function NewRollPage() {
       const data = await response.json();
       router.push(`/user/${user_id}/rolls/${data.id}`);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Failed to create roll");
+      setError(
+        error instanceof Error ? error.message : "Failed to create roll"
+      );
     } finally {
       setLoading(false);
     }
@@ -64,9 +55,13 @@ export default withAuth(function NewRollPage() {
       >
         <main style={sharedStyles.main}>
           <div style={sharedStyles.breadcrumbs}>
-            <Link href={`/user/${user_id}`} style={sharedStyles.link}>Account</Link>
+            <Link href={`/user/${user_id}`} style={sharedStyles.link}>
+              Account
+            </Link>
             <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>Rolls</Link>
+            <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>
+              Rolls
+            </Link>
             <span style={sharedStyles.separator}>/</span>
             <span>New Roll</span>
           </div>
@@ -76,20 +71,20 @@ export default withAuth(function NewRollPage() {
           </div>
 
           <form onSubmit={handleSubmit} style={sharedStyles.form}>
-            <div style={{...sharedStyles.card, cursor: 'default'}}>
-              <h2 style={{...sharedStyles.subtitle, marginBottom: '1rem'}}>
+            <div style={{ ...sharedStyles.card, cursor: "default" }}>
+              <h2 style={{ ...sharedStyles.subtitle, marginBottom: "1rem" }}>
                 Roll Details
               </h2>
               {/* Add form fields for roll details here */}
               {error && <p style={sharedStyles.error}>{error}</p>}
-              <div style={{display: 'flex', gap: '1rem', marginTop: '1rem'}}>
+              <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
                 <Link href={`/user/${user_id}/rolls`}>
                   <button type="button" style={sharedStyles.secondaryButton}>
                     Cancel
                   </button>
                 </Link>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   style={sharedStyles.button}
                   disabled={loading}
                 >

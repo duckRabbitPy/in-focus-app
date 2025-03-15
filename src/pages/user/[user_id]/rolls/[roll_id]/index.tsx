@@ -1,23 +1,11 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import { Geist, Geist_Mono } from "next/font/google";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
-
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 const styles = {
   card: {
@@ -140,7 +128,6 @@ function RollPage() {
       setError("Failed to delete photo");
     }
   };
-
 
   if (loading) {
     return (
@@ -283,7 +270,8 @@ function RollPage() {
                           transition: "all 0.2s",
                         }}
                         onMouseOver={(e) => {
-                          e.currentTarget.style.backgroundColor = "rgba(220, 38, 38, 0.1)";
+                          e.currentTarget.style.backgroundColor =
+                            "rgba(220, 38, 38, 0.1)";
                         }}
                         onMouseOut={(e) => {
                           e.currentTarget.style.backgroundColor = "transparent";

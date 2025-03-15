@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { Tag } from "@/types/tag";
 import { sharedStyles } from "@/styles/shared";
+import TagCreator from "./TagCreator";
 
 interface TagPickerProps {
   selectedTags: string[];
   onTagsChange: (tags: string[]) => void;
+  disableAdd?: boolean;
   userId: string;
 }
 
@@ -12,17 +14,17 @@ export default function TagPicker({
   selectedTags,
   onTagsChange,
   userId,
+  disableAdd,
 }: TagPickerProps) {
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [hoveredTag, setHoveredTag] = useState<string | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
-  const [newTagName, setNewTagName] = useState("");
-  const [createError, setCreateError] = useState("");
+  const [networkError, setNetworkError] = useState("");
 
   const fetchTags = async () => {
     try {
+      setLoading(true);
       const response = await fetch(`/api/user/${userId}/tags`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -30,15 +32,19 @@ export default function TagPicker({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch tags");
+        throw new Error(`Failed to fetch tags: ${response.status}`);
       }
 
       const data = await response.json();
       setTags(data);
       setError("");
+      setNetworkError("");
     } catch (err) {
       console.error("Error fetching tags:", err);
       setError("Failed to load tags");
+      setNetworkError(
+        err instanceof Error ? err.message : "Network error occurred"
+      );
     } finally {
       setLoading(false);
     }
@@ -58,13 +64,14 @@ export default function TagPicker({
     onTagsChange(selectedTags.filter((tag) => tag !== tagName));
   };
 
-  const handleCreateTag = async () => {
-    if (!newTagName.trim()) {
-      setCreateError("Tag name cannot be empty");
-      return;
-    }
-
+  const handleCreateTag = async (newTagName: string) => {
     try {
+      setNetworkError("");
+
+      if (!newTagName.trim()) {
+        return false;
+      }
+
       const response = await fetch(`/api/user/${userId}/tags`, {
         method: "POST",
         headers: {
@@ -75,25 +82,25 @@ export default function TagPicker({
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create tag");
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || `Failed to create tag: ${response.status}`
+        );
       }
-
-      // Reset state
-      setNewTagName("");
-      setIsCreating(false);
-      setCreateError("");
 
       // Refetch tags
       await fetchTags();
 
       // Add the new tag to selected tags
       handleTagSelect(newTagName.trim());
+
+      return true;
     } catch (err) {
       console.error("Error creating tag:", err);
-      setCreateError(
+      setNetworkError(
         err instanceof Error ? err.message : "Failed to create tag"
       );
+      return false;
     }
   };
 
@@ -162,16 +169,29 @@ export default function TagPicker({
         ))}
       </div>
 
+      {/* Network Error Display */}
+      {networkError && (
+        <p
+          style={{
+            ...sharedStyles.error,
+            fontSize: "0.875rem",
+            marginBottom: "0.5rem",
+          }}
+        >
+          {networkError}
+        </p>
+      )}
+
       {/* Tag Selection and Creation */}
       <div
         style={{
           display: "flex",
           gap: "0.5rem",
-          flexDirection: isCreating ? "column" : "row",
+          flexDirection: "row",
         }}
       >
         {/* Tag Dropdown */}
-        {!isCreating && availableTags.length > 0 && (
+        {availableTags.length > 0 && (
           <select
             value=""
             onChange={(e) => {
@@ -192,7 +212,7 @@ export default function TagPicker({
               paddingRight: "2.5rem",
             }}
           >
-            <option value="">Add a tag...</option>
+            <option value="">Select tag...</option>
             {availableTags.map((tag) => (
               <option key={tag.id} value={tag.name}>
                 {tag.name}
@@ -202,83 +222,7 @@ export default function TagPicker({
         )}
 
         {/* Create Tag Button or Input */}
-        {isCreating ? (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
-          >
-            <div
-              style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
-            >
-              <input
-                type="text"
-                value={newTagName}
-                onChange={(e) => setNewTagName(e.target.value)}
-                placeholder="Enter new tag name"
-                autoFocus
-                style={{
-                  ...sharedStyles.input,
-                  flex: 3,
-                  minWidth: 0,
-                }}
-              />
-              <button
-                type="button"
-                onClick={handleCreateTag}
-                style={{
-                  ...sharedStyles.button,
-                  padding: "0.75rem 1rem",
-                  maxWidth: "fit-content",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Add tag
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsCreating(false);
-                  setNewTagName("");
-                  setCreateError("");
-                }}
-                style={{
-                  ...sharedStyles.secondaryButton,
-                  padding: "0.75rem 1rem",
-                  maxWidth: "fit-content",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-            {createError && (
-              <p
-                style={{
-                  ...sharedStyles.error,
-                  margin: 0,
-                  fontSize: "0.875rem",
-                }}
-              >
-                {createError}
-              </p>
-            )}
-          </div>
-        ) : (
-          <button
-            onClick={() => setIsCreating(true)}
-            style={{
-              ...sharedStyles.secondaryButton,
-              padding: "0.75rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "44px",
-              minWidth: "44px",
-              height: "44px",
-            }}
-          >
-            +
-          </button>
-        )}
+        {!disableAdd && <TagCreator onCreate={handleCreateTag} />}
       </div>
     </div>
   );

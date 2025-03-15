@@ -1,17 +1,12 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import { Geist } from "next/font/google";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth } from "@/utils/auth";
 import Image from "next/image";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { geistSans } from "@/styles/font";
 
 function MaxiPhotoPage() {
   const router = useRouter();

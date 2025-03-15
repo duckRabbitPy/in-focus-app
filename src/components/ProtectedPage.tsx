@@ -1,19 +1,9 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, ReactNode } from "react";
 import Head from "next/head";
-import { Geist, Geist_Mono } from "next/font/google";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { geistSans, geistMono } from "@/styles/font";
 
 interface ProtectedPageProps {
   children: ReactNode;
@@ -21,17 +11,21 @@ interface ProtectedPageProps {
   description?: string;
 }
 
-export default function ProtectedPage({ children, title, description = "" }: ProtectedPageProps) {
+export default function ProtectedPage({
+  children,
+  title,
+  description = "",
+}: ProtectedPageProps) {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
         setIsAuthenticated(false);
-        router.replace('/');
+        router.replace("/");
         return false;
       }
       setIsAuthenticated(true);
@@ -47,15 +41,15 @@ export default function ProtectedPage({ children, title, description = "" }: Pro
 
     // Add storage event listener to catch token removal
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'token' && !e.newValue) {
+      if (e.key === "token" && !e.newValue) {
         checkAuth();
       }
     };
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     return () => {
       clearInterval(interval);
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, [router]);
 
@@ -89,4 +83,4 @@ export default function ProtectedPage({ children, title, description = "" }: Pro
       </div>
     </>
   );
-} 
+}
