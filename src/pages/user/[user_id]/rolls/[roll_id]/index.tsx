@@ -39,14 +39,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
   },
-  editButton: {
-    ...sharedStyles.button,
-    padding: "0.5rem 1rem",
-    fontSize: "0.9rem",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-  },
+  editButton: sharedStyles.button,
 };
 
 interface Photo {
