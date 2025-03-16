@@ -30,6 +30,7 @@ function NewPhotoPage() {
     exposure_memory: false,
     notes: "",
     tags: [],
+    lens: "",
   });
 
   const [error, setError] = useState("");
