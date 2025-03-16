@@ -78,7 +78,7 @@ function MaxiPhotoPage() {
   return (
     <>
       <PageHead
-        title={`Photo #${photo_id}`}
+        title={`View photo: ${photo?.subject || "untitled"}`}
         description="View full size photo"
       />
       <div className={geistSans.variable} style={sharedStyles.page}>

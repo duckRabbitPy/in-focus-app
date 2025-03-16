@@ -93,7 +93,7 @@ function ViewPhotoSettingsPage() {
   return (
     <>
       <PageHead
-        title={`Photo #${photo_id}`}
+        title={`View photo: ${photo?.subject || "untitled"}`}
         description="View photo settings"
       />
       <div
@@ -141,7 +141,9 @@ function ViewPhotoSettingsPage() {
             </div>
 
             <div style={sharedStyles.header}>
-              <h1 style={sharedStyles.title}>Photo #{photo_id}</h1>
+              <h1 style={sharedStyles.title}>{`View photo: ${
+                photo?.subject || "untitled"
+              }`}</h1>
               <div
                 style={{ display: "flex", gap: "1rem", alignItems: "center" }}
               >

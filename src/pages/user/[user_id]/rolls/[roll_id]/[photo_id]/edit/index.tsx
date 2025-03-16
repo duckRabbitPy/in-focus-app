@@ -107,7 +107,7 @@ function EditPhotoSettingsPage() {
   return (
     <>
       <PageHead
-        title={`Edit Photo #${photo_id}`}
+        title={`Edit Photo ${photo?.subject || "untitled"}`}
         description="Edit photo settings"
       />
       <div
@@ -142,7 +142,9 @@ function EditPhotoSettingsPage() {
           </div>
 
           <div style={sharedStyles.header}>
-            <h1 style={sharedStyles.title}>Edit Photo #{photo_id}</h1>
+            <h1 style={sharedStyles.title}>{`Edit photo: ${
+              photo?.subject || "untitled"
+            }`}</h1>
           </div>
 
           {loading ? (
