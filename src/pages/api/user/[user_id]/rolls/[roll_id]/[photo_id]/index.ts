@@ -44,16 +44,51 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   switch (req.method) {
     case "GET":
       try {
-        const photo = await queryOne<DBPhoto>(
-          "SELECT * FROM photos WHERE id = $1 AND roll_id = $2 AND roll_id IN (SELECT id FROM rolls WHERE user_id = $3)",
-          [parseInt(photo_id), parseInt(roll_id), user_id]
-        );
+        // Base query to get photo with lens information
+        const photoQuery = `
+          SELECT 
+            p.*,
+            l.name AS lens
+          FROM photos p
+          LEFT JOIN photo_lenses pl ON p.id = pl.photo_id
+          LEFT JOIN lenses l ON pl.lens_id = l.id
+          WHERE p.id = $1 AND p.roll_id = $2 AND p.roll_id IN (
+            SELECT id FROM rolls WHERE user_id = $3
+          )
+        `;
+
+        const photo = await queryOne(photoQuery, [
+          parseInt(photo_id),
+          parseInt(roll_id),
+          user_id,
+        ]);
 
         if (!photo) {
           return res.status(404).json({ error: "Photo not found" });
         }
 
-        return res.status(200).json(photo);
+        // Get tags for the photo
+        const tagsQuery = `
+          SELECT t.name
+          FROM tags t
+          JOIN photo_tags pt ON t.id = pt.tag_id
+          WHERE pt.photo_id = $1
+        `;
+
+        const tagResults = await query<{
+          name: string;
+        }>(tagsQuery, [parseInt(photo_id)]);
+
+        // Extract tag names into string array
+        const tags = tagResults.map((tag) => tag.name);
+
+        // Add tags array to photo object
+        const photoWithTags = {
+          ...photo,
+          tags,
+        };
+
+        return res.status(200).json(photoWithTags);
       } catch (error) {
         console.error("Error fetching photo:", error);
         return res.status(500).json({ error: "Error fetching photo" });
@@ -61,7 +96,11 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
     case "PUT":
       try {
-        const result = await queryOne<DBPhoto>(
+        // Start a transaction
+        await query("BEGIN");
+
+        // Update the photo
+        const updatedPhoto = await queryOne<DBPhoto>(
           "UPDATE photos SET subject = $1, photo_url = $2, f_stop = $3, focal_distance = $4, shutter_speed = $5, exposure_value = $6, phone_light_meter = $7, stabilisation = $8, timer = $9, flash = $10, exposure_memory = $11, notes = $12 WHERE id = $13 AND roll_id = $14 AND roll_id IN (SELECT id FROM rolls WHERE user_id = $15) RETURNING *",
           [
             req.body.subject,
@@ -82,12 +121,93 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           ]
         );
 
-        if (!result) {
+        if (!updatedPhoto) {
+          await query("ROLLBACK");
           return res.status(404).json({ error: "Photo not found" });
         }
 
-        return res.status(200).json(result);
+        // Process tags if they exist in the request
+        if (Array.isArray(req.body.tags)) {
+          // Delete existing photo_tags associations
+          await query("DELETE FROM photo_tags WHERE photo_id = $1", [
+            parseInt(photo_id),
+          ]);
+
+          // If there are tags to add
+          if (req.body.tags.length > 0) {
+            // Get tag IDs for the provided tag names, ensuring they belong to the user
+            const tagRows = await query<{ id: number }>(
+              "SELECT id FROM tags WHERE user_id = $1 AND name = ANY($2)",
+              [user_id, req.body.tags]
+            );
+
+            // Insert the new photo_tags associations
+            if (tagRows.length > 0) {
+              const tagValues = tagRows
+                .map((tag) => `($1, ${tag.id})`)
+                .join(", ");
+
+              await query(
+                `INSERT INTO photo_tags (photo_id, tag_id) VALUES ${tagValues}`,
+                [parseInt(photo_id)]
+              );
+            }
+          }
+        }
+
+        // Process lens if it exists in the request
+        if (req.body.lens !== undefined) {
+          // Delete existing photo_lenses associations
+          await query("DELETE FROM photo_lenses WHERE photo_id = $1", [
+            parseInt(photo_id),
+          ]);
+
+          // If a lens name was provided
+          if (req.body.lens) {
+            // Get lens ID for the provided lens name, ensuring it belongs to the user
+            const lensRow = await queryOne<{ id: number }>(
+              "SELECT id FROM lenses WHERE user_id = $1 AND name = $2",
+              [user_id, req.body.lens]
+            );
+
+            // Insert the new photo_lenses association
+            if (lensRow) {
+              await query(
+                "INSERT INTO photo_lenses (photo_id, lens_id) VALUES ($1, $2)",
+                [parseInt(photo_id), lensRow.id]
+              );
+            }
+          }
+        }
+
+        // Commit the transaction
+        await query("COMMIT");
+
+        // Get the updated tags for the response
+        const updatedTags = await query<{ name: string }>(
+          `SELECT t.name FROM tags t
+             JOIN photo_tags pt ON t.id = pt.tag_id
+             WHERE pt.photo_id = $1`,
+          [parseInt(photo_id)]
+        );
+
+        // Get the updated lens for the response
+        const updatedLens = await queryOne<{ name: string }>(
+          `SELECT l.name FROM lenses l
+             JOIN photo_lenses pl ON l.id = pl.lens_id
+             WHERE pl.photo_id = $1
+             LIMIT 1`,
+          [parseInt(photo_id)]
+        );
+
+        return res.status(200).json({
+          ...updatedPhoto,
+          tags: updatedTags.map((tag) => tag.name),
+          lens: updatedLens?.name || null,
+        });
       } catch (error) {
+        // Rollback in case of error
+        await query("ROLLBACK");
         console.error("Error updating photo:", error);
         return res.status(500).json({ error: "Error updating photo" });
       }

@@ -270,13 +270,20 @@ function ViewPhotoSettingsPage() {
                 </div>
 
                 <div className={styles.detailItem}>
-                  <span className={styles.label}>Lens</span>
-                  <p className={styles.value}>{photo.lens || "Not set"}</p>
+                  <span className={styles.label}>Tags</span>
+                  <p className={styles.value}>
+                    {photo.tags.join(", ") || "Not set"}
+                  </p>
                 </div>
 
                 <div className={styles.detailItem}>
                   <span className={styles.label}>F-Stop</span>
                   <p className={styles.value}>f/{photo.f_stop || "Not set"}</p>
+                </div>
+
+                <div className={styles.detailItem}>
+                  <span className={styles.label}>Lens</span>
+                  <p className={styles.value}>{photo.lens || "Not set"}</p>
                 </div>
 
                 <div className={styles.detailItem}>
