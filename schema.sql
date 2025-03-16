@@ -1,14 +1,18 @@
 -- Enable UUID extension for generating unique IDs
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Drop existing tables if they exist
-DROP TABLE IF EXISTS photos;
-DROP TABLE IF EXISTS rolls;
-DROP TABLE IF EXISTS tags;
-DROP TABLE IF EXISTS users;
+-- Drop junction tables first
 DROP TABLE IF EXISTS photo_tags;
-DROP TABLE IF EXISTS lenses;
+DROP TABLE IF EXISTS photo_lenses;
 
+-- Drop tables that depend on others
+DROP TABLE IF EXISTS photos;
+DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS lenses;
+DROP TABLE IF EXISTS rolls;
+
+-- Drop the base table last
+DROP TABLE IF EXISTS users;
 -- Users table
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
