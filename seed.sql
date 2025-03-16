@@ -5,6 +5,11 @@ DELETE FROM rolls;
 DELETE FROM tags;
 DELETE FROM users;
 
+-- Reset sequences for all tables with serial IDs
+SELECT setval('tags_id_seq', COALESCE((SELECT MAX(id) FROM tags), 1));
+SELECT setval('rolls_id_seq', COALESCE((SELECT MAX(id) FROM rolls), 1));
+SELECT setval('photos_id_seq', COALESCE((SELECT MAX(id) FROM photos), 1));
+
 -- Insert test user
 INSERT INTO users (id, username, password_hash)
 VALUES (
