@@ -4,11 +4,14 @@ DELETE FROM photos;
 DELETE FROM rolls;
 DELETE FROM tags;
 DELETE FROM users;
+DELETE FROM lenses;
 
 -- Reset sequences for all tables with serial IDs
-SELECT setval('tags_id_seq', COALESCE((SELECT MAX(id) FROM tags), 1));
-SELECT setval('rolls_id_seq', COALESCE((SELECT MAX(id) FROM rolls), 1));
-SELECT setval('photos_id_seq', COALESCE((SELECT MAX(id) FROM photos), 1));
+SELECT setval('tags_id_seq', COALESCE((SELECT MAX(id) FROM tags), 0) + 1);
+SELECT setval('rolls_id_seq', COALESCE((SELECT MAX(id) FROM rolls), 0) + 1);
+SELECT setval('photos_id_seq', COALESCE((SELECT MAX(id) FROM photos), 0) + 1);
+SELECT setval('lenses_id_seq', COALESCE((SELECT MAX(id) FROM lenses), 0) + 1);
+
 
 -- Insert test user
 INSERT INTO users (id, username, password_hash)
@@ -30,6 +33,12 @@ INSERT INTO tags (id, user_id, name) VALUES
     (8, '123e4567-e89b-12d3-a456-426614174000', 'urban'),
     (9, '123e4567-e89b-12d3-a456-426614174000', 'experimental'),
     (10, '123e4567-e89b-12d3-a456-426614174000', 'black and white');
+
+-- Insert test lenses
+INSERT INTO lenses (id, user_id, name) VALUES
+    (1, '123e4567-e89b-12d3-a456-426614174000', 'Canon 50mm f/1.8'),
+    (2, '123e4567-e89b-12d3-a456-426614174000', 'Canon 24-70mm f/2.8'),
+    (3, '123e4567-e89b-12d3-a456-426614174000', 'Nikon 50mm f/1.8');
 
 -- Insert test roll
 INSERT INTO rolls (id, user_id, name, film_type, iso)

@@ -5,6 +5,13 @@ export interface Tag {
   updated_at: string;
 }
 
+export interface Lens {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Roll {
   id: number;
   name: string;

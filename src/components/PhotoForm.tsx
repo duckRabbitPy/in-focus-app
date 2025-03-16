@@ -7,8 +7,9 @@ import {
 import { sharedStyles } from "@/styles/shared";
 import { useRouter } from "next/router";
 import TagPicker from "./TagPicker";
+import LensPicker from "./LensPicker";
 
-const formStyles = {
+export const formStyles = {
   group: {
     display: "flex",
     flexDirection: "column" as const,
@@ -184,6 +185,14 @@ export default function PhotoForm({
         </div>
 
         <div style={formStyles.group}>
+          <LensPicker
+            selectedLenses={photo.lens ? [photo.lens] : []}
+            onLensesChange={(lenses) =>
+              onPhotoChange({ ...photo, lens: lenses[0] })
+            }
+            userId={user_id}
+          />
+
           <label style={formStyles.label}>Focal Distance</label>
           <div style={formStyles.segmentedControl}>
             <button

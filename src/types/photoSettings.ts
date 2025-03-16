@@ -18,7 +18,7 @@ export type ShutterSpeed =
   | "1/4000"
   | "1/8000";
 export type PhoneLightMeter = ShutterSpeed; // Assuming same values as shutter speed
-export type Stabilisation = "handheld" | "rested" | "tripod"
+export type Stabilisation = "handheld" | "rested" | "tripod";
 
 // Base type with all shared fields
 export interface BasePhotoSettings {
@@ -54,9 +54,10 @@ export interface PhotoSettingsData {
   exposure_memory: boolean;
   notes?: string;
   tags: string[];
+  lens: string;
 }
 
 // Form data type - same as PhotoSettingsData but without photo_id
 export type PhotoSettingsFormData = {
-  [K in keyof Omit<PhotoSettingsData, 'photo_id'>]: PhotoSettingsData[K];
+  [K in keyof Omit<PhotoSettingsData, "photo_id">]: PhotoSettingsData[K];
 };
