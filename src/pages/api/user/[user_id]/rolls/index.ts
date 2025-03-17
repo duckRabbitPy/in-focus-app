@@ -2,6 +2,7 @@ import { NextApiResponse } from "next";
 import { query, queryOne } from "@/utils/db";
 import { withAuth, AuthenticatedRequest } from "@/utils/middleware";
 import { Roll } from "@/types/shared";
+import { formatDateString } from "@/utils/date";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id } = req.query;
@@ -34,7 +35,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         // Create a new roll with a default name
         const newRoll = await queryOne<Roll>(
           "INSERT INTO rolls (user_id, name) VALUES ($1, $2) RETURNING id, name, created_at, updated_at",
-          [user_id, `Roll #${new Date().toLocaleDateString("en-GB")}`]
+          [user_id, `Roll: ${formatDateString(new Date().toString())}`]
         );
 
         if (!newRoll) {

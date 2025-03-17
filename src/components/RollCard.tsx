@@ -3,6 +3,7 @@ import Link from "next/link";
 import { fetchWithAuth } from "@/utils/auth";
 import { sharedStyles } from "@/styles/shared";
 import { Roll } from "@/types/shared";
+import { formatDateString } from "@/utils/date";
 
 interface RollProps {
   roll: {
@@ -245,7 +246,7 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
         <div>
           <p style={rollCardStyles.label}>Created</p>
           <p style={rollCardStyles.value}>
-            {new Date(roll.created_at).toLocaleDateString()}
+            {formatDateString(roll.created_at)}
           </p>
         </div>
         {error && <p style={{ color: "#dc2626", margin: 0 }}>{error}</p>}

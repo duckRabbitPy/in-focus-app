@@ -6,7 +6,7 @@ import { geistMono, geistSans } from "@/styles/font";
 import TagPicker from "@/components/TagPicker";
 import { useState } from "react";
 import { usePhotoSearch } from "@/hooks/usePhotoSearch";
-import { formatDate } from "@/utils/date";
+import { formatDateString } from "@/utils/date";
 import { PageHead } from "@/components/PageHead";
 
 function SearchPage() {
@@ -97,7 +97,7 @@ function SearchPage() {
                       <td style={tableCellStyle}>{photo.subject}</td>
                       <td style={tableCellStyle}>{photo.roll_name}</td>
                       <td style={tableCellStyle}>
-                        {formatDate(photo.created_at)}
+                        {formatDateString(photo.created_at)}
                       </td>
                       <td style={tableCellStyle}>
                         <div
