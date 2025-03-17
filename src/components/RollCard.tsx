@@ -28,6 +28,11 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
   const [error, setError] = useState("");
 
   const handleSave = async () => {
+    if (!name) {
+      setError("Name is required");
+      return;
+    }
+
     setIsSaving(true);
     setError("");
 
@@ -209,6 +214,7 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
                 onChange={(e) => setFilmType(e.target.value)}
                 style={rollCardStyles.input}
                 placeholder="Film Type"
+                required
               />
             </div>
             <div

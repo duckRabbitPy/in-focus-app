@@ -214,8 +214,8 @@ function RollPage() {
 
             <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
               <p style={sharedStyles.subtitle}>
-                {roll?.film_type || "No film type"} |{" "}
-                {roll?.iso ? `ISO ${roll.iso}` : "No ISO"} |{" "}
+                {roll?.film_type ? `${roll.film_type} | ` : ""}
+                {roll?.iso ? `ISO ${roll.iso} | ` : ""}
                 {formatDateString(roll?.created_at)}
               </p>
             </div>
