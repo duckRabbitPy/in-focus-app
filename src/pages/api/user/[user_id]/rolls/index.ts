@@ -34,7 +34,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         // Create a new roll with a default name
         const newRoll = await queryOne<Roll>(
           "INSERT INTO rolls (user_id, name) VALUES ($1, $2) RETURNING id, name, created_at, updated_at",
-          [user_id, `Roll #${new Date().toLocaleDateString()}`]
+          [user_id, `Roll #${new Date().toLocaleDateString("en-GB")}`]
         );
 
         if (!newRoll) {
