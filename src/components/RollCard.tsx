@@ -4,6 +4,8 @@ import { fetchWithAuth } from "@/utils/auth";
 import { sharedStyles } from "@/styles/shared";
 import { Roll } from "@/types/shared";
 import { formatDateString } from "@/utils/date";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
 
 interface RollProps {
   roll: {
@@ -19,48 +21,82 @@ interface RollProps {
   onUpdate: (updatedRoll: Roll) => void;
 }
 
+type UpdateRollMutationParams = {
+  userId: string;
+  rollId: number;
+  name: string;
+  filmType: string;
+  iso: string;
+};
+
+const RollSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  film_type: z.string(),
+  iso: z.number(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+
+const updateRoll = async ({
+  userId,
+  rollId,
+  name,
+  filmType,
+  iso,
+}: UpdateRollMutationParams) => {
+  const url = `/api/user/${userId}/rolls/${rollId}?name=${encodeURIComponent(
+    name
+  )}&film_type=${encodeURIComponent(filmType)}&iso=${encodeURIComponent(iso)}`;
+
+  const response = await fetchWithAuth(url, {
+    method: "PUT",
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  return RollSchema.parse(await response.json());
+};
+
 export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(roll.name);
   const [filmType, setFilmType] = useState(roll.film_type || "");
   const [iso, setIso] = useState(roll.iso !== null ? roll.iso.toString() : "");
-  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSave = async () => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending: isSaving } = useMutation({
+    mutationKey: ["updateRoll", user_id, roll.id],
+    mutationFn: updateRoll,
+    onSuccess: (updatedRoll) => {
+      queryClient.invalidateQueries({ queryKey: ["rolls", user_id] });
+      onUpdate(updatedRoll);
+      setIsEditing(false);
+    },
+    onError: (err) => {
+      console.error("Error updating roll:", err);
+      setError("Failed to update roll");
+    },
+  });
+
+  const handleSave = () => {
     if (!name) {
       setError("Name is required");
       return;
     }
 
-    setIsSaving(true);
     setError("");
-
-    try {
-      const response = await fetchWithAuth(
-        `/api/user/${user_id}/rolls/${roll.id}?name=${encodeURIComponent(
-          name
-        )}&film_type=${encodeURIComponent(filmType)}&iso=${encodeURIComponent(
-          iso
-        )}`,
-        {
-          method: "PUT",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const updatedRoll = await response.json();
-      onUpdate(updatedRoll);
-      setIsEditing(false);
-    } catch (err) {
-      console.error("Error updating roll:", err);
-      setError("Failed to update roll");
-    } finally {
-      setIsSaving(false);
-    }
+    mutate({
+      userId: user_id,
+      rollId: roll.id,
+      name,
+      filmType,
+      iso,
+    });
   };
 
   const rollCardStyles = {
