@@ -38,10 +38,7 @@ export default async function handler(
       console.log("User not found:", username);
       return res.status(401).json({ error: "Invalid credentials" });
     }
-    console.log({
-      password,
-      hash: user.password_hash,
-    });
+
     console.log("User found, verifying password...");
     // Compare password hash
     const isValidPassword = await bcrypt.compare(password, user.password_hash);

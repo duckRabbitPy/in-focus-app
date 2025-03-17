@@ -24,13 +24,20 @@ export default async function handler(
   }
 
   // Verify that the roll belongs to the user
-  const rollCheck = await queryOne<{ id: number }>(
-    "SELECT r.id FROM rolls r WHERE r.id = $1 AND r.user_id = $2",
+  const rollInfo = await queryOne<{
+    id: number;
+    name: string;
+    film_type: string;
+    iso: number;
+    created_at: Date;
+    updated_at: Date;
+  }>(
+    "SELECT r.id, r.name, r.film_type, r.iso, r.created_at, r.updated_at FROM rolls r WHERE r.id = $1 AND r.user_id = $2",
     [parseInt(roll_id), user_id]
   );
 
-  if (!rollCheck) {
-    return res.status(404).json({ error: "Roll not found or unauthorized" });
+  if (!rollInfo) {
+    return res.status(404).json({ error: "Roll not found" });
   }
 
   switch (req.method) {
@@ -43,7 +50,10 @@ export default async function handler(
           [parseInt(roll_id)]
         );
 
-        return res.status(200).json(photos);
+        return res.status(200).json({
+          roll: rollInfo,
+          photos,
+        });
       } catch (error) {
         console.error("Error fetching photos:", error);
         return res.status(500).json({ error: "Error fetching photos" });

@@ -7,6 +7,8 @@ import { fetchWithAuth } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
+import { Roll } from "@/types/shared";
+import { formatDateString } from "@/utils/date";
 
 const styles = {
   card: {
@@ -56,6 +58,7 @@ function RollPage() {
   const { user_id, roll_id } = router.query;
 
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [roll, setRoll] = useState<Roll | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -70,8 +73,10 @@ function RollPage() {
         if (data.error) {
           setError(data.error);
           setPhotos([]);
+          setRoll(null);
         } else {
-          setPhotos(data);
+          setPhotos(data.photos);
+          setRoll(data.roll);
         }
         setLoading(false);
       })
@@ -156,10 +161,12 @@ function RollPage() {
     );
   }
 
+  const title = roll?.name || `Roll #${roll_id}`;
+
   return (
     <>
       <PageHead
-        title={`Roll #${roll_id}`}
+        title={title}
         description="View and manage your film roll photos"
       />
       <div
@@ -203,7 +210,15 @@ function RollPage() {
           </div>
 
           <div style={sharedStyles.header}>
-            <h1 style={sharedStyles.title}>Roll #{roll_id}</h1>
+            <h1 style={sharedStyles.title}>{title}</h1>
+
+            <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+              <p style={sharedStyles.subtitle}>
+                {roll?.film_type || "No film type"} |{" "}
+                {roll?.iso ? `ISO ${roll.iso}` : "No ISO"} |{" "}
+                {formatDateString(roll?.created_at)}
+              </p>
+            </div>
             {photos.length > 0 && (
               <div
                 style={{ display: "flex", gap: "1rem", alignItems: "center" }}
