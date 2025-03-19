@@ -1,21 +1,20 @@
-import {
-  PhotoSettingsData,
-  PhotoSettingsFormData,
-} from "@/types/photoSettings";
+import { AllPhotoSettings } from "@/types/photoSettings";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
-import PhotoForm from "@/components/PhotoForm";
+import PhotoForm from "@/components/Photo/PhotoForm";
 import { geistMono, geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
+
+type NewPhotoData = Omit<AllPhotoSettings, "created_at" | "updated_at" | "id">;
 
 function NewPhotoPage() {
   const router = useRouter();
   const { user_id, roll_id } = router.query;
 
-  const [photo, setPhoto] = useState<PhotoSettingsFormData>({
+  const [newPhotoData, setNewPhotoData] = useState<NewPhotoData>({
     roll_id: Number(roll_id),
     subject: "",
     photo_url: "",
@@ -41,12 +40,6 @@ function NewPhotoPage() {
     setSubmitting(true);
 
     try {
-      // Convert form data to PhotoSettingsData
-      const photoData: PhotoSettingsData = {
-        ...photo,
-        photo_id: Math.floor(Math.random() * 1000),
-      };
-
       const response = await fetch(
         `/api/user/${user_id}/rolls/${roll_id}/photos`,
         {
@@ -55,7 +48,7 @@ function NewPhotoPage() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          body: JSON.stringify(photoData),
+          body: JSON.stringify(newPhotoData),
         }
       );
 
@@ -106,8 +99,9 @@ function NewPhotoPage() {
           </div>
 
           <PhotoForm
-            photo={photo}
-            onPhotoChange={setPhoto}
+            isNewPhoto
+            photo={newPhotoData}
+            onPhotoChange={setNewPhotoData}
             onSubmit={handleSubmit}
             submitButtonText="Create Photo"
             cancelHref={`/user/${user_id}/rolls/${roll_id}`}

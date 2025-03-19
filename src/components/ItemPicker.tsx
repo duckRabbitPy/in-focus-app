@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import ItemCreator from "./ItemCreator";
-import { formStyles } from "./PhotoForm";
 
 // Generic type for items like tags or lenses
 export interface Item {
@@ -136,7 +135,7 @@ export default function ItemPicker<T extends Item>({
 
   return (
     <div style={{ marginBottom: "1rem" }}>
-      <label style={formStyles.label}>
+      <label style={sharedStyles.label}>
         {entityLabel === "Lens" ? "Lenses" : "Tags"}
       </label>
 

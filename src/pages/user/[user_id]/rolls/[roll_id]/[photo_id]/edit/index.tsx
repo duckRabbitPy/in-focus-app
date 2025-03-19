@@ -1,10 +1,10 @@
-import { PhotoSettingsFormData } from "@/types/photoSettings";
+import { AllPhotoSettings } from "@/types/photoSettings";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
-import PhotoForm from "@/components/PhotoForm";
+import PhotoForm from "@/components/Photo/PhotoForm";
 import { geistSans, geistMono } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -34,10 +34,10 @@ function EditPhotoSettingsPage() {
     enabled: !!user_id && !!roll_id && !!photo_id,
   });
 
-  const [photo, setPhoto] = useState<PhotoSettingsFormData | null>(
+  const [photo, setPhoto] = useState<AllPhotoSettings | null>(
     storedPhoto || null
   );
-  console.log({ storedPhoto, photo });
+
   // mutation function to update photo data
   const { mutate, isPending: isSaving } = useMutation({
     mutationKey: ["updatePhoto", user_id, roll_id, photo_id],
@@ -146,6 +146,7 @@ function EditPhotoSettingsPage() {
             <ErrorState />
           ) : (
             <PhotoForm
+              isNewPhoto={false}
               photo={photo}
               onPhotoChange={setPhoto}
               onSubmit={handleSubmit}

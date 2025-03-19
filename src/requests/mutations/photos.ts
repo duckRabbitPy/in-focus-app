@@ -1,7 +1,7 @@
-import { PhotoSchema, PhotoSettingsData } from "@/types/photoSettings";
+import { PhotoSchema, PhotoSettingsFormData } from "@/types/photoSettings";
 import { fetchWithAuth } from "@/utils/auth";
 
-interface UpdatePhotoMutationParams extends PhotoSettingsData {
+interface UpdatePhotoMutationParams extends PhotoSettingsFormData {
   user_id: string;
   roll_id: number;
   photo_id: number;

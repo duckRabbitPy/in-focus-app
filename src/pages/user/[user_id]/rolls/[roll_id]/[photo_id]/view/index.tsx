@@ -1,4 +1,3 @@
-import { PhotoSettingsData } from "@/types/photoSettings";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { sharedStyles } from "@/styles/shared";
@@ -9,12 +8,13 @@ import { fetchWithAuth } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
+import { PhotoSettingsFormData } from "@/types/photoSettings";
 
 function ViewPhotoSettingsPage() {
   const router = useRouter();
   const { user_id, roll_id, photo_id } = router.query;
 
-  const [photo, setPhoto] = useState<PhotoSettingsData | null>(null);
+  const [photo, setPhoto] = useState<PhotoSettingsFormData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
