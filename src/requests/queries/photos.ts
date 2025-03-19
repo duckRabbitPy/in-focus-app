@@ -21,6 +21,11 @@ export const getPhoto = async ({
   }
 
   const data = await response.json();
-  console.log({ data });
-  return PhotoSchema.parse(data);
+
+  try {
+    return PhotoSchema.parse(data);
+  } catch (error) {
+    console.error("Error parsing photo data:", error);
+    throw new Error("Failed to parse photo data");
+  }
 };

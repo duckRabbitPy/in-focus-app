@@ -95,7 +95,20 @@ export default function PhotoForm<T extends boolean>({
             }}
             style={formStyles.select}
           >
-            {[1.4, 1.7, 2, 2.5, 2.8, 4, 5.6, 8, 11, 16, 22, 32].map((f) => (
+            {[
+              "1.4",
+              "1.7",
+              "2",
+              "2.5",
+              "2.8",
+              "4",
+              "5.6",
+              "8",
+              "11",
+              "16",
+              "22",
+              "32",
+            ].map((f) => (
               <option key={f} value={f}>
                 {f}
               </option>
@@ -122,7 +135,7 @@ export default function PhotoForm<T extends boolean>({
                   focal_distance:
                     photo.focal_distance === "infinity"
                       ? 1
-                      : (photo.focal_distance as number),
+                      : photo.focal_distance,
                 })
               }
               style={{

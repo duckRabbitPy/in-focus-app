@@ -1,16 +1,19 @@
 import { z } from "zod";
 
+// support numbers and strings for fstop TODO: fix this
 export const FstopSchema = z.union([
-  z.literal(1.4),
-  z.literal(2),
-  z.literal(2.8),
-  z.literal(4),
-  z.literal(5.6),
-  z.literal(8),
-  z.literal(11),
-  z.literal(16),
-  z.literal(22),
-  z.literal(32),
+  z.literal("1.4"),
+  z.literal("1.7"),
+  z.literal("2"),
+  z.literal("2.5"),
+  z.literal("2.8"),
+  z.literal("4"),
+  z.literal("5.6"),
+  z.literal("8"),
+  z.literal("11"),
+  z.literal("16"),
+  z.literal("22"),
+  z.literal("32"),
 ]);
 
 export const ShutterSpeedSchema = z.union([
@@ -47,17 +50,17 @@ export const PhotoSchema = z.object({
   photo_url: z.string(),
   subject: z.string(),
   f_stop: FstopSchema,
-  focal_distance: z.union([z.number(), z.literal("infinity")]),
+  focal_distance: z.union([z.string().regex(/^\d+$/), z.literal("infinity")]),
   shutter_speed: ShutterSpeedSchema,
-  exposure_value: z.number(),
+  exposure_value: z.preprocess((val) => Number(val), z.number()),
   phone_light_meter: PhoneLightMeterSchema,
   timer: z.boolean(),
   flash: z.boolean(),
   stabilisation: StabilisationSchema,
   exposure_memory: z.boolean(),
-  lens: z.string(),
+  lens: z.string().nullable(),
   tags: z.array(z.string()),
-  notes: z.string().optional(),
+  notes: z.string().nullable().optional(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 });
