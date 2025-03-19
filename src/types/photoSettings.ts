@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export type FStop = 1.4 | 2 | 2.8 | 4 | 5.6 | 8 | 11 | 16 | 22 | 32;
 export type ShutterSpeed =
   | "8"
@@ -36,11 +38,11 @@ export interface BasePhotoSettings {
   exposure_memory: boolean;
   notes?: string;
 }
-
+export type FStop = 1.4 | 2 | 2.8 | 4 | 5.6 | 8 | 11 | 16 | 22 | 32;
 // Full data type with required photo_id
 export interface PhotoSettingsData {
-  roll_id: string;
-  photo_id: string;
+  roll_id: number;
+  photo_id: number;
   subject: string;
   photo_url?: string;
   f_stop: FStop;
@@ -56,6 +58,29 @@ export interface PhotoSettingsData {
   tags: string[];
   lens: string;
 }
+
+export const PhotoSchema = z.object({
+  id: z.number(),
+  roll_id: z.number(),
+  photo_url: z.string(),
+  subject: z.string(),
+  f_stop: z.number(),
+  focal_distance: z.string(),
+  shutter_speed: z.string(),
+  exposure_value: z.string(),
+  phone_light_meter: z.string(),
+  timer: z.string(),
+  flash: z.string(),
+  stabilisation: z.string(),
+  exposure_memory: z.string(),
+  lens: z.string(),
+  tags: z.string(),
+  notes: z.string(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+
+export type PhotoSettingsDataZod = z.infer<typeof PhotoSchema>;
 
 // Form data type - same as PhotoSettingsData but without photo_id
 export type PhotoSettingsFormData = {

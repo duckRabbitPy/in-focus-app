@@ -1,78 +1,71 @@
 import { PhotoSettingsFormData } from "@/types/photoSettings";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import PhotoForm from "@/components/PhotoForm";
 import { geistSans, geistMono } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { updatePhoto } from "@/requests/mutations/photos";
+import { useValidatedQueryParams } from "@/hooks/useValidatedQueryParams";
+import { getPhoto } from "@/requests/queries/photos";
 
 function EditPhotoSettingsPage() {
   const router = useRouter();
-  const { user_id, roll_id, photo_id } = router.query;
-
-  const [photo, setPhoto] = useState<PhotoSettingsFormData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { photo_id, roll_id, user_id } = useValidatedQueryParams();
   const [error, setError] = useState("");
-  const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!user_id || !roll_id || !photo_id) return;
+  const queryClient = useQueryClient();
 
-    fetch(`/api/user/${user_id}/rolls/${roll_id}/${photo_id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-          setPhoto(null);
-        } else {
-          setPhoto(data);
-        }
-        setLoading(false);
-      })
-      .catch((error: Error) => {
-        console.error("Failed to load photo data:", error);
-        setError("Failed to load photo data");
-        setPhoto(null);
-        setLoading(false);
-      });
-  }, [user_id, roll_id, photo_id]);
+  const {
+    data: storedPhoto,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["photo", user_id, roll_id, photo_id],
+    queryFn: () =>
+      getPhoto({
+        user_id,
+        roll_id: Number(roll_id),
+        photo_id: Number(photo_id),
+      }),
+    enabled: !!user_id && !!roll_id && !!photo_id,
+  });
+
+  const [photo, setPhoto] = useState<PhotoSettingsFormData | null>(
+    storedPhoto || null
+  );
+  console.log({ storedPhoto, photo });
+  // mutation function to update photo data
+  const { mutate, isPending: isSaving } = useMutation({
+    mutationKey: ["updatePhoto", user_id, roll_id, photo_id],
+    mutationFn: updatePhoto,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["photos", user_id, roll_id] });
+      router.push(`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`);
+    },
+    onError: (error) => {
+      console.error("Failed to load photo data:", error);
+      setError("Failed to load photo data");
+      setPhoto(null);
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSaving(true);
-
-    try {
-      const response = await fetch(
-        `/api/user/${user_id}/rolls/${roll_id}/${photo_id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify(photo),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.error) {
-        setError(data.error);
-      } else {
-        router.push(`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`);
-      }
-    } catch (error: unknown) {
-      console.error("Failed to save changes:", error);
-      setError("Failed to save changes");
-    } finally {
-      setSaving(false);
+    if (!photo || !roll_id || !photo_id) {
+      setError("Failed to save changes, missing key data");
+      return;
     }
+    setError("");
+    mutate({
+      ...photo,
+      user_id,
+      roll_id: Number(roll_id),
+      photo_id: Number(photo_id),
+    });
   };
 
   const LoadingState = () => (
@@ -147,9 +140,9 @@ function EditPhotoSettingsPage() {
             }`}</h1>
           </div>
 
-          {loading ? (
+          {isSaving || isLoading ? (
             <LoadingState />
-          ) : !photo ? (
+          ) : !photo || isError ? (
             <ErrorState />
           ) : (
             <PhotoForm
@@ -159,7 +152,7 @@ function EditPhotoSettingsPage() {
               submitButtonText="Save Changes"
               cancelHref={`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`}
               error={error}
-              isSubmitting={saving}
+              isSubmitting={isSaving}
             />
           )}
         </main>

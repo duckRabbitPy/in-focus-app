@@ -1,11 +1,10 @@
 import { useState } from "react";
 import Link from "next/link";
-import { fetchWithAuth } from "@/utils/auth";
 import { sharedStyles } from "@/styles/shared";
 import { Roll } from "@/types/shared";
 import { formatDateString } from "@/utils/date";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { z } from "zod";
+import { updateRoll } from "@/requests/mutations/rolls";
 
 interface RollProps {
   roll: {
@@ -21,43 +20,48 @@ interface RollProps {
   onUpdate: (updatedRoll: Roll) => void;
 }
 
-type UpdateRollMutationParams = {
-  userId: string;
-  rollId: number;
-  name: string;
-  filmType: string;
-  iso: string;
-};
-
-const RollSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  film_type: z.string(),
-  iso: z.number(),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
-});
-
-const updateRoll = async ({
-  userId,
-  rollId,
-  name,
-  filmType,
-  iso,
-}: UpdateRollMutationParams) => {
-  const url = `/api/user/${userId}/rolls/${rollId}?name=${encodeURIComponent(
-    name
-  )}&film_type=${encodeURIComponent(filmType)}&iso=${encodeURIComponent(iso)}`;
-
-  const response = await fetchWithAuth(url, {
-    method: "PUT",
-  });
-
-  if (!response.ok) {
-    throw new Error(await response.text());
-  }
-
-  return RollSchema.parse(await response.json());
+const rollCardStyles = {
+  card: {
+    ...sharedStyles.card,
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "1rem",
+    cursor: "default",
+    overflow: "scroll",
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  title: {
+    ...sharedStyles.subtitle,
+    fontFamily: "var(--font-geist-mono)",
+    fontSize: "1.1rem",
+    margin: 0,
+  },
+  details: {
+    display: "grid",
+    gap: "0.5rem",
+  },
+  label: {
+    fontSize: "0.85rem",
+    color: "#444",
+    margin: 0,
+  },
+  value: {
+    fontSize: "0.95rem",
+    color: "#000",
+    margin: 0,
+    fontFamily: "var(--font-geist-mono)",
+  },
+  input: {
+    padding: "0.5rem",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    fontFamily: "var(--font-geist-mono)",
+    fontSize: "0.95rem",
+  },
 };
 
 export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
@@ -97,50 +101,6 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
       filmType,
       iso,
     });
-  };
-
-  const rollCardStyles = {
-    card: {
-      ...sharedStyles.card,
-      display: "flex",
-      flexDirection: "column" as const,
-      gap: "1rem",
-      cursor: "default",
-      overflow: "scroll",
-    },
-    header: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
-    title: {
-      ...sharedStyles.subtitle,
-      fontFamily: "var(--font-geist-mono)",
-      fontSize: "1.1rem",
-      margin: 0,
-    },
-    details: {
-      display: "grid",
-      gap: "0.5rem",
-    },
-    label: {
-      fontSize: "0.85rem",
-      color: "#444",
-      margin: 0,
-    },
-    value: {
-      fontSize: "0.95rem",
-      color: "#000",
-      margin: 0,
-      fontFamily: "var(--font-geist-mono)",
-    },
-    input: {
-      padding: "0.5rem",
-      border: "1px solid #ccc",
-      borderRadius: "4px",
-      fontFamily: "var(--font-geist-mono)",
-      fontSize: "0.95rem",
-    },
   };
 
   return (

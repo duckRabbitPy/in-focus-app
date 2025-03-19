@@ -10,7 +10,11 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (user_id !== req.user?.userId) {
     return res.status(403).json({ error: "Unauthorized access" });
   }
-
+  console.log({
+    user_id,
+    roll_id,
+    photo_id,
+  });
   // Validate basic UUID format (5 groups of hex chars separated by hyphens)
   const uuidRegex = /^[0-9a-f-]{36}$/i;
   if (typeof user_id !== "string" || !uuidRegex.test(user_id)) {
@@ -44,6 +48,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   switch (req.method) {
     case "GET":
       try {
+        console.log("GET");
         // Base query to get photo with lens information
         const photoQuery = `
           SELECT 
@@ -87,7 +92,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           ...photo,
           tags,
         };
-
+        console.log(photoWithTags);
         return res.status(200).json(photoWithTags);
       } catch (error) {
         console.error("Error fetching photo:", error);

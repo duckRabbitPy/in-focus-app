@@ -16,7 +16,7 @@ function NewPhotoPage() {
   const { user_id, roll_id } = router.query;
 
   const [photo, setPhoto] = useState<PhotoSettingsFormData>({
-    roll_id: roll_id as string,
+    roll_id: Number(roll_id),
     subject: "",
     photo_url: "",
     f_stop: 2.8,
@@ -44,7 +44,7 @@ function NewPhotoPage() {
       // Convert form data to PhotoSettingsData
       const photoData: PhotoSettingsData = {
         ...photo,
-        photo_id: "0", // Server will assign the actual ID
+        photo_id: Math.floor(Math.random() * 1000),
       };
 
       const response = await fetch(
