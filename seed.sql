@@ -3,8 +3,9 @@ DELETE FROM photo_tags;
 DELETE FROM photos;
 DELETE FROM rolls;
 DELETE FROM tags;
-DELETE FROM users;
 DELETE FROM lenses;
+
+DELETE FROM users;
 
 -- Reset sequences for all tables with serial IDs
 SELECT setval('tags_id_seq', COALESCE((SELECT MAX(id) FROM tags), 0) + 1);
@@ -68,8 +69,8 @@ INSERT INTO photos (
     notes,
     sequence_number
 ) VALUES
-    (1, 1, 'City Building', 'https://www.juliatannerart.co.uk/wp-content/uploads/2021/03/City-Hall-London.-River-thames-South-bank-black-and-white-photo-Tower-Bridge-mounted-print-framed-print.jpg', 5.6, '10m', '1/125', 0, 'sunny', 'tripod', false, false, true, 'Test photo 1', 1),
-    (2, 1, 'Street Scene', 'https://images.squarespace-cdn.com/content/v1/53a2b3a1e4b0a5020bebe676/1611752063818-QWUZI3W92KLAXS66EIPT/london-street-photography-00008.jpg', 8, '5m', '1/250', 1, 'sunny', 'handheld', false, false, false, 'Test photo 2', 2),
+    (1, 1, 'City Building', 'https://www.juliatannerart.co.uk/wp-content/uploads/2021/03/City-Hall-London.-River-thames-South-bank-black-and-white-photo-Tower-Bridge-mounted-print-framed-print.jpg', 5.6, '10', '1/125', 0, '1/125', 'tripod', false, false, true, 'Test photo 1', 1),
+    (2, 1, 'Street Scene', 'https://images.squarespace-cdn.com/content/v1/53a2b3a1e4b0a5020bebe676/1611752063818-QWUZI3W92KLAXS66EIPT/london-street-photography-00008.jpg', 8, '5', '1/250', 1, '1/125', 'handheld', false, false, false, 'Test photo 2', 2),
     (3, 1, 'Night Sky', 'https://streetphotographersfoundation.com/wp-content/uploads/2020/07/steve.jpg', 2.8, 'infinity', '1/30', -2, 'dark', 'tripod', true, false, true, 'Test photo 3', 3);
 
 -- Insert photo-tag associations
