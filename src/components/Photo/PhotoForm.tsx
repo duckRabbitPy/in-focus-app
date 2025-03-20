@@ -3,7 +3,7 @@ import {
   PhoneLightMeterSchema,
   ShutterSpeedSchema,
   StabilisationSchema,
-  AllPhotoSettings,
+  FullPhotoSettingsData,
 } from "@/types/photoSettings";
 import { sharedStyles } from "@/styles/shared";
 import { useRouter } from "next/router";
@@ -17,14 +17,17 @@ import {
   StabilisationOptions,
 } from "./constants";
 
-type NewPhotoData = Omit<AllPhotoSettings, "created_at" | "updated_at" | "id">;
+type NewPhotoData = Omit<
+  FullPhotoSettingsData,
+  "created_at" | "updated_at" | "id"
+>;
 
 interface PhotoFormProps<T extends boolean> {
   photo: T extends true
-    ? Omit<AllPhotoSettings, "id" | "created_at" | "updated_at">
-    : AllPhotoSettings;
+    ? Omit<FullPhotoSettingsData, "id" | "created_at" | "updated_at">
+    : FullPhotoSettingsData;
   onPhotoChange: (
-    photo: T extends true ? NewPhotoData : AllPhotoSettings
+    photo: T extends true ? NewPhotoData : FullPhotoSettingsData
   ) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   submitButtonText: string;
@@ -169,6 +172,7 @@ export default function PhotoForm<T extends boolean>({
               style={sharedStyles.input}
               min="0.1"
               step="0.1"
+              max="100"
             />
           )}
         </div>
@@ -262,6 +266,7 @@ export default function PhotoForm<T extends boolean>({
               style={{ ...sharedStyles.input, flex: 1 }}
               min="0"
               step="0.5"
+              max={photo.exposure_value < 0 ? 99.9 : 100}
             />
           </div>
         </div>

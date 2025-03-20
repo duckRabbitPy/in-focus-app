@@ -1,6 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { query, queryOne } from "@/utils/db";
-import { DBPhoto } from "@/utils/db";
+import {
+  FullPhotoSettingsData,
+  NewPhotoSettingsSchema,
+} from "@/types/photoSettings";
 
 export default async function handler(
   req: NextApiRequest,
@@ -43,7 +46,7 @@ export default async function handler(
   switch (req.method) {
     case "GET":
       try {
-        const photos = await query<DBPhoto>(
+        const photos = await query<FullPhotoSettingsData>(
           `SELECT * FROM photos 
            WHERE roll_id = $1 
            ORDER BY sequence_number`,
@@ -69,21 +72,24 @@ export default async function handler(
           [parseInt(roll_id)]
         );
 
-        const {
-          subject,
-          photo_url,
-          f_stop,
-          focal_distance,
-          shutter_speed,
-          exposure_value,
-          phone_light_meter,
-          stabilisation,
-          timer,
-          flash,
-          exposure_memory,
-        } = req.body;
+        const validatedData = NewPhotoSettingsSchema.parse({
+          subject: req.body.subject,
+          photo_url: req.body.photo_url,
+          f_stop: req.body.f_stop,
+          focal_distance: req.body.focal_distance,
+          shutter_speed: req.body.shutter_speed,
+          exposure_value: req.body.exposure_value,
+          phone_light_meter: req.body.phone_light_meter,
+          stabilisation: req.body.stabilisation,
+          timer: req.body.timer,
+          flash: req.body.flash,
+          exposure_memory: req.body.exposure_memory,
+          lens: req.body.lens,
+          tags: req.body.tags,
+          notes: req.body.notes,
+        });
 
-        const newPhoto = await queryOne<DBPhoto>(
+        const newPhoto = await queryOne<FullPhotoSettingsData>(
           `INSERT INTO photos (
              roll_id,
              subject,
@@ -101,19 +107,19 @@ export default async function handler(
            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
            RETURNING *`,
           [
-            parseInt(roll_id),
-            subject,
-            photo_url,
-            f_stop,
-            focal_distance,
-            shutter_speed,
-            exposure_value,
-            phone_light_meter,
-            stabilisation,
-            timer,
-            flash,
-            exposure_memory,
-            nextSequence?.next_sequence || 1,
+            parseInt(roll_id), // 1
+            validatedData.subject, // 2
+            validatedData.photo_url, // 3
+            validatedData.f_stop, // 4
+            validatedData.focal_distance, // 5
+            validatedData.shutter_speed, // 6
+            validatedData.exposure_value, // 7
+            validatedData.phone_light_meter, // 8
+            validatedData.stabilisation, // 9
+            validatedData.timer, // 10
+            validatedData.flash, // 11
+            validatedData.exposure_memory, // 12
+            nextSequence?.next_sequence || 1, // 13
           ]
         );
 

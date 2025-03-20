@@ -1,4 +1,4 @@
-import { AllPhotoSettings } from "@/types/photoSettings";
+import { FullPhotoSettingsData } from "@/types/photoSettings";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
@@ -8,7 +8,10 @@ import PhotoForm from "@/components/Photo/PhotoForm";
 import { geistMono, geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
 
-type NewPhotoData = Omit<AllPhotoSettings, "created_at" | "updated_at" | "id">;
+type NewPhotoData = Omit<
+  FullPhotoSettingsData,
+  "created_at" | "updated_at" | "id"
+>;
 
 function NewPhotoPage() {
   const router = useRouter();

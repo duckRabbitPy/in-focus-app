@@ -44,13 +44,14 @@ export const StabilisationSchema = z.union([
   z.literal("tripod"),
 ]);
 
-export const PhotoSchema = z.object({
-  id: z.number(),
-  roll_id: z.number(),
+const PhotoSettings = {
   photo_url: z.string(),
   subject: z.string(),
   f_stop: FstopSchema,
-  focal_distance: z.union([z.string().regex(/^\d+$/), z.literal("infinity")]),
+  focal_distance: z.union([
+    z.string().regex(/^\d+(\.\d+)?$/), // Allows whole numbers and decimals
+    z.literal("infinity"),
+  ]),
   shutter_speed: ShutterSpeedSchema,
   exposure_value: z.preprocess((val) => Number(val), z.number()),
   phone_light_meter: PhoneLightMeterSchema,
@@ -61,6 +62,18 @@ export const PhotoSchema = z.object({
   lens: z.string().nullable(),
   tags: z.array(z.string()),
   notes: z.string().nullable().optional(),
+};
+
+// settings without id, roll_id, created_at, updated_at
+// used for creating new photo settings
+export const NewPhotoSettingsSchema = z.object({
+  ...PhotoSettings,
+});
+
+export const FullPhotoSettingsSchema = z.object({
+  id: z.number(),
+  roll_id: z.number(),
+  ...PhotoSettings,
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 });
@@ -70,6 +83,7 @@ export type ShutterSpeed = z.infer<typeof ShutterSpeedSchema>;
 export type PhoneLightMeter = z.infer<typeof PhoneLightMeterSchema>;
 export type Stabilisation = z.infer<typeof StabilisationSchema>;
 
-export type AllPhotoSettings = z.infer<typeof PhotoSchema>;
+export type PhotoSettingsData = z.infer<typeof NewPhotoSettingsSchema>;
+export type FullPhotoSettingsData = z.infer<typeof FullPhotoSettingsSchema>;
 
-export type PhotoSettingsFormData = Omit<AllPhotoSettings, "id">;
+export type PhotoSettingsFormData = Omit<FullPhotoSettingsData, "id">;

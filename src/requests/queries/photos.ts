@@ -1,4 +1,4 @@
-import { PhotoSchema } from "@/types/photoSettings";
+import { FullPhotoSettingsSchema } from "@/types/photoSettings";
 import { fetchWithAuth } from "@/utils/auth";
 
 interface GetPhotoParams {
@@ -23,7 +23,7 @@ export const getPhoto = async ({
   const data = await response.json();
 
   try {
-    return PhotoSchema.parse(data);
+    return FullPhotoSettingsSchema.parse(data);
   } catch (error) {
     console.error("Error parsing photo data:", error);
     throw new Error("Failed to parse photo data");

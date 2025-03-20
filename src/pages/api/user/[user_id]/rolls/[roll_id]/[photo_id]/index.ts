@@ -1,7 +1,10 @@
 import { NextApiResponse } from "next";
 import { queryOne, query } from "@/utils/db";
-import { DBPhoto } from "@/utils/db";
 import { withAuth, AuthenticatedRequest } from "@/utils/middleware";
+import {
+  FullPhotoSettingsData,
+  FullPhotoSettingsSchema,
+} from "@/types/photoSettings";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id, roll_id, photo_id } = req.query;
@@ -98,25 +101,44 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         // Start a transaction
         await query("BEGIN");
 
+        const validatedData = FullPhotoSettingsSchema.parse({
+          id: parseInt(photo_id),
+          roll_id: parseInt(roll_id),
+          subject: req.body.subject,
+          photo_url: req.body.photo_url,
+          f_stop: req.body.f_stop,
+          focal_distance: req.body.focal_distance,
+          shutter_speed: req.body.shutter_speed,
+          exposure_value: req.body.exposure_value,
+          phone_light_meter: req.body.phone_light_meter,
+          stabilisation: req.body.stabilisation,
+          timer: req.body.timer,
+          flash: req.body.flash,
+          exposure_memory: req.body.exposure_memory,
+          lens: req.body.lens,
+          tags: req.body.tags,
+          notes: req.body.notes,
+        });
+
         // Update the photo
-        const updatedPhoto = await queryOne<DBPhoto>(
+        const updatedPhoto = await queryOne<FullPhotoSettingsData>(
           "UPDATE photos SET subject = $1, photo_url = $2, f_stop = $3, focal_distance = $4, shutter_speed = $5, exposure_value = $6, phone_light_meter = $7, stabilisation = $8, timer = $9, flash = $10, exposure_memory = $11, notes = $12 WHERE id = $13 AND roll_id = $14 AND roll_id IN (SELECT id FROM rolls WHERE user_id = $15) RETURNING *",
           [
-            req.body.subject,
-            req.body.photo_url,
-            req.body.f_stop,
-            req.body.focal_distance,
-            req.body.shutter_speed,
-            req.body.exposure_value,
-            req.body.phone_light_meter,
-            req.body.stabilisation,
-            req.body.timer,
-            req.body.flash,
-            req.body.exposure_memory,
-            req.body.notes,
-            parseInt(photo_id),
-            parseInt(roll_id),
-            user_id,
+            validatedData.subject, // 1
+            validatedData.photo_url, // 2
+            validatedData.f_stop, // 3
+            validatedData.focal_distance, // 4
+            validatedData.shutter_speed, // 5
+            validatedData.exposure_value, // 6
+            validatedData.phone_light_meter, // 7
+            validatedData.stabilisation, // 8
+            validatedData.timer, // 9
+            validatedData.flash, // 10
+            validatedData.exposure_memory, // 11
+            validatedData.notes, // 12
+            validatedData.id, // 13
+            validatedData.roll_id, // 14
+            user_id, // 15
           ]
         );
 

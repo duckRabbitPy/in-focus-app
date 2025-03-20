@@ -1,6 +1,6 @@
-import { AllPhotoSettings } from "@/types/photoSettings";
+import { FullPhotoSettingsData } from "@/types/photoSettings";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
@@ -18,9 +18,11 @@ function EditPhotoSettingsPage() {
   const [error, setError] = useState("");
 
   const queryClient = useQueryClient();
+  const [photoFormState, setPhotoFormState] =
+    useState<FullPhotoSettingsData | null>(null);
 
   const {
-    data: storedPhoto,
+    data: photoInDB,
     isLoading,
     isError,
   } = useQuery({
@@ -34,9 +36,11 @@ function EditPhotoSettingsPage() {
     enabled: !!user_id && !!roll_id && !!photo_id,
   });
 
-  const [photo, setPhoto] = useState<AllPhotoSettings | null>(
-    storedPhoto || null
-  );
+  useEffect(() => {
+    if (photoInDB) {
+      setPhotoFormState(photoInDB);
+    }
+  }, [photoInDB]);
 
   // mutation function to update photo data
   const { mutate, isPending: isSaving } = useMutation({
@@ -49,19 +53,19 @@ function EditPhotoSettingsPage() {
     onError: (error) => {
       console.error("Failed to load photo data:", error);
       setError("Failed to load photo data");
-      setPhoto(null);
+      setPhotoFormState(null);
     },
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!photo || !roll_id || !photo_id) {
+    if (!photoFormState || !roll_id || !photo_id) {
       setError("Failed to save changes, missing key data");
       return;
     }
     setError("");
     mutate({
-      ...photo,
+      ...photoFormState,
       user_id,
       roll_id: Number(roll_id),
       photo_id: Number(photo_id),
@@ -100,7 +104,7 @@ function EditPhotoSettingsPage() {
   return (
     <>
       <PageHead
-        title={`Edit Photo ${photo?.subject || "untitled"}`}
+        title={`Edit Photo ${photoFormState?.subject || "untitled"}`}
         description="Edit photo settings"
       />
       <div
@@ -136,19 +140,19 @@ function EditPhotoSettingsPage() {
 
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>{`Edit photo: ${
-              photo?.subject || "untitled"
+              photoFormState?.subject || "untitled"
             }`}</h1>
           </div>
 
-          {isSaving || isLoading ? (
+          {isSaving || isLoading || !photoFormState ? (
             <LoadingState />
-          ) : !photo || isError ? (
+          ) : isError ? (
             <ErrorState />
           ) : (
             <PhotoForm
               isNewPhoto={false}
-              photo={photo}
-              onPhotoChange={setPhoto}
+              photo={photoFormState}
+              onPhotoChange={setPhotoFormState}
               onSubmit={handleSubmit}
               submitButtonText="Save Changes"
               cancelHref={`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`}

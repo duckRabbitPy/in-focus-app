@@ -1,4 +1,7 @@
-import { PhotoSchema, PhotoSettingsFormData } from "@/types/photoSettings";
+import {
+  FullPhotoSettingsSchema,
+  PhotoSettingsFormData,
+} from "@/types/photoSettings";
 import { fetchWithAuth } from "@/utils/auth";
 
 interface UpdatePhotoMutationParams extends PhotoSettingsFormData {
@@ -54,5 +57,5 @@ export const updatePhoto = async ({
     throw new Error(await response.text());
   }
 
-  return PhotoSchema.parse(await response.json());
+  return FullPhotoSettingsSchema.parse(await response.json());
 };
