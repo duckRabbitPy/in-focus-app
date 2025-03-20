@@ -4,7 +4,7 @@ import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
-import PhotoForm from "@/components/Photo/PhotoForm";
+import PhotoForm from "@/components/PhotoForm/PhotoForm";
 import { geistMono, geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
 

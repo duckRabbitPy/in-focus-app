@@ -57,6 +57,21 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           RETURNING id, name, created_at, updated_at
         `;
 
+        // log what is in tags
+        const tags = await query<Tag>(
+          "SELECT id, name, created_at, updated_at FROM tags WHERE user_id = $1 ORDER BY name ASC",
+          [user_id]
+        );
+
+        console.log({
+          tags,
+        });
+
+        console.log({
+          user_id,
+          validTags,
+        });
+
         const insertedTags = await query<Tag>(insertQuery, [
           user_id,
           validTags,

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
-import PhotoForm from "@/components/Photo/PhotoForm";
+import PhotoForm from "@/components/PhotoForm/PhotoForm";
 import { geistSans, geistMono } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
