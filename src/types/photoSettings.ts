@@ -66,6 +66,9 @@ export const PhotoSchema = z.object({
 });
 
 export type Fstop = z.infer<typeof FstopSchema>;
+export type ShutterSpeed = z.infer<typeof ShutterSpeedSchema>;
+export type PhoneLightMeter = z.infer<typeof PhoneLightMeterSchema>;
+export type Stabilisation = z.infer<typeof StabilisationSchema>;
 
 export type AllPhotoSettings = z.infer<typeof PhotoSchema>;
 

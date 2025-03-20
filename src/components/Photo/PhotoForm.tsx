@@ -10,6 +10,12 @@ import { useRouter } from "next/router";
 import TagPicker from "../TagPicker";
 import LensPicker from "../LensPicker";
 import { formStyles } from "./PhotoForm.styles";
+import {
+  FstopOptions,
+  PhoneLightMeterOptions,
+  ShutterSpeedOptions,
+  StabilisationOptions,
+} from "./constants";
 
 type NewPhotoData = Omit<AllPhotoSettings, "created_at" | "updated_at" | "id">;
 
@@ -95,20 +101,7 @@ export default function PhotoForm<T extends boolean>({
             }}
             style={formStyles.select}
           >
-            {[
-              "1.4",
-              "1.7",
-              "2",
-              "2.5",
-              "2.8",
-              "4",
-              "5.6",
-              "8",
-              "11",
-              "16",
-              "22",
-              "32",
-            ].map((f) => (
+            {FstopOptions.map((f) => (
               <option key={f} value={f}>
                 {f}
               </option>
@@ -193,27 +186,9 @@ export default function PhotoForm<T extends boolean>({
             }}
             style={formStyles.select}
           >
-            {[
-              "8",
-              "4",
-              "2",
-              "1",
-              "1/2",
-              "1/4",
-              "1/8",
-              "1/15",
-              "1/30",
-              "1/60",
-              "1/125",
-              "1/250",
-              "1/500",
-              "1/1000",
-              "1/2000",
-              "1/4000",
-              "1/8000",
-            ].map((s) => (
-              <option key={s} value={s}>
-                {s}
+            {ShutterSpeedOptions.map((shutterSpeed) => (
+              <option key={shutterSpeed} value={shutterSpeed}>
+                {shutterSpeed}
               </option>
             ))}
           </select>
@@ -304,25 +279,7 @@ export default function PhotoForm<T extends boolean>({
             }}
             style={formStyles.select}
           >
-            {[
-              "8",
-              "4",
-              "2",
-              "1",
-              "1/2",
-              "1/4",
-              "1/8",
-              "1/15",
-              "1/30",
-              "1/60",
-              "1/125",
-              "1/250",
-              "1/500",
-              "1/1000",
-              "1/2000",
-              "1/4000",
-              "1/8000",
-            ].map((s) => (
+            {PhoneLightMeterOptions.map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>
@@ -343,7 +300,7 @@ export default function PhotoForm<T extends boolean>({
             }}
             style={formStyles.select}
           >
-            {["handheld", "rested", "tripod"].map((s) => (
+            {StabilisationOptions.map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>
