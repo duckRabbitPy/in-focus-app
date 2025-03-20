@@ -1,6 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import ItemCreator from "./ItemCreator";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getTags } from "@/requests/queries/tags";
+import { getLenses } from "@/requests/queries/lenses";
 
 // Generic type for items like tags or lenses
 export interface Item {
@@ -20,7 +23,7 @@ interface ItemPickerProps {
   disabled?: boolean;
 }
 
-export default function ItemPicker<T extends Item>({
+export default function ItemPicker({
   selectedItems,
   onItemsChange,
   userId,
@@ -29,45 +32,30 @@ export default function ItemPicker<T extends Item>({
   entityLabel,
   disabled,
 }: ItemPickerProps) {
-  const [items, setItems] = useState<T[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [networkError, setNetworkError] = useState("");
 
-  const fetchItems = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/user/${userId}/${entityType}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+  const queryClient = useQueryClient();
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch ${entityType}: ${response.status}`);
+  const {
+    data: items,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["items", userId, entityType],
+    queryFn: () => {
+      switch (entityType) {
+        case "tags":
+          return getTags({ userId });
+        case "lenses":
+          return getLenses({ userId });
+        default:
+          throw new Error(`Unknown entity type: ${entityType}`);
       }
-
-      const data = await response.json();
-      setItems(data);
-      setError("");
-      setNetworkError("");
-    } catch (err) {
-      console.error(`Error fetching ${entityType}:`, err);
-      setError(`Failed to load ${entityType}`);
-      setNetworkError(
-        err instanceof Error ? err.message : "Network error occurred"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const memoizedFetchItems = useCallback(fetchItems, [userId, entityType]);
-
-  useEffect(() => {
-    memoizedFetchItems();
-  }, [userId, memoizedFetchItems]);
+    },
+    enabled: !!userId,
+  });
 
   const handleItemSelect = (itemName: string) => {
     onItemsChange([...selectedItems, itemName]);
@@ -103,7 +91,9 @@ export default function ItemPicker<T extends Item>({
       }
 
       // Refetch items
-      await fetchItems();
+      await queryClient.invalidateQueries({
+        queryKey: ["items", userId, entityType],
+      });
 
       // Add the new item to selected items
       handleItemSelect(newItemName.trim());
@@ -121,16 +111,16 @@ export default function ItemPicker<T extends Item>({
   };
 
   // Filter out already selected items from the dropdown options
-  const availableItems = items.filter(
+  const availableItems = items?.filter(
     (item) => !selectedItems.includes(item.name)
   );
 
-  if (loading) {
+  if (isLoading) {
     return <p style={sharedStyles.subtitle}>Loading {entityType}...</p>;
   }
 
-  if (error) {
-    return <p style={sharedStyles.error}>{error}</p>;
+  if (isError) {
+    return <p style={sharedStyles.error}>{error.message}</p>;
   }
 
   return (
@@ -211,7 +201,7 @@ export default function ItemPicker<T extends Item>({
         }}
       >
         {/* Item Dropdown */}
-        {availableItems.length > 0 && (
+        {availableItems?.length && availableItems.length > 0 && (
           <select
             value=""
             onChange={(e) => {

@@ -1,4 +1,3 @@
-import { Tag } from "@/types/shared";
 import ItemPicker from "./ItemPicker";
 
 interface TagPickerProps {
@@ -15,7 +14,7 @@ export default function TagPicker({
   disableAdd,
 }: TagPickerProps) {
   return (
-    <ItemPicker<Tag>
+    <ItemPicker
       selectedItems={selectedTags}
       onItemsChange={onTagsChange}
       userId={userId}

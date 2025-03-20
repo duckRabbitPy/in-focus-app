@@ -1,7 +1,7 @@
 import { NextApiResponse } from "next";
 import { query } from "@/utils/db";
 import { withAuth, AuthenticatedRequest } from "@/utils/middleware";
-import { Tag } from "@/types/shared";
+import { Tag } from "@/types/tag";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id } = req.query;
