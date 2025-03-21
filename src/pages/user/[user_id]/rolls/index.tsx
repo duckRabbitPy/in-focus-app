@@ -7,7 +7,7 @@ import { fetchWithAuth, logout } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
 import CreateNewRollButton from "@/components/CreateNewRollButton";
-import { RollCard } from "@/components/RollCard";
+import { RollCard } from "@/components/RollCard/RollCard";
 import { PageHead } from "@/components/PageHead";
 
 interface Roll {

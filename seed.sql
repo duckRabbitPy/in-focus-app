@@ -87,3 +87,11 @@ INSERT INTO photo_tags (photo_id, tag_id) VALUES
     -- Night Sky photo tags
     (3, 6),  -- night
     (3, 9);  -- experimental 
+
+
+-- Update sequences for all tables with serial IDs
+SELECT setval('tags_id_seq', 10);
+SELECT setval('rolls_id_seq', 1);
+SELECT setval('photos_id_seq', 3);
+SELECT setval('lenses_id_seq', 3);
+
