@@ -12,8 +12,8 @@ type UpdateRollMutationParams = {
 const RollSchema = z.object({
   id: z.number(),
   name: z.string(),
-  film_type: z.string(),
-  iso: z.number(),
+  film_type: z.string().optional(),
+  iso: z.number().optional(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 });
@@ -37,5 +37,22 @@ export const updateRoll = async ({
     throw new Error(await response.text());
   }
 
+  return RollSchema.parse(await response.json());
+};
+
+type CreateRollParams = {
+  user_id: string;
+};
+
+export const createRoll = async ({ user_id }: CreateRollParams) => {
+  const url = `/api/user/${user_id}/rolls`;
+
+  const response = await fetchWithAuth(url, {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
   return RollSchema.parse(await response.json());
 };

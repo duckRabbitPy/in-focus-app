@@ -6,7 +6,7 @@ import { withAuth } from "@/utils/withAuth";
 import { fetchWithAuth, logout } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
-import CreateNewRollButton from "@/components/CreateNewRollButton";
+import { CreateNewRollButton } from "@/components/CreateNewRollButton";
 import { RollCard } from "@/components/RollCard/RollCard";
 import { PageHead } from "@/components/PageHead";
 
