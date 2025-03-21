@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import ItemCreator from "./ItemCreator";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTags } from "@/requests/queries/tags";
 import { getLenses } from "@/requests/queries/lenses";
+import { createTag } from "@/requests/mutations/tags";
+import { createLens } from "@/requests/mutations/lenses";
 
 // Generic type for items like tags or lenses
 export interface Item {
@@ -33,8 +35,6 @@ export default function ItemPicker({
   disabled,
 }: ItemPickerProps) {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const [networkError, setNetworkError] = useState("");
-
   const queryClient = useQueryClient();
 
   const {
@@ -65,30 +65,23 @@ export default function ItemPicker({
     onItemsChange(selectedItems.filter((item) => item !== itemName));
   };
 
+  const { mutate: createItemMutation, isError: isCreateError } = useMutation({
+    mutationKey: ["createItem", userId, entityType],
+    mutationFn: entityType === "lenses" ? createLens : createTag,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["items", userId, entityType],
+      });
+    },
+  });
+
   const handleCreateItem = async (newItemName: string) => {
     try {
-      setNetworkError("");
-
       if (!newItemName.trim()) {
         return false;
       }
 
-      const response = await fetch(`/api/user/${userId}/${entityType}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ [entityType]: [newItemName.trim()] }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error ||
-            `Failed to create ${entityLabel.toLowerCase()}: ${response.status}`
-        );
-      }
+      createItemMutation({ userId, name: newItemName });
 
       // Refetch items
       await queryClient.invalidateQueries({
@@ -101,11 +94,6 @@ export default function ItemPicker({
       return true;
     } catch (err) {
       console.error(`Error creating ${entityLabel.toLowerCase()}:`, err);
-      setNetworkError(
-        err instanceof Error
-          ? err.message
-          : `Failed to create ${entityLabel.toLowerCase()}`
-      );
       return false;
     }
   };
@@ -120,7 +108,7 @@ export default function ItemPicker({
   }
 
   if (isError) {
-    return <p style={sharedStyles.error}>{error.message}</p>;
+    return <p style={sharedStyles.error}>{error?.message}</p>;
   }
 
   return (
@@ -179,19 +167,6 @@ export default function ItemPicker({
         ))}
       </div>
 
-      {/* Network Error Display */}
-      {networkError && (
-        <p
-          style={{
-            ...sharedStyles.error,
-            fontSize: "0.875rem",
-            marginBottom: "0.5rem",
-          }}
-        >
-          {networkError}
-        </p>
-      )}
-
       {/* Item Selection and Creation */}
       <div
         style={{
@@ -237,6 +212,14 @@ export default function ItemPicker({
           <ItemCreator onCreate={handleCreateItem} entityLabel={entityLabel} />
         )}
       </div>
+      {isCreateError && (
+        <p
+          style={{
+            ...sharedStyles.error,
+            marginTop: "0.5rem",
+          }}
+        >{`Error creating ${entityLabel.toLowerCase()}`}</p>
+      )}
     </div>
   );
 }

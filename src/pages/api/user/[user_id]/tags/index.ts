@@ -44,7 +44,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
               tag.trim().length <= 50
           )
           .map((tag) => tag.trim().toLowerCase());
-
+        console.log({ newTags, validTags });
         if (validTags.length === 0) {
           return res.status(400).json({ error: "No valid tags provided" });
         }

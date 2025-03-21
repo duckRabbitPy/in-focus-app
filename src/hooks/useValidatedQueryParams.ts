@@ -14,7 +14,6 @@ export const useValidatedQueryParams = () => {
 
   if (!result.success) {
     console.error("Invalid query params:", result.error.format());
-    router.replace("/error");
     return {
       user_id: "",
       roll_id: "",
