@@ -8,16 +8,16 @@ import {
 export const FstopOptions: Fstop[] = [
   "1.4",
   "1.7",
-  "2",
+  "2.0",
   "2.5",
   "2.8",
-  "4",
+  "4.0",
   "5.6",
-  "8",
-  "11",
-  "16",
-  "22",
-  "32",
+  "8.0",
+  "11.0",
+  "16.0",
+  "22.0",
+  "32.0",
 ];
 
 export const ShutterSpeedOptions: ShutterSpeed[] = [

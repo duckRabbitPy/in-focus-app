@@ -35,18 +35,19 @@ function ViewPhotoSettingsPage() {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const {
-    mutate,
-    isPending: isDeleting,
-    isError: deleteError,
-  } = useMutation({
-    mutationKey: ["deletePhoto", user_id, roll_id, photo_id],
-    mutationFn: deletePhoto,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["photos", user_id, roll_id] });
-      router.push(`/user/${user_id}/rolls/${roll_id}`);
-    },
-  });
+  const { mutate: deletePhotoMutation, isPending: deletePending } = useMutation(
+    {
+      mutationKey: ["deletePhoto", user_id, roll_id, photo_id],
+      mutationFn: deletePhoto,
+      onSuccess: () => {
+        setIsDeleteModalOpen(false);
+        queryClient.invalidateQueries({
+          queryKey: ["photos", user_id, roll_id],
+        });
+        router.push(`/user/${user_id}/rolls/${roll_id}`);
+      },
+    }
+  );
 
   const LoadingState = () => (
     <div style={{ textAlign: "center", padding: "2rem" }}>
@@ -90,9 +91,9 @@ function ViewPhotoSettingsPage() {
         <ConfirmModal
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
+          loading={deletePending}
           onConfirm={() => {
-            setIsDeleteModalOpen(false);
-            mutate({
+            deletePhotoMutation({
               user_id,
               roll_id: Number(roll_id),
               photo_id: Number(photo_id),

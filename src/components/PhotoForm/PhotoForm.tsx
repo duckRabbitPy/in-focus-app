@@ -99,7 +99,7 @@ export default function PhotoForm<T extends boolean>({
             onChange={(e) => {
               onPhotoChange({
                 ...photo,
-                f_stop: FstopSchema.parse(parseFloat(e.target.value)),
+                f_stop: FstopSchema.parse(e.target.value),
               });
             }}
             style={formStyles.select}

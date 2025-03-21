@@ -4,16 +4,16 @@ import { z } from "zod";
 export const FstopSchema = z.union([
   z.literal("1.4"),
   z.literal("1.7"),
-  z.literal("2"),
+  z.literal("2.0"),
   z.literal("2.5"),
   z.literal("2.8"),
-  z.literal("4"),
+  z.literal("4.0"),
   z.literal("5.6"),
-  z.literal("8"),
-  z.literal("11"),
-  z.literal("16"),
-  z.literal("22"),
-  z.literal("32"),
+  z.literal("8.0"),
+  z.literal("11.0"),
+  z.literal("16.0"),
+  z.literal("22.0"),
+  z.literal("32.0"),
 ]);
 
 export const ShutterSpeedSchema = z.union([
