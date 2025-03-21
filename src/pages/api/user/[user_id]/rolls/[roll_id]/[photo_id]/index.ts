@@ -3,7 +3,7 @@ import { queryOne, query } from "@/utils/db";
 import { withAuth, AuthenticatedRequest } from "@/utils/middleware";
 import {
   FullPhotoSettingsData,
-  FullPhotoSettingsSchema,
+  PhotoSettingsInputSchema,
 } from "@/types/photoSettings";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
@@ -101,9 +101,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         // Start a transaction
         await query("BEGIN");
 
-        const validatedData = FullPhotoSettingsSchema.parse({
-          id: parseInt(photo_id),
-          roll_id: parseInt(roll_id),
+        const validatedInput = PhotoSettingsInputSchema.parse({
           subject: req.body.subject,
           photo_url: req.body.photo_url,
           f_stop: req.body.f_stop,
@@ -124,20 +122,20 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         const updatedPhoto = await queryOne<FullPhotoSettingsData>(
           "UPDATE photos SET subject = $1, photo_url = $2, f_stop = $3, focal_distance = $4, shutter_speed = $5, exposure_value = $6, phone_light_meter = $7, stabilisation = $8, timer = $9, flash = $10, exposure_memory = $11, notes = $12 WHERE id = $13 AND roll_id = $14 AND roll_id IN (SELECT id FROM rolls WHERE user_id = $15) RETURNING *",
           [
-            validatedData.subject, // 1
-            validatedData.photo_url, // 2
-            validatedData.f_stop, // 3
-            validatedData.focal_distance, // 4
-            validatedData.shutter_speed, // 5
-            validatedData.exposure_value, // 6
-            validatedData.phone_light_meter, // 7
-            validatedData.stabilisation, // 8
-            validatedData.timer, // 9
-            validatedData.flash, // 10
-            validatedData.exposure_memory, // 11
-            validatedData.notes, // 12
-            validatedData.id, // 13
-            validatedData.roll_id, // 14
+            validatedInput.subject, // 1
+            validatedInput.photo_url, // 2
+            validatedInput.f_stop, // 3
+            validatedInput.focal_distance, // 4
+            validatedInput.shutter_speed, // 5
+            validatedInput.exposure_value, // 6
+            validatedInput.phone_light_meter, // 7
+            validatedInput.stabilisation, // 8
+            validatedInput.timer, // 9
+            validatedInput.flash, // 10
+            validatedInput.exposure_memory, // 11
+            validatedInput.notes, // 12
+            parseInt(photo_id), // 13
+            parseInt(roll_id), // 14
             user_id, // 15
           ]
         );

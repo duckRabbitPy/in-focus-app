@@ -1,65 +1,52 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import styles from "@/styles/ViewPhoto.module.css";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
-import { fetchWithAuth } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
-import { PhotoSettingsFormData } from "@/types/photoSettings";
+import { getPhoto } from "@/requests/queries/photos";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useValidatedQueryParams } from "@/hooks/useValidatedQueryParams";
+import { deletePhoto } from "@/requests/mutations/photos";
 
 function ViewPhotoSettingsPage() {
   const router = useRouter();
-  const { user_id, roll_id, photo_id } = router.query;
+  const { photo_id, roll_id, user_id } = useValidatedQueryParams();
+  const queryClient = useQueryClient();
 
-  const [photo, setPhoto] = useState<PhotoSettingsFormData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const {
+    data: photo,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["photo", user_id, roll_id, photo_id],
+    queryFn: () =>
+      getPhoto({
+        user_id,
+        roll_id: Number(roll_id),
+        photo_id: Number(photo_id),
+      }),
+    enabled: !!user_id && !!roll_id && !!photo_id,
+  });
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (!user_id || !roll_id || !photo_id) return;
-
-    fetchWithAuth(`/api/user/${user_id}/rolls/${roll_id}/${photo_id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-          setPhoto(null);
-        } else {
-          setPhoto(data);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load photo data");
-        setPhoto(null);
-        setLoading(false);
-      });
-  }, [user_id, roll_id, photo_id]);
-
-  const handleDeletePhoto = async () => {
-    try {
-      const response = await fetchWithAuth(
-        `/api/user/${user_id}/rolls/${roll_id}/${photo_id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete photo");
-      }
-
+  const {
+    mutate,
+    isPending: isDeleting,
+    isError: deleteError,
+  } = useMutation({
+    mutationKey: ["deletePhoto", user_id, roll_id, photo_id],
+    mutationFn: deletePhoto,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["photos", user_id, roll_id] });
       router.push(`/user/${user_id}/rolls/${roll_id}`);
-    } catch (error) {
-      console.error("Error deleting photo:", error);
-      setError("Failed to delete photo");
-    }
-  };
+    },
+  });
 
   const LoadingState = () => (
     <div style={{ textAlign: "center", padding: "2rem" }}>
@@ -70,19 +57,19 @@ function ViewPhotoSettingsPage() {
   const ErrorState = () => (
     <div style={{ textAlign: "center", padding: "2rem" }}>
       <p style={sharedStyles.error}>
-        {error === "Missing authentication token"
+        {error?.message === "Missing authentication token"
           ? "Please log in to view this page"
-          : error || "Photo not found"}
+          : error?.message || "Photo not found"}
       </p>
       <Link
         href={
-          error === "Missing authentication token"
+          error?.message === "Missing authentication token"
             ? "/"
             : `/user/${user_id}/rolls/${roll_id}`
         }
       >
         <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>
-          {error === "Missing authentication token"
+          {error?.message === "Missing authentication token"
             ? "Go to Home Page"
             : "Back to Roll"}
         </button>
@@ -103,7 +90,14 @@ function ViewPhotoSettingsPage() {
         <ConfirmModal
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={handleDeletePhoto}
+          onConfirm={() => {
+            setIsDeleteModalOpen(false);
+            mutate({
+              user_id,
+              roll_id: Number(roll_id),
+              photo_id: Number(photo_id),
+            });
+          }}
           title="Delete Photo"
           message="Are you sure you want to delete this photo? This action cannot be undone."
         />
@@ -175,9 +169,9 @@ function ViewPhotoSettingsPage() {
             </div>
           </div>
 
-          {loading ? (
+          {isLoading ? (
             <LoadingState />
-          ) : !photo ? (
+          ) : !photo || isError ? (
             <ErrorState />
           ) : (
             <div

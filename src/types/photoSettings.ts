@@ -65,8 +65,7 @@ const PhotoSettings = {
 };
 
 // settings without id, roll_id, created_at, updated_at
-// used for creating new photo settings
-export const NewPhotoSettingsSchema = z.object({
+export const PhotoSettingsInputSchema = z.object({
   ...PhotoSettings,
 });
 
@@ -83,7 +82,5 @@ export type ShutterSpeed = z.infer<typeof ShutterSpeedSchema>;
 export type PhoneLightMeter = z.infer<typeof PhoneLightMeterSchema>;
 export type Stabilisation = z.infer<typeof StabilisationSchema>;
 
-export type PhotoSettingsData = z.infer<typeof NewPhotoSettingsSchema>;
+export type PhotoSettingsInput = z.infer<typeof PhotoSettingsInputSchema>;
 export type FullPhotoSettingsData = z.infer<typeof FullPhotoSettingsSchema>;
-
-export type PhotoSettingsFormData = Omit<FullPhotoSettingsData, "id">;

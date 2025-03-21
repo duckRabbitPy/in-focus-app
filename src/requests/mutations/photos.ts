@@ -1,10 +1,10 @@
 import {
   FullPhotoSettingsSchema,
-  PhotoSettingsFormData,
+  PhotoSettingsInput,
 } from "@/types/photoSettings";
 import { fetchWithAuth } from "@/utils/auth";
 
-interface UpdatePhotoMutationParams extends PhotoSettingsFormData {
+interface UpdatePhotoMutationParams extends PhotoSettingsInput {
   user_id: string;
   roll_id: number;
   photo_id: number;
@@ -58,4 +58,28 @@ export const updatePhoto = async ({
   }
 
   return FullPhotoSettingsSchema.parse(await response.json());
+};
+
+interface DeletePhotoParams {
+  user_id: string;
+  roll_id: number;
+  photo_id: number;
+}
+
+export const deletePhoto = async ({
+  user_id,
+  roll_id,
+  photo_id,
+}: DeletePhotoParams) => {
+  const url = `/api/user/${user_id}/rolls/${roll_id}/${photo_id}`;
+
+  const response = await fetchWithAuth(url, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  return true;
 };

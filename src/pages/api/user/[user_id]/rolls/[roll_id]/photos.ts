@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { query, queryOne } from "@/utils/db";
 import {
   FullPhotoSettingsData,
-  NewPhotoSettingsSchema,
+  PhotoSettingsInputSchema,
 } from "@/types/photoSettings";
 
 export default async function handler(
@@ -72,7 +72,7 @@ export default async function handler(
           [parseInt(roll_id)]
         );
 
-        const validatedData = NewPhotoSettingsSchema.parse({
+        const validatedInput = PhotoSettingsInputSchema.parse({
           subject: req.body.subject,
           photo_url: req.body.photo_url,
           f_stop: req.body.f_stop,
@@ -108,17 +108,17 @@ export default async function handler(
            RETURNING *`,
           [
             parseInt(roll_id), // 1
-            validatedData.subject, // 2
-            validatedData.photo_url, // 3
-            validatedData.f_stop, // 4
-            validatedData.focal_distance, // 5
-            validatedData.shutter_speed, // 6
-            validatedData.exposure_value, // 7
-            validatedData.phone_light_meter, // 8
-            validatedData.stabilisation, // 9
-            validatedData.timer, // 10
-            validatedData.flash, // 11
-            validatedData.exposure_memory, // 12
+            validatedInput.subject, // 2
+            validatedInput.photo_url, // 3
+            validatedInput.f_stop, // 4
+            validatedInput.focal_distance, // 5
+            validatedInput.shutter_speed, // 6
+            validatedInput.exposure_value, // 7
+            validatedInput.phone_light_meter, // 8
+            validatedInput.stabilisation, // 9
+            validatedInput.timer, // 10
+            validatedInput.flash, // 11
+            validatedInput.exposure_memory, // 12
             nextSequence?.next_sequence || 1, // 13
           ]
         );
