@@ -1,4 +1,4 @@
-import { TagSchema } from "@/types/tag";
+import { TagSchema } from "@/types/tags";
 import { fetchWithAuth } from "@/utils/auth";
 
 type CreateTagMutationParams = {

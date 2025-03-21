@@ -62,21 +62,10 @@ export async function transaction<T>(
   }
 }
 
-// Types for database entities
 export interface DBUser {
   id: string; // UUID
   username: string;
   password_hash: string;
-  created_at: Date;
-  updated_at: Date;
-}
-
-export interface DBRoll {
-  id: number; // SERIAL
-  user_id: string; // UUID from users table
-  name: string;
-  film_type: string | null;
-  iso: number | null;
   created_at: Date;
   updated_at: Date;
 }

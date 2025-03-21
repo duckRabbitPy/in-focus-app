@@ -7,8 +7,8 @@ import { fetchWithAuth } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
-import { Roll } from "@/types/shared";
 import { formatDateString } from "@/utils/date";
+import { Roll } from "@/types/rolls";
 
 const styles = {
   card: {

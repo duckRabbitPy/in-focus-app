@@ -3,7 +3,7 @@ import {
   PhoneLightMeter,
   ShutterSpeed,
   Stabilisation,
-} from "@/types/photoSettings";
+} from "@/types/photos";
 
 export const FstopOptions: Fstop[] = [
   "1.4",

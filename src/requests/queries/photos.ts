@@ -1,4 +1,4 @@
-import { FullPhotoSettingsSchema } from "@/types/photoSettings";
+import { FullPhotoSettingsSchema } from "@/types/photos";
 import { fetchWithAuth } from "@/utils/auth";
 
 interface GetPhotoParams {

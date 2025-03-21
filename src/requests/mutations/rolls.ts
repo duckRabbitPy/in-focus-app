@@ -1,5 +1,5 @@
+import { RollSchema } from "@/types/rolls";
 import { fetchWithAuth } from "@/utils/auth";
-import { z } from "zod";
 
 type UpdateRollMutationParams = {
   userId: string;
@@ -8,15 +8,6 @@ type UpdateRollMutationParams = {
   filmType: string;
   iso: string;
 };
-
-const RollSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  film_type: z.string().optional(),
-  iso: z.number().optional(),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
-});
 
 export const updateRoll = async ({
   userId,

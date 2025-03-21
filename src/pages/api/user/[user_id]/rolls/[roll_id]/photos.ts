@@ -3,7 +3,7 @@ import { query, queryOne } from "@/utils/db";
 import {
   FullPhotoSettingsData,
   PhotoSettingsInputSchema,
-} from "@/types/photoSettings";
+} from "@/types/photos";
 
 export default async function handler(
   req: NextApiRequest,

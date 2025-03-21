@@ -1,7 +1,7 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import jwt from 'jsonwebtoken';
+import { NextApiRequest, NextApiResponse } from "next";
+import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret-key";
 
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: {
@@ -10,7 +10,8 @@ export interface AuthenticatedRequest extends NextApiRequest {
   };
 }
 
-export function withAuth(
+// protects API routes by requiring a valid JWT token
+export function AuthMiddleWare(
   handler: (req: AuthenticatedRequest, res: NextApiResponse) => Promise<void>
 ) {
   return async (req: AuthenticatedRequest, res: NextApiResponse) => {
@@ -18,12 +19,12 @@ export function withAuth(
       const authHeader = req.headers.authorization;
 
       if (!authHeader) {
-        return res.status(401).json({ error: 'Missing authentication token' });
+        return res.status(401).json({ error: "Missing authentication token" });
       }
 
-      const token = authHeader.split(' ')[1];
+      const token = authHeader.split(" ")[1];
       if (!token) {
-        return res.status(401).json({ error: 'Invalid authentication format' });
+        return res.status(401).json({ error: "Invalid authentication format" });
       }
 
       try {
@@ -41,12 +42,12 @@ export function withAuth(
         // Call the handler
         return handler(req, res);
       } catch (error) {
-        console.error('Token verification failed:', error);
-        return res.status(401).json({ error: 'Invalid authentication token' });
+        console.error("Token verification failed:", error);
+        return res.status(401).json({ error: "Invalid authentication token" });
       }
     } catch (error) {
-      console.error('Auth middleware error:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+      console.error("Auth middleware error:", error);
+      return res.status(500).json({ error: "Internal server error" });
     }
   };
-} 
+}

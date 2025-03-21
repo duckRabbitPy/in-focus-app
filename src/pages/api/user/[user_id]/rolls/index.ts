@@ -1,8 +1,12 @@
 import { NextApiResponse } from "next";
 import { query, queryOne } from "@/utils/db";
-import { withAuth, AuthenticatedRequest } from "@/utils/middleware";
-import { Roll } from "@/types/shared";
+import {
+  AuthMiddleWare,
+  AuthenticatedRequest,
+} from "../../../../../requests/middleware";
+
 import { formatDateString } from "@/utils/date";
+import { Roll } from "@/types/rolls";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id } = req.query;
@@ -53,4 +57,4 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 }
 
-export default withAuth(handler);
+export default AuthMiddleWare(handler);

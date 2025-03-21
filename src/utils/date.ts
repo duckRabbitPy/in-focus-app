@@ -4,7 +4,7 @@ export function formatDateString(dateString: string | undefined): string {
   }
   const date = new Date(dateString);
   return date.toLocaleDateString("en-GB", {
-    year: "numeric",
+    year: "2-digit",
     month: "short",
     day: "numeric",
   });

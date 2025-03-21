@@ -1,8 +1,11 @@
 // search all photos, by user_id and tags
 
-import { NextApiResponse } from 'next';
-import { query } from '@/utils/db';
-import { withAuth, AuthenticatedRequest } from '@/utils/middleware';
+import { NextApiResponse } from "next";
+import { query } from "@/utils/db";
+import {
+  AuthMiddleWare,
+  AuthenticatedRequest,
+} from "../../../../../requests/middleware";
 
 interface DBPhotoResult {
   id: number;
@@ -24,7 +27,9 @@ interface PhotoSearchResult {
   tags: string[];
 }
 
-function transformDBResultToSearchResult(photo: DBPhotoResult): PhotoSearchResult {
+function transformDBResultToSearchResult(
+  photo: DBPhotoResult
+): PhotoSearchResult {
   return {
     id: photo.id.toString(),
     roll_id: photo.roll_id.toString(),
@@ -32,24 +37,25 @@ function transformDBResultToSearchResult(photo: DBPhotoResult): PhotoSearchResul
     photo_url: photo.photo_url || undefined,
     created_at: photo.created_at,
     roll_name: photo.roll_name,
-    tags: photo.tags || []
+    tags: photo.tags || [],
   };
 }
 
-async function handler(
-  req: AuthenticatedRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   const { user_id } = req.query;
-  const tags = req.query.tags ? (Array.isArray(req.query.tags) ? req.query.tags : [req.query.tags]) : [];
+  const tags = req.query.tags
+    ? Array.isArray(req.query.tags)
+      ? req.query.tags
+      : [req.query.tags]
+    : [];
 
   try {
     if (user_id !== req.user?.userId) {
-      return res.status(403).json({ error: 'Unauthorized' });
+      return res.status(403).json({ error: "Unauthorized" });
     }
 
     if (tags.length === 0) {
@@ -57,7 +63,8 @@ async function handler(
     }
 
     // Query photos that have any of the provided tags
-    const result = await query<DBPhotoResult>(`
+    const result = await query<DBPhotoResult>(
+      `
       SELECT DISTINCT 
         p.id,
         p.roll_id,
@@ -86,15 +93,16 @@ async function handler(
         p.created_at,
         r.name
       ORDER BY p.created_at DESC
-    `, [user_id, tags]);
+    `,
+      [user_id, tags]
+    );
 
     // Transform results to match PhotoSearchResult
     const transformedPhotos = result.map(transformDBResultToSearchResult);
     return res.json({ photos: transformedPhotos });
-
   } catch (error) {
-    console.error('Search error:', error);
-    return res.status(500).json({ error: 'Failed to search photos' });
+    console.error("Search error:", error);
+    return res.status(500).json({ error: "Failed to search photos" });
   }
 }
 
@@ -104,4 +112,4 @@ export const config = {
   },
 };
 
-export default withAuth(handler);
+export default AuthMiddleWare(handler);

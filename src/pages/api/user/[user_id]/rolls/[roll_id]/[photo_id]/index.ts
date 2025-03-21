@@ -1,10 +1,13 @@
 import { NextApiResponse } from "next";
 import { queryOne, query } from "@/utils/db";
-import { withAuth, AuthenticatedRequest } from "@/utils/middleware";
+import {
+  AuthMiddleWare,
+  AuthenticatedRequest,
+} from "../../../../../../../requests/middleware";
 import {
   FullPhotoSettingsData,
   PhotoSettingsInputSchema,
-} from "@/types/photoSettings";
+} from "@/types/photos";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id, roll_id, photo_id } = req.query;
@@ -253,4 +256,4 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 }
 
-export default withAuth(handler);
+export default AuthMiddleWare(handler);

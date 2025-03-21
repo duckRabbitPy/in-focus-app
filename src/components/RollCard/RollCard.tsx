@@ -1,21 +1,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { sharedStyles } from "@/styles/shared";
-import { Roll } from "@/types/shared";
+
 import { formatDateString } from "@/utils/date";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateRoll } from "@/requests/mutations/rolls";
 import { rollCardStyles } from "./RollCard.styles";
+import { Roll } from "@/types/rolls";
 
 interface RollProps {
-  roll: {
-    id: number;
-    name: string;
-    film_type: string | null;
-    iso: number | null;
-    created_at: string;
-    updated_at: string;
-  };
+  roll: Roll;
   user_id: string;
   onDelete: (rollId: number) => void;
   onUpdate: (updatedRoll: Roll) => void;
@@ -25,7 +19,7 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(roll.name);
   const [filmType, setFilmType] = useState(roll.film_type || "");
-  const [iso, setIso] = useState(roll.iso !== null ? roll.iso.toString() : "");
+  const [iso, setIso] = useState(!!roll.iso ? roll.iso.toString() : "");
   const [error, setError] = useState("");
 
   const queryClient = useQueryClient();
@@ -120,7 +114,7 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
                 setIsEditing(false);
                 setName(roll.name);
                 setFilmType(roll.film_type || "");
-                setIso(roll.iso !== null ? roll.iso.toString() : "");
+                setIso(roll.iso ? roll.iso.toString() : "");
                 setError("");
               }}
             >

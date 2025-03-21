@@ -1,6 +1,9 @@
 import { NextApiResponse } from "next";
 import { queryOne } from "@/utils/db";
-import { withAuth, AuthenticatedRequest } from "@/utils/middleware";
+import {
+  AuthMiddleWare,
+  AuthenticatedRequest,
+} from "../../../requests/middleware";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -37,4 +40,4 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 }
 
-export default withAuth(handler);
+export default AuthMiddleWare(handler);

@@ -1,4 +1,4 @@
-import { LensSchema } from "@/types/lens";
+import { LensSchema } from "@/types/lenses";
 import { fetchWithAuth } from "@/utils/auth";
 
 type CreateLensMutationParams = {

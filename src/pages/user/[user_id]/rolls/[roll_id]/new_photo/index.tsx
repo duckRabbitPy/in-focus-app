@@ -1,4 +1,4 @@
-import { FullPhotoSettingsData } from "@/types/photoSettings";
+import { FullPhotoSettingsData } from "@/types/photos";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";

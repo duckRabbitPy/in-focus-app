@@ -1,3 +1,9 @@
+export function generateShortId(length = 4): string {
+  return Math.random()
+    .toString(36)
+    .slice(2, 2 + length);
+}
+
 export function arrayFromQueryParam(
   param: string | string[] | undefined,
   delimiter: string = ","

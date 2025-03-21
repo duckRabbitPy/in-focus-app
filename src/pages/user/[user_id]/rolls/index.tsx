@@ -9,15 +9,7 @@ import { geistMono, geistSans } from "@/styles/font";
 import { CreateNewRollButton } from "@/components/CreateNewRollButton";
 import { RollCard } from "@/components/RollCard/RollCard";
 import { PageHead } from "@/components/PageHead";
-
-interface Roll {
-  id: number;
-  name: string;
-  film_type: string | null;
-  iso: number | null;
-  created_at: string;
-  updated_at: string;
-}
+import { Roll } from "@/types/rolls";
 
 const headerButtonStyles = {
   container: {

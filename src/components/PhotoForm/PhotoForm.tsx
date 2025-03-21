@@ -4,7 +4,7 @@ import {
   ShutterSpeedSchema,
   StabilisationSchema,
   FullPhotoSettingsData,
-} from "@/types/photoSettings";
+} from "@/types/photos";
 import { sharedStyles } from "@/styles/shared";
 import { useRouter } from "next/router";
 import TagPicker from "../TagPicker";

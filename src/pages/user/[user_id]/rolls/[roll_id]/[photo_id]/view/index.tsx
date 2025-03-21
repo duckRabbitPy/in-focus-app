@@ -9,12 +9,11 @@ import { geistMono, geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
 import { getPhoto } from "@/requests/queries/photos";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useValidatedQueryParams } from "@/hooks/useValidatedQueryParams";
 import { deletePhoto } from "@/requests/mutations/photos";
 
 function ViewPhotoSettingsPage() {
   const router = useRouter();
-  const { photo_id, roll_id, user_id } = useValidatedQueryParams();
+  const { photo_id, roll_id, user_id } = router.query;
   const queryClient = useQueryClient();
 
   const {
@@ -26,7 +25,7 @@ function ViewPhotoSettingsPage() {
     queryKey: ["photo", user_id, roll_id, photo_id],
     queryFn: () =>
       getPhoto({
-        user_id,
+        user_id: user_id as string,
         roll_id: Number(roll_id),
         photo_id: Number(photo_id),
       }),
@@ -91,7 +90,7 @@ function ViewPhotoSettingsPage() {
           onClose={() => setIsDeleteModalOpen(false)}
           onConfirm={() => {
             deletePhotoMutation({
-              user_id,
+              user_id: user_id as string,
               roll_id: Number(roll_id),
               photo_id: Number(photo_id),
             });

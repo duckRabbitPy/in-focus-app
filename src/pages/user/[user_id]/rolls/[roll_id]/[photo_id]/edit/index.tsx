@@ -1,4 +1,4 @@
-import { FullPhotoSettingsData } from "@/types/photoSettings";
+import { FullPhotoSettingsData } from "@/types/photos";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { sharedStyles } from "@/styles/shared";
@@ -9,12 +9,11 @@ import { geistSans, geistMono } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { updatePhoto } from "@/requests/mutations/photos";
-import { useValidatedQueryParams } from "@/hooks/useValidatedQueryParams";
 import { getPhoto } from "@/requests/queries/photos";
 
 function EditPhotoSettingsPage() {
   const router = useRouter();
-  const { photo_id, roll_id, user_id } = useValidatedQueryParams();
+  const { photo_id, roll_id, user_id } = router.query;
   const [error, setError] = useState("");
 
   const queryClient = useQueryClient();
@@ -29,7 +28,7 @@ function EditPhotoSettingsPage() {
     queryKey: ["photo", user_id, roll_id, photo_id],
     queryFn: () =>
       getPhoto({
-        user_id,
+        user_id: user_id as string,
         roll_id: Number(roll_id),
         photo_id: Number(photo_id),
       }),
@@ -59,7 +58,12 @@ function EditPhotoSettingsPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!photoFormState || !roll_id || !photo_id) {
+    if (
+      !photoFormState ||
+      !roll_id ||
+      !photo_id ||
+      typeof user_id !== "string"
+    ) {
       setError("Failed to save changes, missing key data");
       return;
     }

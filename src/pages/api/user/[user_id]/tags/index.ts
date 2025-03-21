@@ -1,7 +1,10 @@
 import { NextApiResponse } from "next";
 import { query } from "@/utils/db";
-import { withAuth, AuthenticatedRequest } from "@/utils/middleware";
-import { Tag } from "@/types/tag";
+import {
+  AuthMiddleWare,
+  AuthenticatedRequest,
+} from "../../../../../requests/middleware";
+import { Tag } from "@/types/tags";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id } = req.query;
@@ -97,4 +100,4 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 }
 
-export default withAuth(handler);
+export default AuthMiddleWare(handler);

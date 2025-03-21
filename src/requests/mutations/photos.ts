@@ -1,7 +1,4 @@
-import {
-  FullPhotoSettingsSchema,
-  PhotoSettingsInput,
-} from "@/types/photoSettings";
+import { FullPhotoSettingsSchema, PhotoSettingsInput } from "@/types/photos";
 import { fetchWithAuth } from "@/utils/auth";
 
 interface UpdatePhotoMutationParams extends PhotoSettingsInput {
