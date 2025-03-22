@@ -8,8 +8,8 @@ import {
 } from "@/types/photos";
 import { sharedStyles } from "@/styles/shared";
 import { useRouter } from "next/router";
-import TagPicker from "../TagPicker";
-import LensPicker from "../LensPicker";
+import TagPicker from "../UserItems/TagPicker";
+import LensPicker from "../UserItems/LensPicker";
 import { formStyles } from "./PhotoForm.styles";
 import {
   FstopOptions,
