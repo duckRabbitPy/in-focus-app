@@ -97,7 +97,7 @@ function RollPage() {
     if (typeof user_id !== "string" || !selectedPhotoId) return;
     deletePhotoMutation({
       user_id,
-      roll_id: selectedPhotoId,
+      roll_id: Number(roll_id),
       photo_id: photoId,
     });
   };

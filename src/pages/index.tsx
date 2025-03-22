@@ -80,7 +80,13 @@ export default function LandingPage() {
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
       >
-        <main style={sharedStyles.main}>
+        <main
+          style={{
+            ...sharedStyles.main,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <div
             style={{
               display: "flex",
@@ -107,7 +113,7 @@ export default function LandingPage() {
 
           <form
             onSubmit={handleSubmit}
-            style={sharedStyles.form}
+            style={{ ...sharedStyles.form, maxWidth: "400px" }}
             autoComplete="on"
           >
             <input

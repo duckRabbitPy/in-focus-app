@@ -1,4 +1,3 @@
-// The first file (photo handler)
 import { NextApiResponse } from "next";
 import { queryOne, query } from "@/utils/db";
 import {
