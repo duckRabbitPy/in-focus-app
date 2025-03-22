@@ -9,6 +9,7 @@
     "lint": "next lint",
     "db:migrate": "psql -U postgres -d in_focus -f schema.sql",
     "db:seed": "psql -U postgres -d in_focus -f seed.sql",
+    "db:seed_user": "psql -U postgres -d in_focus -f seed_user.sql",
     "db:reset": "yarn db:migrate && yarn db:seed",
     "type-check": "tsc --noEmit"
   },

@@ -1,9 +1,10 @@
 import { NextApiResponse } from "next";
-import { query, DBUser } from "@/utils/db";
+import { query } from "@/utils/db";
 import {
   WithApiAuthMiddleware,
   AuthenticatedRequest,
 } from "../../../../requests/middleware";
+import { ClientUser } from "@/types/users";
 
 export async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method !== "GET") {
@@ -13,7 +14,7 @@ export async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id } = req.query;
 
   try {
-    const users = await query<DBUser>(
+    const users = await query<ClientUser>(
       "SELECT id, username FROM users WHERE id = $1",
       [user_id]
     );

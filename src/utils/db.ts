@@ -61,11 +61,3 @@ export async function transaction<T>(
     client.release();
   }
 }
-
-export interface DBUser {
-  id: string; // UUID
-  username: string;
-  password_hash: string;
-  created_at: Date;
-  updated_at: Date;
-}
