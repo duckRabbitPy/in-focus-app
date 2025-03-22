@@ -4,6 +4,11 @@ import {
   FullPhotoSettingsData,
   PhotoSettingsInputSchema,
 } from "@/types/photos";
+import {
+  getPhotoTags,
+  updatePhotoLens,
+  updatePhotoTags,
+} from "@/utils/updateTags";
 
 export default async function handler(
   req: NextApiRequest,
@@ -53,9 +58,17 @@ export default async function handler(
           [parseInt(roll_id)]
         );
 
+        // TODO: Optional enhancement: fetch tags for all photos in one go
+        const photosWithTags = await Promise.all(
+          photos.map(async (photo) => {
+            const tags = await getPhotoTags(photo.id);
+            return { ...photo, tags };
+          })
+        );
+
         return res.status(200).json({
           roll: rollInfo,
-          photos,
+          photos: photosWithTags,
         });
       } catch (error) {
         console.error("Error fetching photos:", error);
@@ -64,6 +77,9 @@ export default async function handler(
 
     case "POST":
       try {
+        // Start a transaction
+        await query("BEGIN");
+
         // Get the next sequence number for this roll
         const nextSequence = await queryOne<{ next_sequence: number }>(
           `SELECT COALESCE(MAX(sequence_number), 0) + 1 as next_sequence 
@@ -103,9 +119,11 @@ export default async function handler(
              timer,
              flash,
              exposure_memory,
+             notes,
              sequence_number
-           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-           RETURNING *`,
+            ) VALUES (
+              $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+            ) RETURNING *`,
           [
             parseInt(roll_id), // 1
             validatedInput.subject, // 2
@@ -119,12 +137,42 @@ export default async function handler(
             validatedInput.timer, // 10
             validatedInput.flash, // 11
             validatedInput.exposure_memory, // 12
-            nextSequence?.next_sequence || 1, // 13
+            validatedInput.notes, // 13
+            nextSequence?.next_sequence || 1, // 14
           ]
         );
 
-        return res.status(201).json(newPhoto);
+        // Use the utility functions to update tags and lens
+        const photoId = newPhoto?.id;
+
+        if (!photoId) {
+          await query("ROLLBACK");
+          return res.status(500).json({ error: "Error creating photo" });
+        }
+
+        const updatedTags = await updatePhotoTags(
+          photoId,
+          validatedInput.tags,
+          user_id
+        );
+        const updatedLens = await updatePhotoLens(
+          photoId,
+          validatedInput.lens,
+          user_id
+        );
+
+        // Commit the transaction
+        await query("COMMIT");
+
+        // Return the complete photo object with tags and lens
+        return res.status(201).json({
+          ...newPhoto,
+          tags: updatedTags,
+          lens: updatedLens,
+        });
       } catch (error) {
+        // Rollback in case of error
+        await query("ROLLBACK");
         console.error("Error creating photo:", error);
         return res.status(500).json({ error: "Error creating photo" });
       }

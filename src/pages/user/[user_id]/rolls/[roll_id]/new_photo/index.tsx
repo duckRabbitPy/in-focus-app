@@ -1,4 +1,4 @@
-import { FullPhotoSettingsData } from "@/types/photos";
+import { PhotoSettingsInput } from "@/types/photos";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
@@ -7,18 +7,14 @@ import { withAuth } from "@/utils/withAuth";
 import PhotoForm from "@/components/PhotoForm/PhotoForm";
 import { geistMono, geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
-
-type NewPhotoData = Omit<
-  FullPhotoSettingsData,
-  "created_at" | "updated_at" | "id"
->;
+import { createPhoto } from "@/requests/mutations/photos";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 function NewPhotoPage() {
   const router = useRouter();
   const { user_id, roll_id } = router.query;
 
-  const [newPhotoData, setNewPhotoData] = useState<NewPhotoData>({
-    roll_id: Number(roll_id),
+  const [newPhotoData, setNewPhotoData] = useState<PhotoSettingsInput>({
     subject: "",
     photo_url: "",
     f_stop: "2.8",
@@ -35,39 +31,30 @@ function NewPhotoPage() {
     lens: "",
   });
 
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const queryClient = useQueryClient();
+
+  const {
+    mutate: createPhotoMutation,
+    isPending,
+    error,
+  } = useMutation({
+    mutationKey: ["createPhoto", user_id, roll_id],
+    mutationFn: createPhoto,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["photos", user_id, roll_id],
+      });
+      router.push(`/user/${user_id}/rolls/${roll_id}`);
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitting(true);
-
-    try {
-      const response = await fetch(
-        `/api/user/${user_id}/rolls/${roll_id}/photos`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify(newPhotoData),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.error) {
-        setError(data.error);
-      } else {
-        router.push(`/user/${user_id}/rolls/${roll_id}`);
-      }
-    } catch (error: unknown) {
-      console.error("Failed to create photo:", error);
-      setError("Failed to create photo");
-    } finally {
-      setSubmitting(false);
-    }
+    createPhotoMutation({
+      user_id: user_id as string,
+      roll_id: Number(roll_id),
+      ...newPhotoData,
+    });
   };
 
   return (
@@ -108,8 +95,8 @@ function NewPhotoPage() {
             onSubmit={handleSubmit}
             submitButtonText="Create Photo"
             cancelHref={`/user/${user_id}/rolls/${roll_id}`}
-            error={error}
-            isSubmitting={submitting}
+            error={error?.message}
+            isSubmitting={isPending}
           />
         </main>
         <footer style={sharedStyles.footer}>

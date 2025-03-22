@@ -7,6 +7,59 @@ interface UpdatePhotoMutationParams extends PhotoSettingsInput {
   photo_id: number;
 }
 
+type CreatePhotoMutationParams = PhotoSettingsInput & {
+  user_id: string;
+  roll_id: number;
+};
+
+export const createPhoto = async ({
+  user_id,
+  roll_id,
+  subject,
+  photo_url,
+  f_stop,
+  focal_distance,
+  shutter_speed,
+  exposure_value,
+  phone_light_meter,
+  timer,
+  flash,
+  stabilisation,
+  exposure_memory,
+  lens,
+  tags,
+  notes,
+}: CreatePhotoMutationParams) => {
+  const url = `/api/user/${user_id}/rolls/${roll_id}/photos`;
+
+  const response = await fetchWithAuth(url, {
+    method: "POST",
+    body: JSON.stringify({
+      roll_id,
+      subject,
+      photo_url,
+      f_stop,
+      focal_distance,
+      shutter_speed,
+      exposure_value,
+      phone_light_meter,
+      timer,
+      flash,
+      stabilisation,
+      exposure_memory,
+      lens,
+      tags,
+      notes,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  return FullPhotoSettingsSchema.parse(await response.json());
+};
+
 export const updatePhoto = async ({
   user_id,
   roll_id,

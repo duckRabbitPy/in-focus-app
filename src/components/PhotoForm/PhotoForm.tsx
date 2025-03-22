@@ -4,6 +4,7 @@ import {
   ShutterSpeedSchema,
   StabilisationSchema,
   FullPhotoSettingsData,
+  PhotoSettingsInput,
 } from "@/types/photos";
 import { sharedStyles } from "@/styles/shared";
 import { useRouter } from "next/router";
@@ -17,17 +18,10 @@ import {
   StabilisationOptions,
 } from "./constants";
 
-type NewPhotoData = Omit<
-  FullPhotoSettingsData,
-  "created_at" | "updated_at" | "id"
->;
-
 interface PhotoFormProps<T extends boolean> {
-  photo: T extends true
-    ? Omit<FullPhotoSettingsData, "id" | "created_at" | "updated_at">
-    : FullPhotoSettingsData;
+  photo: T extends true ? PhotoSettingsInput : FullPhotoSettingsData;
   onPhotoChange: (
-    photo: T extends true ? NewPhotoData : FullPhotoSettingsData
+    photo: T extends true ? PhotoSettingsInput : FullPhotoSettingsData
   ) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   submitButtonText: string;
