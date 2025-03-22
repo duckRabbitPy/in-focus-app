@@ -13,31 +13,6 @@ import { deleteRoll } from "@/requests/mutations/rolls";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getRolls } from "@/requests/queries/rolls";
 
-const headerButtonStyles = {
-  container: {
-    display: "flex",
-    gap: "0.75rem",
-    alignItems: "center",
-    "@media (minWidth: 640px)": {
-      gap: "1rem",
-    },
-  },
-  linkWrapper: {
-    display: "inline-block",
-  },
-  newRollButton: {
-    ...sharedStyles.button,
-    whiteSpace: "nowrap" as const,
-    padding: "0.75rem 1.25rem",
-  },
-  logoutButton: {
-    ...sharedStyles.secondaryButton,
-    whiteSpace: "nowrap" as const,
-    fontSize: "0.9rem",
-    padding: "0.75rem 1.25rem",
-  },
-};
-
 function RollsPage() {
   const router = useRouter();
   const { user_id } = router.query;
@@ -182,5 +157,30 @@ function RollsPage() {
     </>
   );
 }
+
+const headerButtonStyles = {
+  container: {
+    display: "flex",
+    gap: "0.75rem",
+    alignItems: "center",
+    "@media (minWidth: 640px)": {
+      gap: "1rem",
+    },
+  },
+  linkWrapper: {
+    display: "inline-block",
+  },
+  newRollButton: {
+    ...sharedStyles.button,
+    whiteSpace: "nowrap" as const,
+    padding: "0.75rem 1.25rem",
+  },
+  logoutButton: {
+    ...sharedStyles.secondaryButton,
+    whiteSpace: "nowrap" as const,
+    fontSize: "0.9rem",
+    padding: "0.75rem 1.25rem",
+  },
+};
 
 export default withAuth(RollsPage);

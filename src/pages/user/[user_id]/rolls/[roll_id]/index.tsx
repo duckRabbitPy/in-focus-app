@@ -13,40 +13,6 @@ import { deleteRoll } from "@/requests/mutations/rolls";
 import { deletePhoto } from "@/requests/mutations/photos";
 import { getPhotos } from "@/requests/queries/photos";
 
-const styles = {
-  card: {
-    ...sharedStyles.card,
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "1rem",
-    cursor: "default",
-  },
-  photoHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  photoId: {
-    ...sharedStyles.subtitle,
-    fontFamily: "var(--font-geist-mono)",
-    fontSize: "1rem",
-  },
-  actions: {
-    display: "flex",
-    gap: "0.5rem",
-    alignItems: "stretch",
-  },
-  viewButton: {
-    ...sharedStyles.secondaryButton,
-    padding: "0.5rem 1rem",
-    fontSize: "0.9rem",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-  },
-  editButton: sharedStyles.button,
-};
-
 function RollPage() {
   const router = useRouter();
   const { user_id, roll_id } = router.query;
@@ -304,5 +270,39 @@ function RollPage() {
     </>
   );
 }
+
+const styles = {
+  card: {
+    ...sharedStyles.card,
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "1rem",
+    cursor: "default",
+  },
+  photoHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  photoId: {
+    ...sharedStyles.subtitle,
+    fontFamily: "var(--font-geist-mono)",
+    fontSize: "1rem",
+  },
+  actions: {
+    display: "flex",
+    gap: "0.5rem",
+    alignItems: "stretch",
+  },
+  viewButton: {
+    ...sharedStyles.secondaryButton,
+    padding: "0.5rem 1rem",
+    fontSize: "0.9rem",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+  },
+  editButton: sharedStyles.button,
+};
 
 export default withAuth(RollPage);
