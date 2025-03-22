@@ -1,48 +1,35 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
-import { fetchWithAuth } from "@/utils/auth";
 
 import { geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
+import { getPhoto } from "@/requests/queries/photos";
+import { useQuery } from "@tanstack/react-query";
 
 function MaxiPhotoPage() {
   const router = useRouter();
   const { user_id, roll_id, photo_id } = router.query;
 
-  const [photo, setPhoto] = useState<{
-    photo_url: string | null;
-    subject: string;
-  } | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const {
+    data: photo,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["photo", user_id, roll_id, photo_id],
+    queryFn: () =>
+      getPhoto({
+        user_id: user_id as string,
+        roll_id: Number(roll_id),
+        photo_id: Number(photo_id),
+      }),
+    enabled: !!user_id && !!roll_id && !!photo_id,
+  });
 
-  useEffect(() => {
-    if (!user_id || !roll_id || !photo_id) return;
-
-    fetchWithAuth(`/api/user/${user_id}/rolls/${roll_id}/${photo_id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-          setPhoto(null);
-        } else {
-          setPhoto(data);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load photo");
-        setPhoto(null);
-        setLoading(false);
-      });
-  }, [user_id, roll_id, photo_id]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div
         style={{
@@ -56,7 +43,7 @@ function MaxiPhotoPage() {
     );
   }
 
-  if (error || !photo?.photo_url) {
+  if (isError || !photo?.photo_url) {
     return (
       <div
         style={{
@@ -65,7 +52,7 @@ function MaxiPhotoPage() {
           alignItems: "center",
         }}
       >
-        <p style={sharedStyles.error}>{error || "Photo not found"}</p>
+        <p style={sharedStyles.error}>{error?.message || "Photo not found"}</p>
         <Link href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`}>
           <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>
             Back to Photo
