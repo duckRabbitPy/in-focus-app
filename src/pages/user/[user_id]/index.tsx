@@ -85,7 +85,7 @@ function UserPage() {
                 <button
                   style={{ ...sharedStyles.button, backgroundColor: "#3962b4" }}
                 >
-                  Search
+                  Search Photos
                 </button>
               </Link>
               <button onClick={logout} style={sharedStyles.secondaryButton}>

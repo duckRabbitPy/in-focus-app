@@ -53,18 +53,16 @@ function SearchPage() {
             <h1 style={sharedStyles.title}>Search Photos by Tags</h1>
           </div>
 
-          <div style={{ marginBottom: "2rem" }}>
-            <TagPicker
-              selectedTags={selectedTags}
-              onTagsChange={setSelectedTags}
-              userId={user_id as string}
-              disableAdd
-            />
-          </div>
+          <TagPicker
+            selectedTags={selectedTags}
+            onTagsChange={setSelectedTags}
+            userId={user_id as string}
+            disableAdd
+          />
 
           {error && <p style={sharedStyles.error}>{error.message}</p>}
 
-          <div style={{ overflowX: "auto", width: "100%" }}>
+          <div style={{ overflowX: "auto", width: "100%", height: "40vh" }}>
             <table
               style={{
                 width: "100%",

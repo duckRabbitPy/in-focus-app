@@ -268,22 +268,22 @@ function RollPage() {
                       href={`/user/${user_id}/rolls/${roll_id}/${photo.id}/view`}
                     >
                       {photo.subject || "No subject"}
+
+                      {photo.photo_url && (
+                        <div style={{ marginTop: "0.5rem" }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={photo.photo_url}
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              objectFit: "cover",
+                            }}
+                            alt={photo.subject}
+                          />
+                        </div>
+                      )}
                     </Link>
-                    {photo.photo_url && (
-                      <div style={{ marginTop: "0.5rem" }}>
-                        <a
-                          href={photo.photo_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            color: "#0070f3",
-                            textDecoration: "underline",
-                          }}
-                        >
-                          View Photo
-                        </a>
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
