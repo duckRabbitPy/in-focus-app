@@ -176,7 +176,7 @@ export default function ItemPicker({
         }}
       >
         {/* Item Dropdown */}
-        {availableItems?.length && availableItems.length > 0 && (
+        {availableItems?.length && availableItems.length > 0 ? (
           <select
             value=""
             onChange={(e) => {
@@ -205,7 +205,11 @@ export default function ItemPicker({
               </option>
             ))}
           </select>
-        )}
+        ) : null}
+
+        {disableAdd &&
+          items?.length === 0 &&
+          `No ${entityType} available for search`}
 
         {/* Create Item Button or Input */}
         {!disableAdd && (

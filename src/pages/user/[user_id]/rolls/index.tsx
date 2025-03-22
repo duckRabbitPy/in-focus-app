@@ -142,13 +142,14 @@ function RollsPage() {
           </div>
 
           {rolls?.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "2rem" }}>
+            <div
+              style={{
+                padding: "2rem",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
               <p style={sharedStyles.subtitle}>No rolls found</p>
-              <Link href={`/user/${user_id}/rolls/new`}>
-                <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>
-                  Create Your First Roll
-                </button>
-              </Link>
             </div>
           ) : (
             <div style={sharedStyles.grid}>
