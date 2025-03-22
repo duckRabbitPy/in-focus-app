@@ -5,8 +5,8 @@ import {
   AuthenticatedRequest,
 } from "../../../../../requests/middleware";
 
-import { formatDateString } from "@/utils/date";
 import { Roll } from "@/types/rolls";
+import { generateShortId } from "@/utils/shared";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id } = req.query;
@@ -38,8 +38,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       try {
         // Create a new roll with a default name
         const newRoll = await queryOne<Roll>(
-          "INSERT INTO rolls (user_id, name) VALUES ($1, $2) RETURNING id, name, created_at, updated_at",
-          [user_id, `Roll: ${formatDateString(new Date().toString())}`]
+          "INSERT INTO rolls (user_id, name) VALUES ($1, $2) RETURNING *",
+          [user_id, `Draft: ${generateShortId(4)}`]
         );
 
         if (!newRoll) {
