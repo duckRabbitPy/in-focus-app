@@ -2,7 +2,7 @@ export const styles = {
   detailsCard: {
     cursor: "default",
     width: "100%",
-    maxWidth: "100%",
+    maxWidth: "800px",
     padding: "1rem",
     "@media (minWidth: 640px)": {
       maxWidth: "600px",
