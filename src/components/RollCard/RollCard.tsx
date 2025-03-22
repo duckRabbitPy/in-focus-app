@@ -1,110 +1,56 @@
 import { useState } from "react";
 import Link from "next/link";
-import { fetchWithAuth } from "@/utils/auth";
 import { sharedStyles } from "@/styles/shared";
-import { Roll } from "@/types/shared";
+
 import { formatDateString } from "@/utils/date";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateRoll } from "@/requests/mutations/rolls";
+import { rollCardStyles } from "./RollCard.styles";
+import { Roll } from "@/types/rolls";
 
 interface RollProps {
-  roll: {
-    id: number;
-    name: string;
-    film_type: string | null;
-    iso: number | null;
-    created_at: string;
-    updated_at: string;
-  };
+  roll: Roll;
   user_id: string;
   onDelete: (rollId: number) => void;
-  onUpdate: (updatedRoll: Roll) => void;
+  deleteError: Error | null;
 }
 
-export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
+export function RollCard({ roll, user_id, onDelete, deleteError }: RollProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(roll.name);
   const [filmType, setFilmType] = useState(roll.film_type || "");
-  const [iso, setIso] = useState(roll.iso !== null ? roll.iso.toString() : "");
-  const [isSaving, setIsSaving] = useState(false);
+  const [iso, setIso] = useState(!!roll.iso ? roll.iso.toString() : "");
   const [error, setError] = useState("");
 
-  const handleSave = async () => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending: isSaving } = useMutation({
+    mutationKey: ["updateRoll", user_id, roll.id],
+    mutationFn: updateRoll,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rolls", user_id] });
+      setIsEditing(false);
+    },
+    onError: (err) => {
+      console.error("Error updating roll:", err);
+      setError("Failed to update roll");
+    },
+  });
+
+  const handleSave = () => {
     if (!name) {
       setError("Name is required");
       return;
     }
 
-    setIsSaving(true);
     setError("");
-
-    try {
-      const response = await fetchWithAuth(
-        `/api/user/${user_id}/rolls/${roll.id}?name=${encodeURIComponent(
-          name
-        )}&film_type=${encodeURIComponent(filmType)}&iso=${encodeURIComponent(
-          iso
-        )}`,
-        {
-          method: "PUT",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const updatedRoll = await response.json();
-      onUpdate(updatedRoll);
-      setIsEditing(false);
-    } catch (err) {
-      console.error("Error updating roll:", err);
-      setError("Failed to update roll");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const rollCardStyles = {
-    card: {
-      ...sharedStyles.card,
-      display: "flex",
-      flexDirection: "column" as const,
-      gap: "1rem",
-      cursor: "default",
-      overflow: "scroll",
-    },
-    header: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
-    title: {
-      ...sharedStyles.subtitle,
-      fontFamily: "var(--font-geist-mono)",
-      fontSize: "1.1rem",
-      margin: 0,
-    },
-    details: {
-      display: "grid",
-      gap: "0.5rem",
-    },
-    label: {
-      fontSize: "0.85rem",
-      color: "#444",
-      margin: 0,
-    },
-    value: {
-      fontSize: "0.95rem",
-      color: "#000",
-      margin: 0,
-      fontFamily: "var(--font-geist-mono)",
-    },
-    input: {
-      padding: "0.5rem",
-      border: "1px solid #ccc",
-      borderRadius: "4px",
-      fontFamily: "var(--font-geist-mono)",
-      fontSize: "0.95rem",
-    },
+    mutate({
+      userId: user_id,
+      rollId: roll.id,
+      name,
+      filmType,
+      iso,
+    });
   };
 
   return (
@@ -167,7 +113,7 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
                 setIsEditing(false);
                 setName(roll.name);
                 setFilmType(roll.film_type || "");
-                setIso(roll.iso !== null ? roll.iso.toString() : "");
+                setIso(roll.iso ? roll.iso.toString() : "");
                 setError("");
               }}
             >
@@ -190,7 +136,7 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
               }}
               aria-label="Delete roll"
             >
-              Delete
+              {deleteError ? "Delete failed (retry?)" : "Delete"}
             </button>
           )}
         </div>

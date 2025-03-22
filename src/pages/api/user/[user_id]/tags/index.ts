@@ -1,7 +1,10 @@
 import { NextApiResponse } from "next";
 import { query } from "@/utils/db";
-import { withAuth, AuthenticatedRequest } from "@/utils/middleware";
-import { Tag } from "@/types/shared";
+import {
+  WithApiAuthMiddleware,
+  AuthenticatedRequest,
+} from "../../../../../requests/middleware";
+import { Tag } from "@/types/tags";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id } = req.query;
@@ -44,7 +47,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
               tag.trim().length <= 50
           )
           .map((tag) => tag.trim().toLowerCase());
-
+        console.log({ newTags, validTags });
         if (validTags.length === 0) {
           return res.status(400).json({ error: "No valid tags provided" });
         }
@@ -56,6 +59,21 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           ON CONFLICT (user_id, name) DO NOTHING
           RETURNING id, name, created_at, updated_at
         `;
+
+        // log what is in tags
+        const tags = await query<Tag>(
+          "SELECT id, name, created_at, updated_at FROM tags WHERE user_id = $1 ORDER BY name ASC",
+          [user_id]
+        );
+
+        console.log({
+          tags,
+        });
+
+        console.log({
+          user_id,
+          validTags,
+        });
 
         const insertedTags = await query<Tag>(insertQuery, [
           user_id,
@@ -82,4 +100,4 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 }
 
-export default withAuth(handler);
+export default WithApiAuthMiddleware(handler);

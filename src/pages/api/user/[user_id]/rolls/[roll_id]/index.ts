@@ -1,6 +1,9 @@
 import { NextApiResponse } from "next";
 import { query } from "@/utils/db";
-import { withAuth, AuthenticatedRequest } from "@/utils/middleware";
+import {
+  WithApiAuthMiddleware,
+  AuthenticatedRequest,
+} from "../../../../../../requests/middleware";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id, roll_id, name, iso, film_type } = req.query;
@@ -63,4 +66,4 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 }
 
-export default withAuth(handler);
+export default WithApiAuthMiddleware(handler);

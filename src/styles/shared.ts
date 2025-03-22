@@ -62,6 +62,14 @@ export const sharedStyles = {
       color: "#fff",
     },
   },
+  label: {
+    fontSize: "0.85rem",
+    color: "#333",
+    fontFamily: "var(--font-geist-sans)",
+    "@media (minWidth: 640px)": {
+      fontSize: "0.9rem",
+    },
+  },
   grid: {
     display: "grid",
     gridTemplateColumns: "1fr",

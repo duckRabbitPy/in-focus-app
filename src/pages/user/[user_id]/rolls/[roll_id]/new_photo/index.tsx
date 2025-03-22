@@ -1,28 +1,26 @@
-import {
-  PhotoSettingsData,
-  PhotoSettingsFormData,
-} from "@/types/photoSettings";
+import { PhotoSettingsInput } from "@/types/photos";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
-import PhotoForm from "@/components/PhotoForm";
+import PhotoForm from "@/components/PhotoForm/PhotoForm";
 import { geistMono, geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
+import { createPhoto } from "@/requests/mutations/photos";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 function NewPhotoPage() {
   const router = useRouter();
   const { user_id, roll_id } = router.query;
 
-  const [photo, setPhoto] = useState<PhotoSettingsFormData>({
-    roll_id: roll_id as string,
+  const [newPhotoData, setNewPhotoData] = useState<PhotoSettingsInput>({
     subject: "",
     photo_url: "",
-    f_stop: 2.8,
-    focal_distance: 1,
+    f_stop: "2.8",
+    focal_distance: "1",
     shutter_speed: "1/125",
-    exposure_value: 0,
+    exposure_value: 1,
     phone_light_meter: "1/125",
     stabilisation: "handheld",
     timer: false,
@@ -33,45 +31,30 @@ function NewPhotoPage() {
     lens: "",
   });
 
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const queryClient = useQueryClient();
+
+  const {
+    mutate: createPhotoMutation,
+    isPending,
+    error,
+  } = useMutation({
+    mutationKey: ["createPhoto", user_id, roll_id],
+    mutationFn: createPhoto,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["photos", user_id, Number(roll_id)],
+      });
+      router.push(`/user/${user_id}/rolls/${roll_id}`);
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitting(true);
-
-    try {
-      // Convert form data to PhotoSettingsData
-      const photoData: PhotoSettingsData = {
-        ...photo,
-        photo_id: "0", // Server will assign the actual ID
-      };
-
-      const response = await fetch(
-        `/api/user/${user_id}/rolls/${roll_id}/photos`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify(photoData),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.error) {
-        setError(data.error);
-      } else {
-        router.push(`/user/${user_id}/rolls/${roll_id}`);
-      }
-    } catch (error: unknown) {
-      console.error("Failed to create photo:", error);
-      setError("Failed to create photo");
-    } finally {
-      setSubmitting(false);
-    }
+    createPhotoMutation({
+      user_id: user_id as string,
+      roll_id: Number(roll_id),
+      ...newPhotoData,
+    });
   };
 
   return (
@@ -106,13 +89,14 @@ function NewPhotoPage() {
           </div>
 
           <PhotoForm
-            photo={photo}
-            onPhotoChange={setPhoto}
+            isNewPhoto
+            photo={newPhotoData}
+            onPhotoChange={setNewPhotoData}
             onSubmit={handleSubmit}
             submitButtonText="Create Photo"
             cancelHref={`/user/${user_id}/rolls/${roll_id}`}
-            error={error}
-            isSubmitting={submitting}
+            error={error?.message}
+            isSubmitting={isPending}
           />
         </main>
         <footer style={sharedStyles.footer}>

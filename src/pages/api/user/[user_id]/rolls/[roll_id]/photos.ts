@@ -1,6 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { query, queryOne } from "@/utils/db";
-import { DBPhoto } from "@/utils/db";
+import {
+  FullPhotoSettingsData,
+  PhotoSettingsInputSchema,
+} from "@/types/photos";
+import {
+  getPhotoTags,
+  updatePhotoLens,
+  updatePhotoTags,
+} from "@/utils/updateTags";
 
 export default async function handler(
   req: NextApiRequest,
@@ -43,16 +51,24 @@ export default async function handler(
   switch (req.method) {
     case "GET":
       try {
-        const photos = await query<DBPhoto>(
+        const photos = await query<FullPhotoSettingsData>(
           `SELECT * FROM photos 
            WHERE roll_id = $1 
            ORDER BY sequence_number`,
           [parseInt(roll_id)]
         );
 
+        // TODO: Optional enhancement: fetch tags for all photos in one go
+        const photosWithTags = await Promise.all(
+          photos.map(async (photo) => {
+            const tags = await getPhotoTags(photo.id);
+            return { ...photo, tags };
+          })
+        );
+
         return res.status(200).json({
           roll: rollInfo,
-          photos,
+          photos: photosWithTags,
         });
       } catch (error) {
         console.error("Error fetching photos:", error);
@@ -61,6 +77,9 @@ export default async function handler(
 
     case "POST":
       try {
+        // Start a transaction
+        await query("BEGIN");
+
         // Get the next sequence number for this roll
         const nextSequence = await queryOne<{ next_sequence: number }>(
           `SELECT COALESCE(MAX(sequence_number), 0) + 1 as next_sequence 
@@ -69,21 +88,24 @@ export default async function handler(
           [parseInt(roll_id)]
         );
 
-        const {
-          subject,
-          photo_url,
-          f_stop,
-          focal_distance,
-          shutter_speed,
-          exposure_value,
-          phone_light_meter,
-          stabilisation,
-          timer,
-          flash,
-          exposure_memory,
-        } = req.body;
+        const validatedInput = PhotoSettingsInputSchema.parse({
+          subject: req.body.subject,
+          photo_url: req.body.photo_url,
+          f_stop: req.body.f_stop,
+          focal_distance: req.body.focal_distance,
+          shutter_speed: req.body.shutter_speed,
+          exposure_value: req.body.exposure_value,
+          phone_light_meter: req.body.phone_light_meter,
+          stabilisation: req.body.stabilisation,
+          timer: req.body.timer,
+          flash: req.body.flash,
+          exposure_memory: req.body.exposure_memory,
+          lens: req.body.lens,
+          tags: req.body.tags,
+          notes: req.body.notes,
+        });
 
-        const newPhoto = await queryOne<DBPhoto>(
+        const newPhoto = await queryOne<FullPhotoSettingsData>(
           `INSERT INTO photos (
              roll_id,
              subject,
@@ -97,28 +119,60 @@ export default async function handler(
              timer,
              flash,
              exposure_memory,
+             notes,
              sequence_number
-           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-           RETURNING *`,
+            ) VALUES (
+              $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+            ) RETURNING *`,
           [
-            parseInt(roll_id),
-            subject,
-            photo_url,
-            f_stop,
-            focal_distance,
-            shutter_speed,
-            exposure_value,
-            phone_light_meter,
-            stabilisation,
-            timer,
-            flash,
-            exposure_memory,
-            nextSequence?.next_sequence || 1,
+            parseInt(roll_id), // 1
+            validatedInput.subject, // 2
+            validatedInput.photo_url, // 3
+            validatedInput.f_stop, // 4
+            validatedInput.focal_distance, // 5
+            validatedInput.shutter_speed, // 6
+            validatedInput.exposure_value, // 7
+            validatedInput.phone_light_meter, // 8
+            validatedInput.stabilisation, // 9
+            validatedInput.timer, // 10
+            validatedInput.flash, // 11
+            validatedInput.exposure_memory, // 12
+            validatedInput.notes, // 13
+            nextSequence?.next_sequence || 1, // 14
           ]
         );
 
-        return res.status(201).json(newPhoto);
+        // Use the utility functions to update tags and lens
+        const photoId = newPhoto?.id;
+
+        if (!photoId) {
+          await query("ROLLBACK");
+          return res.status(500).json({ error: "Error creating photo" });
+        }
+
+        const updatedTags = await updatePhotoTags(
+          photoId,
+          validatedInput.tags,
+          user_id
+        );
+        const updatedLens = await updatePhotoLens(
+          photoId,
+          validatedInput.lens,
+          user_id
+        );
+
+        // Commit the transaction
+        await query("COMMIT");
+
+        // Return the complete photo object with tags and lens
+        return res.status(201).json({
+          ...newPhoto,
+          tags: updatedTags,
+          lens: updatedLens,
+        });
       } catch (error) {
+        // Rollback in case of error
+        await query("ROLLBACK");
         console.error("Error creating photo:", error);
         return res.status(500).json({ error: "Error creating photo" });
       }

@@ -1,112 +1,50 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
-import { fetchWithAuth, logout } from "@/utils/auth";
+import { logout } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
-import CreateNewRollButton from "@/components/CreateNewRollButton";
-import { RollCard } from "@/components/RollCard";
+import { CreateNewRollButton } from "@/components/CreateNewRollButton";
+import { RollCard } from "@/components/RollCard/RollCard";
 import { PageHead } from "@/components/PageHead";
-
-interface Roll {
-  id: number;
-  name: string;
-  film_type: string | null;
-  iso: number | null;
-  created_at: string;
-  updated_at: string;
-}
-
-const headerButtonStyles = {
-  container: {
-    display: "flex",
-    gap: "0.75rem",
-    alignItems: "center",
-    "@media (minWidth: 640px)": {
-      gap: "1rem",
-    },
-  },
-  linkWrapper: {
-    display: "inline-block",
-  },
-  newRollButton: {
-    ...sharedStyles.button,
-    whiteSpace: "nowrap" as const,
-    padding: "0.75rem 1.25rem",
-  },
-  logoutButton: {
-    ...sharedStyles.secondaryButton,
-    whiteSpace: "nowrap" as const,
-    fontSize: "0.9rem",
-    padding: "0.75rem 1.25rem",
-  },
-};
+import { deleteRoll } from "@/requests/mutations/rolls";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getRolls } from "@/requests/queries/rolls";
 
 function RollsPage() {
   const router = useRouter();
   const { user_id } = router.query;
-  const [rolls, setRolls] = useState<Roll[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedRollId, setSelectedRollId] = useState<number | null>(null);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!user_id) return;
+  const {
+    data: rolls,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["rolls", user_id],
+    queryFn: () => getRolls({ user_id: user_id as string }),
+    enabled: !!user_id,
+  });
 
-    fetchWithAuth(`/api/user/${user_id}/rolls`)
-      .then(async (res) => {
-        if (!res.ok) {
-          throw new Error(await res.text());
-        }
-        return res.json();
-      })
-      .then((data) => {
-        setRolls(data);
-        setError("");
-      })
-      .catch((err) => {
-        console.error("Error fetching rolls:", err);
-        setError("Failed to load rolls");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [user_id]);
+  const { mutate: deleteRollMutation, error: deleteRollError } = useMutation({
+    mutationKey: ["deleteRoll", user_id, selectedRollId],
+    mutationFn: deleteRoll,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rolls", user_id] });
+      setIsDeleteModalOpen(false);
+    },
+  });
 
   const handleDeleteRoll = async () => {
-    if (!selectedRollId) return;
-
-    try {
-      const response = await fetchWithAuth(
-        `/api/user/${user_id}/rolls/${selectedRollId}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete roll");
-      }
-
-      setRolls(rolls.filter((roll) => roll.id !== selectedRollId));
-      setSelectedRollId(null);
-      setIsDeleteModalOpen(false);
-    } catch (error) {
-      console.error("Error deleting roll:", error);
-      setError("Failed to delete roll");
-    }
+    if (typeof user_id !== "string" || !selectedRollId) return;
+    deleteRollMutation({ user_id, roll_id: selectedRollId });
   };
 
-  const handleUpdateRoll = (updatedRoll: Roll) => {
-    setRolls(
-      rolls.map((roll) => (roll.id === updatedRoll.id ? updatedRoll : roll))
-    );
-  };
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div
         style={{
@@ -129,7 +67,7 @@ function RollsPage() {
           alignItems: "center",
         }}
       >
-        <p style={sharedStyles.error}>{error}</p>
+        <p style={sharedStyles.error}>{error.message}</p>
         <Link href="/">
           <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>
             Back to Home
@@ -178,18 +116,19 @@ function RollsPage() {
             </div>
           </div>
 
-          {rolls.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "2rem" }}>
+          {rolls?.length === 0 ? (
+            <div
+              style={{
+                padding: "2rem",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
               <p style={sharedStyles.subtitle}>No rolls found</p>
-              <Link href={`/user/${user_id}/rolls/new`}>
-                <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>
-                  Create Your First Roll
-                </button>
-              </Link>
             </div>
           ) : (
             <div style={sharedStyles.grid}>
-              {rolls.map((roll) => (
+              {rolls?.map((roll) => (
                 <RollCard
                   key={roll.id}
                   roll={roll}
@@ -198,7 +137,7 @@ function RollsPage() {
                     setSelectedRollId(rollId);
                     setIsDeleteModalOpen(true);
                   }}
-                  onUpdate={handleUpdateRoll}
+                  deleteError={deleteRollError}
                 />
               ))}
             </div>
@@ -218,5 +157,30 @@ function RollsPage() {
     </>
   );
 }
+
+const headerButtonStyles = {
+  container: {
+    display: "flex",
+    gap: "0.75rem",
+    alignItems: "center",
+    "@media (minWidth: 640px)": {
+      gap: "1rem",
+    },
+  },
+  linkWrapper: {
+    display: "inline-block",
+  },
+  newRollButton: {
+    ...sharedStyles.button,
+    whiteSpace: "nowrap" as const,
+    padding: "0.75rem 1.25rem",
+  },
+  logoutButton: {
+    ...sharedStyles.secondaryButton,
+    whiteSpace: "nowrap" as const,
+    fontSize: "0.9rem",
+    padding: "0.75rem 1.25rem",
+  },
+};
 
 export default withAuth(RollsPage);

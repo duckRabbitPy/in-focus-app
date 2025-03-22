@@ -9,10 +9,13 @@
     "lint": "next lint",
     "db:migrate": "psql -U postgres -d in_focus -f schema.sql",
     "db:seed": "psql -U postgres -d in_focus -f seed.sql",
+    "db:seed_user": "psql -U postgres -d in_focus -f seed_user.sql",
     "db:reset": "yarn db:migrate && yarn db:seed",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.68.0",
+    "@tanstack/react-query-devtools": "^5.68.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.9",
     "bcryptjs": "^3.0.2",
@@ -22,7 +25,8 @@
     "next": "15.2.1",
     "pg": "^8.11.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

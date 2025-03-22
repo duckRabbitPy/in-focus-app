@@ -1,4 +1,3 @@
-import { Lens } from "@/types/shared";
 import ItemPicker from "./ItemPicker";
 
 interface LensPickerProps {
@@ -15,7 +14,7 @@ export default function LensPicker({
   disableAdd,
 }: LensPickerProps) {
   return (
-    <ItemPicker<Lens>
+    <ItemPicker
       selectedItems={selectedLenses}
       onItemsChange={onLensesChange}
       userId={userId}

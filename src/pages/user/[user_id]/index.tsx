@@ -1,54 +1,29 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
-import { fetchWithAuth, logout } from "@/utils/auth";
+import { logout } from "@/utils/auth";
 import { geistSans, geistMono } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
-
-interface UserData {
-  id: string;
-  username: string;
-}
+import { useQuery } from "@tanstack/react-query";
+import { getUser } from "@/requests/queries/user";
 
 function UserPage() {
   const router = useRouter();
   const { user_id } = router.query;
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!user_id) return;
+  const {
+    data: userData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["user", user_id],
+    queryFn: () => getUser({ user_id: user_id as string }),
+    enabled: !!user_id,
+  });
 
-    fetchWithAuth(`/api/user/${user_id}`)
-      .then(async (res) => {
-        if (!res.ok) {
-          if (res.status === 401) {
-            router.push("/");
-            return;
-          }
-          throw new Error(await res.text());
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data) {
-          setUserData(data);
-          setError("");
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching user data:", err);
-        setError(err.message || "Failed to load user data");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [user_id, router]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div
         style={{
@@ -71,7 +46,7 @@ function UserPage() {
           alignItems: "center",
         }}
       >
-        <p style={sharedStyles.error}>{error}</p>
+        <p style={sharedStyles.error}>{error.message}</p>
         <Link href="/">
           <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>
             Back to Home
@@ -110,7 +85,7 @@ function UserPage() {
                 <button
                   style={{ ...sharedStyles.button, backgroundColor: "#3962b4" }}
                 >
-                  Search
+                  Search Photos
                 </button>
               </Link>
               <button onClick={logout} style={sharedStyles.secondaryButton}>

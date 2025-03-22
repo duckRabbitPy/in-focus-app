@@ -1,115 +1,37 @@
 import {
-  FStop,
-  ShutterSpeed,
-  Stabilisation,
-  PhotoSettingsFormData,
-} from "@/types/photoSettings";
+  FstopSchema,
+  PhoneLightMeterSchema,
+  ShutterSpeedSchema,
+  StabilisationSchema,
+  FullPhotoSettingsData,
+  PhotoSettingsInput,
+} from "@/types/photos";
 import { sharedStyles } from "@/styles/shared";
 import { useRouter } from "next/router";
-import TagPicker from "./TagPicker";
-import LensPicker from "./LensPicker";
+import TagPicker from "../UserItems/TagPicker";
+import LensPicker from "../UserItems/LensPicker";
+import { formStyles } from "./PhotoForm.styles";
+import {
+  FstopOptions,
+  PhoneLightMeterOptions,
+  ShutterSpeedOptions,
+  StabilisationOptions,
+} from "./constants";
 
-export const formStyles = {
-  group: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "0.5rem",
-    marginTop: "1rem",
-    marginBottom: "1rem",
-    width: "100%",
-    "@media (minWidth: 640px)": {
-      marginBottom: "1.5rem",
-    },
-  },
-  label: {
-    fontSize: "0.85rem",
-    color: "#333",
-    fontFamily: "var(--font-geist-sans)",
-    "@media (minWidth: 640px)": {
-      fontSize: "0.9rem",
-    },
-  },
-  select: {
-    ...sharedStyles.input,
-    backgroundColor: "#fff",
-    width: "100%",
-    paddingRight: "2rem",
-  },
-  checkbox: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-    padding: "0.5rem",
-    borderRadius: "4px",
-    "&:active": {
-      backgroundColor: "#f5f5f5",
-    },
-  },
-  checkboxInput: {
-    width: "1.4rem",
-    height: "1.4rem",
-    cursor: "pointer",
-    "@media (minWidth: 640px)": {
-      width: "1.2rem",
-      height: "1.2rem",
-    },
-  },
-  buttonGroup: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "0.75rem",
-    marginTop: "1.5rem",
-    width: "100%",
-    "@media (minWidth: 640px)": {
-      flexDirection: "row",
-      gap: "1rem",
-      marginTop: "2rem",
-    },
-  },
-  checkboxGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr",
-    gap: "0.5rem",
-    marginTop: "1rem",
-    width: "100%",
-    "@media (minWidth: 480px)": {
-      gridTemplateColumns: "1fr 1fr",
-    },
-  },
-  segmentedControl: {
-    display: "flex",
-    gap: "0.5rem",
-    marginBottom: "0.5rem",
-  },
-  segment: {
-    padding: "0.5rem 1rem",
-    border: "1px solid #e5e5e5",
-    borderRadius: "4px",
-    fontSize: "0.9rem",
-    cursor: "pointer",
-    backgroundColor: "#fff",
-    color: "#666",
-    flex: 1,
-    textAlign: "center" as const,
-  },
-  activeSegment: {
-    backgroundColor: "#8E5D94",
-    color: "#fff",
-    borderColor: "#8E5D94",
-  },
-};
-
-interface PhotoFormProps {
-  photo: PhotoSettingsFormData;
-  onPhotoChange: (photo: PhotoSettingsFormData) => void;
+interface PhotoFormProps<T extends boolean> {
+  photo: T extends true ? PhotoSettingsInput : FullPhotoSettingsData;
+  onPhotoChange: (
+    photo: T extends true ? PhotoSettingsInput : FullPhotoSettingsData
+  ) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   submitButtonText: string;
   cancelHref: string;
   error?: string;
   isSubmitting?: boolean;
+  isNewPhoto: T;
 }
 
-export default function PhotoForm({
+export default function PhotoForm<T extends boolean>({
   photo,
   onPhotoChange,
   onSubmit,
@@ -117,7 +39,7 @@ export default function PhotoForm({
   cancelHref,
   error,
   isSubmitting = false,
-}: PhotoFormProps) {
+}: PhotoFormProps<T>) {
   const router = useRouter();
   const { user_id } = router.query;
 
@@ -168,15 +90,15 @@ export default function PhotoForm({
           <select
             name="f_stop"
             value={photo.f_stop}
-            onChange={(e) =>
+            onChange={(e) => {
               onPhotoChange({
                 ...photo,
-                f_stop: parseFloat(e.target.value) as FStop,
-              })
-            }
+                f_stop: FstopSchema.parse(e.target.value),
+              });
+            }}
             style={formStyles.select}
           >
-            {[1.4, 1.7, 2, 2.5, 2.8, 4, 5.6, 8, 11, 16, 22, 32].map((f) => (
+            {FstopOptions.map((f) => (
               <option key={f} value={f}>
                 {f}
               </option>
@@ -203,7 +125,7 @@ export default function PhotoForm({
                   focal_distance:
                     photo.focal_distance === "infinity"
                       ? 1
-                      : (photo.focal_distance as number),
+                      : photo.focal_distance,
                 })
               }
               style={{
@@ -244,6 +166,7 @@ export default function PhotoForm({
               style={sharedStyles.input}
               min="0.1"
               step="0.1"
+              max="100"
             />
           )}
         </div>
@@ -253,35 +176,17 @@ export default function PhotoForm({
           <select
             name="shutter_speed"
             value={photo.shutter_speed}
-            onChange={(e) =>
+            onChange={(e) => {
               onPhotoChange({
                 ...photo,
-                shutter_speed: e.target.value as ShutterSpeed,
-              })
-            }
+                shutter_speed: ShutterSpeedSchema.parse(e.target.value),
+              });
+            }}
             style={formStyles.select}
           >
-            {[
-              "8",
-              "4",
-              "2",
-              "1",
-              "1/2",
-              "1/4",
-              "1/8",
-              "1/15",
-              "1/30",
-              "1/60",
-              "1/125",
-              "1/250",
-              "1/500",
-              "1/1000",
-              "1/2000",
-              "1/4000",
-              "1/8000",
-            ].map((s) => (
-              <option key={s} value={s}>
-                {s}
+            {ShutterSpeedOptions.map((shutterSpeed) => (
+              <option key={shutterSpeed} value={shutterSpeed}>
+                {shutterSpeed}
               </option>
             ))}
           </select>
@@ -355,6 +260,7 @@ export default function PhotoForm({
               style={{ ...sharedStyles.input, flex: 1 }}
               min="0"
               step="0.5"
+              max={photo.exposure_value < 0 ? 99.9 : 100}
             />
           </div>
         </div>
@@ -364,33 +270,15 @@ export default function PhotoForm({
           <select
             name="phone_light_meter"
             value={photo.phone_light_meter}
-            onChange={(e) =>
+            onChange={(e) => {
               onPhotoChange({
                 ...photo,
-                phone_light_meter: e.target.value as ShutterSpeed,
-              })
-            }
+                phone_light_meter: PhoneLightMeterSchema.parse(e.target.value),
+              });
+            }}
             style={formStyles.select}
           >
-            {[
-              "8",
-              "4",
-              "2",
-              "1",
-              "1/2",
-              "1/4",
-              "1/8",
-              "1/15",
-              "1/30",
-              "1/60",
-              "1/125",
-              "1/250",
-              "1/500",
-              "1/1000",
-              "1/2000",
-              "1/4000",
-              "1/8000",
-            ].map((s) => (
+            {PhoneLightMeterOptions.map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>
@@ -403,15 +291,15 @@ export default function PhotoForm({
           <select
             name="stabilisation"
             value={photo.stabilisation}
-            onChange={(e) =>
+            onChange={(e) => {
               onPhotoChange({
                 ...photo,
-                stabilisation: e.target.value as Stabilisation,
-              })
-            }
+                stabilisation: StabilisationSchema.parse(e.target.value),
+              });
+            }}
             style={formStyles.select}
           >
-            {["handheld", "rested", "tripod"].map((s) => (
+            {StabilisationOptions.map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>

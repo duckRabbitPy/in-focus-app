@@ -1,8 +1,12 @@
 import { NextApiResponse } from "next";
 import { query, queryOne } from "@/utils/db";
-import { withAuth, AuthenticatedRequest } from "@/utils/middleware";
-import { Roll } from "@/types/shared";
-import { formatDateString } from "@/utils/date";
+import {
+  WithApiAuthMiddleware,
+  AuthenticatedRequest,
+} from "../../../../../requests/middleware";
+
+import { Roll } from "@/types/rolls";
+import { generateShortId } from "@/utils/shared";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id } = req.query;
@@ -16,7 +20,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     case "GET":
       try {
         const rolls = await query<Roll>(
-          "SELECT id, name, film_type, iso, created_at, updated_at FROM rolls WHERE user_id = $1 ORDER BY created_at DESC",
+          "SELECT * FROM rolls WHERE user_id = $1 ORDER BY created_at DESC",
           [user_id]
         );
 
@@ -34,8 +38,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       try {
         // Create a new roll with a default name
         const newRoll = await queryOne<Roll>(
-          "INSERT INTO rolls (user_id, name) VALUES ($1, $2) RETURNING id, name, created_at, updated_at",
-          [user_id, `Roll: ${formatDateString(new Date().toString())}`]
+          "INSERT INTO rolls (user_id, name) VALUES ($1, $2) RETURNING *",
+          [user_id, `Draft: #${generateShortId(4)}`]
         );
 
         if (!newRoll) {
@@ -53,4 +57,4 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 }
 
-export default withAuth(handler);
+export default WithApiAuthMiddleware(handler);

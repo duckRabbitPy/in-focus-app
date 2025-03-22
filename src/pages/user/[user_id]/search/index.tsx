@@ -3,27 +3,28 @@ import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { geistMono, geistSans } from "@/styles/font";
-import TagPicker from "@/components/TagPicker";
+import TagPicker from "@/components/UserItems/TagPicker";
 import { useState } from "react";
-import { usePhotoSearch } from "@/hooks/usePhotoSearch";
 import { formatDateString } from "@/utils/date";
 import { PageHead } from "@/components/PageHead";
+import { searchPhotosByTags } from "@/requests/queries/search";
+import { useQuery } from "@tanstack/react-query";
 
 function SearchPage() {
   const router = useRouter();
   const { user_id } = router.query;
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [hasSearched, setHasSearched] = useState(false);
-  const { photos, isLoading, error, searchPhotos } = usePhotoSearch(
-    user_id as string
-  );
 
-  const handleSearch = () => {
-    if (selectedTags.length > 0) {
-      setHasSearched(true);
-      searchPhotos(selectedTags);
-    }
-  };
+  const {
+    data: { photos } = {},
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["photoSearch", user_id, selectedTags],
+    queryFn: () =>
+      searchPhotosByTags({ user_id: user_id as string, tags: selectedTags }),
+    enabled: !!user_id && selectedTags.length > 0,
+  });
 
   if (!user_id || Array.isArray(user_id)) {
     return <p style={sharedStyles.error}>Invalid user ID</p>;
@@ -51,97 +52,85 @@ function SearchPage() {
             <h1 style={sharedStyles.title}>Search Photos by Tags</h1>
           </div>
 
-          <div style={{ marginBottom: "2rem" }}>
-            <TagPicker
-              selectedTags={selectedTags}
-              onTagsChange={setSelectedTags}
-              userId={user_id as string}
-              disableAdd
-            />
-            <button
-              onClick={handleSearch}
-              disabled={selectedTags.length === 0 || isLoading}
+          <TagPicker
+            selectedTags={selectedTags}
+            onTagsChange={setSelectedTags}
+            userId={user_id as string}
+            disableAdd
+          />
+
+          {error && <p style={sharedStyles.error}>{error.message}</p>}
+
+          <div style={{ overflowX: "auto", width: "100%", height: "40vh" }}>
+            <table
               style={{
-                ...sharedStyles.button,
-                marginTop: "1rem",
                 width: "100%",
+                borderCollapse: "collapse",
+                marginTop: "1rem",
               }}
             >
-              {isLoading ? "Searching..." : "Search Photos"}
-            </button>
+              <thead>
+                <tr>
+                  <th style={styles.tableHeaderStyle}>Subject</th>
+                  <th style={styles.tableHeaderStyle}>Roll</th>
+                  <th style={styles.tableHeaderStyle}>Date</th>
+                  <th style={styles.tableHeaderStyle}>Tags</th>
+                  <th style={styles.tableHeaderStyle}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {photos?.map((photo) => (
+                  <tr key={photo.id} style={styles.tableRowStyle}>
+                    <td style={styles.tableCellStyle}>{photo.subject}</td>
+                    <td style={styles.tableCellStyle}>{photo.roll_name}</td>
+                    <td style={styles.tableCellStyle}>
+                      {formatDateString(photo.created_at)}
+                    </td>
+                    <td style={styles.tableCellStyle}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: "0.5rem",
+                        }}
+                      >
+                        {photo.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            style={{
+                              backgroundColor: "#f3f4f6",
+                              padding: "0.25rem 0.5rem",
+                              borderRadius: "0.5rem",
+                              fontSize: "0.875rem",
+                            }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td style={styles.tableCellStyle}>
+                      <Link
+                        href={`/user/${user_id}/rolls/${photo.roll_id}/${photo.id}/view`}
+                        style={sharedStyles.link}
+                      >
+                        View Details
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
-          {error && <p style={sharedStyles.error}>{error}</p>}
-
-          {photos.length > 0 && (
-            <div style={{ overflowX: "auto", width: "100%" }}>
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  marginTop: "1rem",
-                }}
-              >
-                <thead>
-                  <tr>
-                    <th style={tableHeaderStyle}>Subject</th>
-                    <th style={tableHeaderStyle}>Roll</th>
-                    <th style={tableHeaderStyle}>Date</th>
-                    <th style={tableHeaderStyle}>Tags</th>
-                    <th style={tableHeaderStyle}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {photos.map((photo) => (
-                    <tr key={photo.id} style={tableRowStyle}>
-                      <td style={tableCellStyle}>{photo.subject}</td>
-                      <td style={tableCellStyle}>{photo.roll_name}</td>
-                      <td style={tableCellStyle}>
-                        {formatDateString(photo.created_at)}
-                      </td>
-                      <td style={tableCellStyle}>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: "0.5rem",
-                          }}
-                        >
-                          {photo.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              style={{
-                                backgroundColor: "#f3f4f6",
-                                padding: "0.25rem 0.5rem",
-                                borderRadius: "0.5rem",
-                                fontSize: "0.875rem",
-                              }}
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td style={tableCellStyle}>
-                        <Link
-                          href={`/user/${user_id}/rolls/${photo.roll_id}/${photo.id}/view`}
-                          style={sharedStyles.link}
-                        >
-                          View Details
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {!isLoading && !error && photos.length === 0 && hasSearched && (
-            <p style={sharedStyles.subtitle}>
-              No photos found with the selected tags.
-            </p>
-          )}
+          {!isLoading &&
+            !error &&
+            photos?.length === 0 &&
+            selectedTags.length > 0 && (
+              <p style={sharedStyles.subtitle}>
+                No photos found with the selected tags.
+              </p>
+            )}
         </main>
         <footer style={sharedStyles.footer}>
           <Link
@@ -158,23 +147,23 @@ function SearchPage() {
   );
 }
 
-const tableHeaderStyle = {
-  textAlign: "left" as const,
-  padding: "0.75rem",
-  borderBottom: "2px solid #e5e7eb",
-  backgroundColor: "#f9fafb",
-};
-
-const tableRowStyle = {
-  borderBottom: "1px solid #e5e7eb",
-  "&:hover": {
+export const styles = {
+  tableHeaderStyle: {
+    textAlign: "left" as const,
+    padding: "0.75rem",
+    borderBottom: "2px solid #e5e7eb",
     backgroundColor: "#f9fafb",
   },
-};
-
-const tableCellStyle = {
-  padding: "0.75rem",
-  fontSize: "0.875rem",
+  tableRowStyle: {
+    borderBottom: "1px solid #e5e7eb",
+    "&:hover": {
+      backgroundColor: "#f9fafb",
+    },
+  },
+  tableCellStyle: {
+    padding: "0.75rem",
+    fontSize: "0.875rem",
+  },
 };
 
 export default withAuth(SearchPage);
