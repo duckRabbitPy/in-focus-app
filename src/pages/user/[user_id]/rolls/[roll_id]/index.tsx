@@ -56,7 +56,7 @@ function RollPage() {
   const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["photos", user_id, roll_id],
+    queryKey: ["photos", user_id, Number(roll_id)],
     queryFn: () => getPhotos(user_id as string, Number(roll_id)),
     enabled: !!user_id && !!roll_id,
   });
@@ -77,7 +77,9 @@ function RollPage() {
     mutationKey: ["deletePhoto", user_id, roll_id, selectedPhotoId],
     mutationFn: deletePhoto,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["photos", user_id, roll_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["photos", user_id, Number(roll_id)],
+      });
       setIsDeleteModalOpen(false);
       setSelectedPhotoId(null);
     },

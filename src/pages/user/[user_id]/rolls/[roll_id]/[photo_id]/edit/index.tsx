@@ -10,6 +10,7 @@ import { PageHead } from "@/components/PageHead";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { updatePhoto } from "@/requests/mutations/photos";
 import { getPhoto } from "@/requests/queries/photos";
+import { getPhotoFromRollCache } from "@/utils/client";
 
 function EditPhotoSettingsPage() {
   const router = useRouter();
@@ -32,6 +33,25 @@ function EditPhotoSettingsPage() {
         roll_id: Number(roll_id),
         photo_id: Number(photo_id),
       }),
+    initialData: () => {
+      // Try to find the photo in the existing roll data
+      try {
+        const existingPhotoInCache = getPhotoFromRollCache({
+          user_id: user_id as string,
+          roll_id: Number(roll_id),
+          photo_id: Number(photo_id),
+          queryClient: queryClient,
+        });
+
+        if (existingPhotoInCache) {
+          return existingPhotoInCache;
+        }
+      } catch (e) {
+        console.error("Error accessing query cache:", e);
+      }
+
+      return undefined;
+    },
     enabled: !!user_id && !!roll_id && !!photo_id,
   });
 
@@ -46,7 +66,9 @@ function EditPhotoSettingsPage() {
     mutationKey: ["updatePhoto", user_id, roll_id, photo_id],
     mutationFn: updatePhoto,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["photos", user_id, roll_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["photos", user_id, Number(roll_id)],
+      });
       router.push(`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`);
     },
     onError: (error) => {

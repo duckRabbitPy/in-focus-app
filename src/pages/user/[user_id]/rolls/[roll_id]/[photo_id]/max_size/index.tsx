@@ -19,7 +19,7 @@ function MaxiPhotoPage() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["photo", user_id, roll_id, photo_id],
+    queryKey: ["photo", user_id, Number(roll_id), Number(photo_id)],
     queryFn: () =>
       getPhoto({
         user_id: user_id as string,

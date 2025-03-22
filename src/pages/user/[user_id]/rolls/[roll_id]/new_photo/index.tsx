@@ -42,7 +42,7 @@ function NewPhotoPage() {
     mutationFn: createPhoto,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["photos", user_id, roll_id],
+        queryKey: ["photos", user_id, Number(roll_id)],
       });
       router.push(`/user/${user_id}/rolls/${roll_id}`);
     },

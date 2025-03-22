@@ -9,6 +9,7 @@ import { getPhoto } from "@/requests/queries/photos";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deletePhoto } from "@/requests/mutations/photos";
 import { styles } from "./styles";
+import { getPhotoFromRollCache } from "@/utils/client";
 
 function ViewPhotoSettingsPage() {
   const router = useRouter();
@@ -21,7 +22,7 @@ function ViewPhotoSettingsPage() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["photo", user_id, roll_id, photo_id],
+    queryKey: ["photo", user_id, Number(roll_id), Number(photo_id)],
     queryFn: () =>
       getPhoto({
         user_id: user_id as string,
@@ -29,6 +30,25 @@ function ViewPhotoSettingsPage() {
         photo_id: Number(photo_id),
       }),
     enabled: !!user_id && !!roll_id && !!photo_id,
+    initialData: () => {
+      // Try to find the photo in the existing roll data
+      try {
+        const existingPhotoInCache = getPhotoFromRollCache({
+          user_id: user_id as string,
+          roll_id: Number(roll_id),
+          photo_id: Number(photo_id),
+          queryClient: queryClient,
+        });
+
+        if (existingPhotoInCache) {
+          return existingPhotoInCache;
+        }
+      } catch (e) {
+        console.error("Error accessing query cache:", e);
+      }
+
+      return undefined;
+    },
   });
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -39,7 +59,7 @@ function ViewPhotoSettingsPage() {
     onSuccess: () => {
       setIsDeleteModalOpen(false);
       queryClient.invalidateQueries({
-        queryKey: ["photos", user_id, roll_id],
+        queryKey: ["photos", user_id, Number(roll_id)],
       });
       router.push(`/user/${user_id}/rolls/${roll_id}`);
     },

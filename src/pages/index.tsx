@@ -1,99 +1,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { getUserFromToken } from "@/utils/auth";
-import { geistSans, geistMono } from "@/styles/font";
+
 import { PageHead } from "@/components/PageHead";
 import Image from "next/image";
-
-const styles = {
-  page: {
-    minHeight: "100vh",
-    display: "flex",
-    flexDirection: "column" as const,
-    backgroundColor: "#ffffff",
-  },
-  main: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column" as const,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "2rem",
-    gap: "2rem",
-  },
-  title: {
-    fontSize: "3rem",
-    fontWeight: 700,
-    margin: 0,
-    fontFamily: "var(--font-geist-mono)",
-    letterSpacing: "-0.03em",
-  },
-  subtitle: {
-    fontSize: "1.1rem",
-    color: "#444",
-    margin: 0,
-    fontFamily: "var(--font-geist-sans)",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "1rem",
-    width: "100%",
-    maxWidth: "300px",
-    marginTop: "1rem",
-  },
-  input: {
-    padding: "0.8rem 1rem",
-    border: "2px solid #000",
-    borderRadius: "4px",
-    fontSize: "1rem",
-    width: "100%",
-    fontFamily: "var(--font-geist-sans)",
-    transition: "border-color 0.2s",
-    outline: "none",
-    "&:focus": {
-      borderColor: "#666",
-    },
-  },
-  button: {
-    padding: "0.8rem 1rem",
-    backgroundColor: "#8E5D94",
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
-    fontSize: "1rem",
-    cursor: "pointer",
-    fontFamily: "var(--font-geist-sans)",
-    transition: "background-color 0.2s",
-    "&:hover": {
-      backgroundColor: "#333",
-    },
-    "&:disabled": {
-      backgroundColor: "#666",
-      cursor: "not-allowed",
-    },
-  },
-  error: {
-    color: "#ff3333",
-    fontSize: "0.9rem",
-    margin: 0,
-    fontFamily: "var(--font-geist-sans)",
-  },
-  footer: {
-    padding: "2rem",
-    textAlign: "center" as const,
-    borderTop: "1px solid #eaeaea",
-  },
-  link: {
-    color: "#444",
-    textDecoration: "none",
-    fontFamily: "var(--font-geist-sans)",
-    transition: "color 0.2s",
-    "&:hover": {
-      color: "#000",
-    },
-  },
-};
+import { sharedStyles } from "@/styles/shared";
+import { geistMono, geistSans } from "@/styles/font";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -161,19 +73,14 @@ export default function LandingPage() {
     }
   };
 
-  const user = getUserFromToken();
-  if (user) {
-    console.log(user.userId, user.username);
-  }
-
   return (
     <>
       <PageHead title={"In-focus"} description={"Photography settings app"} />
       <div
         className={`${geistSans.variable} ${geistMono.variable}`}
-        style={styles.page}
+        style={sharedStyles.page}
       >
-        <main style={styles.main}>
+        <main style={sharedStyles.main}>
           <div
             style={{
               display: "flex",
@@ -183,7 +90,7 @@ export default function LandingPage() {
           >
             <h1
               style={{
-                ...styles.title,
+                ...sharedStyles.title,
                 display: "flex",
                 alignItems: "center",
                 gap: "0.5rem",
@@ -196,9 +103,13 @@ export default function LandingPage() {
             </h1>
           </div>
 
-          <p style={styles.subtitle}>Photography settings app</p>
+          <p style={sharedStyles.subtitle}>Photography settings app</p>
 
-          <form onSubmit={handleSubmit} style={styles.form} autoComplete="on">
+          <form
+            onSubmit={handleSubmit}
+            style={sharedStyles.form}
+            autoComplete="on"
+          >
             <input
               type="text"
               name="username"
@@ -206,7 +117,7 @@ export default function LandingPage() {
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              style={styles.input}
+              style={sharedStyles.input}
               disabled={loading}
               required
             />
@@ -217,22 +128,26 @@ export default function LandingPage() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={styles.input}
+              style={sharedStyles.input}
               disabled={loading}
               required
             />
-            <button type="submit" style={styles.button} disabled={loading}>
+            <button
+              type="submit"
+              style={sharedStyles.button}
+              disabled={loading}
+            >
               {loading ? "Logging in..." : "Log in"}
             </button>
-            {error && <p style={styles.error}>{error}</p>}
+            {error && <p style={sharedStyles.error}>{error}</p>}
           </form>
         </main>
-        <footer style={styles.footer}>
+        <footer style={sharedStyles.footer}>
           <a
             href="https://github.com/DuckRabbitPy"
             target="_blank"
             rel="noopener noreferrer"
-            style={styles.link}
+            style={sharedStyles.link}
           >
             DuckRabbitPy
           </a>
