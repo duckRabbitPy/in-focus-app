@@ -20,7 +20,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     case "GET":
       try {
         const rolls = await query<Roll>(
-          "SELECT id, name, film_type, iso, created_at, updated_at FROM rolls WHERE user_id = $1 ORDER BY created_at DESC",
+          "SELECT * FROM rolls WHERE user_id = $1 ORDER BY created_at DESC",
           [user_id]
         );
 

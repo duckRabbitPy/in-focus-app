@@ -12,10 +12,10 @@ interface RollProps {
   roll: Roll;
   user_id: string;
   onDelete: (rollId: number) => void;
-  onUpdate: (updatedRoll: Roll) => void;
+  deleteError: Error | null;
 }
 
-export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
+export function RollCard({ roll, user_id, onDelete, deleteError }: RollProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(roll.name);
   const [filmType, setFilmType] = useState(roll.film_type || "");
@@ -27,9 +27,8 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
   const { mutate, isPending: isSaving } = useMutation({
     mutationKey: ["updateRoll", user_id, roll.id],
     mutationFn: updateRoll,
-    onSuccess: (updatedRoll) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rolls", user_id] });
-      onUpdate(updatedRoll);
       setIsEditing(false);
     },
     onError: (err) => {
@@ -137,7 +136,7 @@ export function RollCard({ roll, user_id, onDelete, onUpdate }: RollProps) {
               }}
               aria-label="Delete roll"
             >
-              Delete
+              {deleteError ? "Delete failed (retry?)" : "Delete"}
             </button>
           )}
         </div>
