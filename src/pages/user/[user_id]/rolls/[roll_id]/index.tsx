@@ -1,14 +1,17 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
-import { fetchWithAuth } from "@/utils/auth";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { geistMono, geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
 import { formatDateString } from "@/utils/date";
-import { Roll } from "@/types/rolls";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteRoll } from "@/requests/mutations/rolls";
+import { deletePhoto } from "@/requests/mutations/photos";
+import { getPhotos } from "@/requests/queries/photos";
 
 const styles = {
   card: {
@@ -44,91 +47,60 @@ const styles = {
   editButton: sharedStyles.button,
 };
 
-interface Photo {
-  id: number;
-  roll_id: number;
-  subject: string;
-  photo_url: string | null;
-  sequence_number: number;
-  created_at: string;
-}
-
 function RollPage() {
   const router = useRouter();
   const { user_id, roll_id } = router.query;
-
-  const [photos, setPhotos] = useState<Photo[]>([]);
-  const [roll, setRoll] = useState<Roll | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (!user_id || !roll_id) return;
+  const queryClient = useQueryClient();
 
-    fetchWithAuth(`/api/user/${user_id}/rolls/${roll_id}/photos`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-          setPhotos([]);
-          setRoll(null);
-        } else {
-          setPhotos(data.photos);
-          setRoll(data.roll);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load roll data");
-        setPhotos([]);
-        setLoading(false);
-      });
-  }, [user_id, roll_id]);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["photos", user_id, roll_id],
+    queryFn: () => getPhotos(user_id as string, Number(roll_id)),
+    enabled: !!user_id && !!roll_id,
+  });
+
+  const photos = data?.photos || [];
+  const roll = data?.roll;
+
+  const { mutate: deleteRollMutation } = useMutation({
+    mutationKey: ["deleteRoll", user_id, selectedPhotoId],
+    mutationFn: deleteRoll,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rolls", user_id] });
+      setIsDeleteModalOpen(false);
+    },
+  });
+
+  const { mutate: deletePhotoMutation } = useMutation({
+    mutationKey: ["deletePhoto", user_id, roll_id, selectedPhotoId],
+    mutationFn: deletePhoto,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["photos", user_id, roll_id] });
+      setIsDeleteModalOpen(false);
+      setSelectedPhotoId(null);
+    },
+    onError: (err) => {
+      console.error("Error deleting photo:", err);
+    },
+  });
 
   const handleDeleteRoll = async () => {
-    try {
-      const response = await fetchWithAuth(
-        `/api/user/${user_id}/rolls/${roll_id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete roll");
-      }
-
-      router.push(`/user/${user_id}/rolls`);
-    } catch (error) {
-      console.error("Error deleting roll:", error);
-      setError("Failed to delete roll");
-    }
+    if (typeof user_id !== "string" || typeof roll_id !== "string") return;
+    deleteRollMutation({ user_id, roll_id: Number(roll_id) });
   };
 
   const handleDeletePhoto = async (photoId: number) => {
-    try {
-      const response = await fetchWithAuth(
-        `/api/user/${user_id}/rolls/${roll_id}/${photoId}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete photo");
-      }
-
-      setPhotos(photos.filter((p) => p.id !== photoId));
-    } catch (error) {
-      console.error("Error deleting photo:", error);
-      setError("Failed to delete photo");
-    }
+    if (typeof user_id !== "string" || !selectedPhotoId) return;
+    deletePhotoMutation({
+      user_id,
+      roll_id: selectedPhotoId,
+      photo_id: photoId,
+    });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div
         style={{
@@ -151,7 +123,7 @@ function RollPage() {
           alignItems: "center",
         }}
       >
-        <p style={sharedStyles.error}>{error}</p>
+        <p style={sharedStyles.error}>{error.message}</p>
         <Link href={`/user/${user_id}/rolls`}>
           <button style={{ ...sharedStyles.button, marginTop: "1rem" }}>
             Back to Rolls

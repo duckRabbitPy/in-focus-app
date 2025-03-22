@@ -10,6 +10,8 @@ import { CreateNewRollButton } from "@/components/CreateNewRollButton";
 import { RollCard } from "@/components/RollCard/RollCard";
 import { PageHead } from "@/components/PageHead";
 import { Roll } from "@/types/rolls";
+import { deleteRoll } from "@/requests/mutations/rolls";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const headerButtonStyles = {
   container: {
@@ -44,6 +46,20 @@ function RollsPage() {
   const [error, setError] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedRollId, setSelectedRollId] = useState<number | null>(null);
+  const queryClient = useQueryClient();
+
+  const { mutate: deleteRollMutation } = useMutation({
+    mutationKey: ["deleteRoll", user_id, selectedRollId],
+    mutationFn: deleteRoll,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rolls", user_id] });
+      setIsDeleteModalOpen(false);
+    },
+    onError: (err) => {
+      console.error("Error deleting roll:", err);
+      setError("Failed to delete roll");
+    },
+  });
 
   useEffect(() => {
     if (!user_id) return;
@@ -69,27 +85,8 @@ function RollsPage() {
   }, [user_id]);
 
   const handleDeleteRoll = async () => {
-    if (!selectedRollId) return;
-
-    try {
-      const response = await fetchWithAuth(
-        `/api/user/${user_id}/rolls/${selectedRollId}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete roll");
-      }
-
-      setRolls(rolls.filter((roll) => roll.id !== selectedRollId));
-      setSelectedRollId(null);
-      setIsDeleteModalOpen(false);
-    } catch (error) {
-      console.error("Error deleting roll:", error);
-      setError("Failed to delete roll");
-    }
+    if (typeof user_id !== "string" || !selectedRollId) return;
+    deleteRollMutation({ user_id, roll_id: selectedRollId });
   };
 
   const handleUpdateRoll = (updatedRoll: Roll) => {

@@ -59,7 +59,7 @@ const PhotoSettings = {
   flash: z.boolean(),
   stabilisation: StabilisationSchema,
   exposure_memory: z.boolean(),
-  lens: z.string().nullable(),
+  lens: z.string().nullable().optional(),
   tags: z.array(z.string()),
   notes: z.string().nullable().optional(),
 };
@@ -73,6 +73,7 @@ export const FullPhotoSettingsSchema = z.object({
   id: z.number(),
   roll_id: z.number(),
   ...PhotoSettings,
+  sequence_number: z.number(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 });

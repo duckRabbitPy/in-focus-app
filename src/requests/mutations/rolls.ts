@@ -47,3 +47,23 @@ export const createRoll = async ({ user_id }: CreateRollParams) => {
   }
   return RollSchema.parse(await response.json());
 };
+
+type DeleteRollParams = {
+  user_id: string;
+  roll_id: number;
+};
+
+export const deleteRoll = async ({ user_id, roll_id }: DeleteRollParams) => {
+  const url = `/api/user/${user_id}/rolls/${roll_id}`;
+
+  const response = await fetchWithAuth(url, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  const data = await response.json();
+  return data?.message;
+};

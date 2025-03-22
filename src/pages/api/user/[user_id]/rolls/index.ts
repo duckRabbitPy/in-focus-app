@@ -39,7 +39,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         // Create a new roll with a default name
         const newRoll = await queryOne<Roll>(
           "INSERT INTO rolls (user_id, name) VALUES ($1, $2) RETURNING *",
-          [user_id, `Draft: ${generateShortId(4)}`]
+          [user_id, `Draft: #${generateShortId(4)}`]
         );
 
         if (!newRoll) {
