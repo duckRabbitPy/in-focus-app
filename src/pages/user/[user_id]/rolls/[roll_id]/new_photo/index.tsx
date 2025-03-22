@@ -20,7 +20,7 @@ function NewPhotoPage() {
     f_stop: "2.8",
     focal_distance: "1",
     shutter_speed: "1/125",
-    exposure_value: 0,
+    exposure_value: 1,
     phone_light_meter: "1/125",
     stabilisation: "handheld",
     timer: false,
