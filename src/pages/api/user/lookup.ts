@@ -1,7 +1,7 @@
 import { NextApiResponse } from "next";
 import { queryOne } from "@/utils/db";
 import {
-  AuthMiddleWare,
+  WithApiAuthMiddleware,
   AuthenticatedRequest,
 } from "../../../requests/middleware";
 
@@ -40,4 +40,4 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 }
 
-export default AuthMiddleWare(handler);
+export default WithApiAuthMiddleware(handler);

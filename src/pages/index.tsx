@@ -106,6 +106,8 @@ export default function LandingPage() {
     const token = localStorage.getItem("token");
     if (token) {
       const user = getUserFromToken();
+
+      // Redirect to user's rolls if logged in
       if (user) {
         router.push(`/user/${user.userId}/rolls`);
       }

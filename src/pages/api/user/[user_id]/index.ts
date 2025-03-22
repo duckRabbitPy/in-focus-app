@@ -1,14 +1,11 @@
 import { NextApiResponse } from "next";
 import { query, DBUser } from "@/utils/db";
 import {
-  AuthMiddleWare,
+  WithApiAuthMiddleware,
   AuthenticatedRequest,
 } from "../../../../requests/middleware";
 
-export default AuthMiddleWare(async function handler(
-  req: AuthenticatedRequest,
-  res: NextApiResponse
-) {
+export async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -31,4 +28,6 @@ export default AuthMiddleWare(async function handler(
     console.error("Error fetching user:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
-});
+}
+
+export default WithApiAuthMiddleware(handler);

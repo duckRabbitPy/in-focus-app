@@ -1,7 +1,7 @@
 import { NextApiResponse } from "next";
 import { query } from "@/utils/db";
 import {
-  AuthMiddleWare,
+  WithApiAuthMiddleware,
   AuthenticatedRequest,
 } from "../../../../../requests/middleware";
 import { Tag } from "@/types/tags";
@@ -100,4 +100,4 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 }
 
-export default AuthMiddleWare(handler);
+export default WithApiAuthMiddleware(handler);

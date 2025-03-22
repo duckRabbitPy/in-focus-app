@@ -11,7 +11,7 @@ export interface AuthenticatedRequest extends NextApiRequest {
 }
 
 // protects API routes by requiring a valid JWT token
-export function AuthMiddleWare(
+export function WithApiAuthMiddleware(
   handler: (req: AuthenticatedRequest, res: NextApiResponse) => Promise<void>
 ) {
   return async (req: AuthenticatedRequest, res: NextApiResponse) => {
