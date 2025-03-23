@@ -113,8 +113,9 @@ function SearchPage() {
                       <Link
                         href={`/user/${user_id}/rolls/${photo.roll_id}/${photo.id}/view`}
                         style={sharedStyles.link}
+                        target="_blank"
                       >
-                        View Details
+                        View
                       </Link>
                     </td>
                   </tr>
