@@ -160,7 +160,7 @@ export default function PhotoForm<T extends boolean>({
               onChange={(e) =>
                 onPhotoChange({
                   ...photo,
-                  focal_distance: parseFloat(e.target.value),
+                  focal_distance: e.target.value,
                 })
               }
               style={sharedStyles.input}
