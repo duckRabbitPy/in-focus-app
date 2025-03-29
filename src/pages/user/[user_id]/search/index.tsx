@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useRouter } from "next/router";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
@@ -13,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 function SearchPage() {
   const router = useRouter();
   const { user_id } = router.query;
+
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const {
@@ -72,6 +74,7 @@ function SearchPage() {
               <thead>
                 <tr>
                   <th style={styles.tableHeaderStyle}>Subject</th>
+                  <th style={styles.tableHeaderStyle}>Preview</th>
                   <th style={styles.tableHeaderStyle}>Roll</th>
                   <th style={styles.tableHeaderStyle}>Date</th>
                   <th style={styles.tableHeaderStyle}>Tags</th>
@@ -82,6 +85,17 @@ function SearchPage() {
                 {photos?.map((photo) => (
                   <tr key={photo.id} style={styles.tableRowStyle}>
                     <td style={styles.tableCellStyle}>{photo.subject}</td>
+                    <td style={styles.tableCellStyle}>
+                      {photo.photo_url ? (
+                        <img
+                          src={photo.photo_url}
+                          alt={photo.subject}
+                          style={{ width: "50px", height: "auto" }}
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </td>
                     <td style={styles.tableCellStyle}>{photo.roll_name}</td>
                     <td style={styles.tableCellStyle}>
                       {formatDateString(photo.created_at)}
