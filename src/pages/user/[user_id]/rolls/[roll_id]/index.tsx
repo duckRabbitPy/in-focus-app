@@ -12,6 +12,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteRoll } from "@/requests/mutations/rolls";
 import { deletePhoto } from "@/requests/mutations/photos";
 import { getPhotos } from "@/requests/queries/photos";
+import { exportRoll } from "@/utils/client";
 
 function RollPage() {
   const router = useRouter();
@@ -166,6 +167,14 @@ function RollPage() {
                 <Link href={`/user/${user_id}/rolls/${roll_id}/new_photo`}>
                   <button style={sharedStyles.button}>Add Photo</button>
                 </Link>
+                {roll && photos.length > 0 && (
+                  <button
+                    style={sharedStyles.secondaryButton}
+                    onClick={() => exportRoll(roll, photos)}
+                  >
+                    Export
+                  </button>
+                )}
               </div>
             )}
           </div>
