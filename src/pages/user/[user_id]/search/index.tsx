@@ -5,7 +5,7 @@ import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { geistMono, geistSans } from "@/styles/font";
 import TagPicker from "@/components/UserItems/TagPicker";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatDateString } from "@/utils/date";
 import { PageHead } from "@/components/PageHead";
 import { searchPhotosByTags } from "@/requests/queries/search";
@@ -13,9 +13,38 @@ import { useQuery } from "@tanstack/react-query";
 
 function SearchPage() {
   const router = useRouter();
-  const { user_id } = router.query;
+  const { user_id, tags: queryParamTags } = router.query;
 
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  // Initialize selected tags from URL query params when available
+  useEffect(() => {
+    if (queryParamTags) {
+      const tagsArray = Array.isArray(queryParamTags)
+        ? queryParamTags
+        : [queryParamTags];
+      setSelectedTags(tagsArray);
+    }
+  }, [queryParamTags]);
+
+  const handleTagsChange = (newTags: string[]) => {
+    setSelectedTags(newTags);
+
+    // Update the URL without reloading the page
+    // This synchronizes the query params made in latest API call with query params in URL
+    // allows user to share URL and initialize with the same tags
+    router.push(
+      {
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          tags: newTags.length > 0 ? newTags : undefined,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
 
   const {
     data: { photos } = {},
@@ -56,7 +85,7 @@ function SearchPage() {
 
           <TagPicker
             selectedTags={selectedTags}
-            onTagsChange={setSelectedTags}
+            onTagsChange={handleTagsChange}
             userId={user_id as string}
             disableAdd
           />
