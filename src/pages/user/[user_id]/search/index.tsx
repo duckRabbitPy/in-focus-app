@@ -107,13 +107,19 @@ function SearchPage() {
                   <th style={styles.tableHeaderStyle}>Roll</th>
                   <th style={styles.tableHeaderStyle}>Date</th>
                   <th style={styles.tableHeaderStyle}>Tags</th>
-                  <th style={styles.tableHeaderStyle}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {photos?.map((photo) => (
                   <tr key={photo.id} style={styles.tableRowStyle}>
-                    <td style={styles.tableCellStyle}>{photo.subject}</td>
+                    <td style={styles.tableCellStyle}>
+                      <Link
+                        href={`/user/${user_id}/rolls/${photo.roll_id}/${photo.id}/view`}
+                        style={sharedStyles.link}
+                      >
+                        {photo.subject}
+                      </Link>
+                    </td>
                     <td style={styles.tableCellStyle}>
                       {photo.photo_url ? (
                         <img
@@ -151,15 +157,6 @@ function SearchPage() {
                           </span>
                         ))}
                       </div>
-                    </td>
-                    <td style={styles.tableCellStyle}>
-                      <Link
-                        href={`/user/${user_id}/rolls/${photo.roll_id}/${photo.id}/view`}
-                        style={sharedStyles.link}
-                        target="_blank"
-                      >
-                        View
-                      </Link>
                     </td>
                   </tr>
                 ))}

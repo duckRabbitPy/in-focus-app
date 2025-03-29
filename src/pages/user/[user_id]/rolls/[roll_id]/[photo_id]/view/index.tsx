@@ -410,10 +410,8 @@ const styles = {
     cursor: "default",
     width: "100%",
     maxWidth: "800px",
-    padding: "1rem",
     "@media (minWidth: 640px)": {
       maxWidth: "600px",
-      padding: "1.5rem",
     },
   },
   detailsGroup: {
