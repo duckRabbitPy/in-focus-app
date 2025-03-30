@@ -1,6 +1,10 @@
 export const transformIfDropboxUrl = (url: string) => {
-  // Ensure that if the URL contains "dropbox.com" and modifies "dl=1" or "dl=0".
-  // we replace with "raw=1" which allows direct rendering in the browser.
-  const dropboxRegex = /(dropbox\.com\/[^?]+)(\?.*?)([?&]dl=[01])/;
-  return url.replace(dropboxRegex, "$1$2&raw=1").replace(/[?&]dl=[01]/, "");
+  // replace with "raw=1" which allows direct rendering in the browser.
+  if (url.includes("dropbox.com")) {
+    if (url.includes("dl=1")) return url.replace("dl=1", "raw=1");
+    if (url.includes("dl=0")) return url.replace("dl=0", "raw=1");
+    return url;
+  }
+
+  return url;
 };
