@@ -1,7 +1,7 @@
-import { jwtDecode } from 'jwt-decode';
-import jwt from 'jsonwebtoken';
+import { jwtDecode } from "jwt-decode";
+import jwt from "jsonwebtoken";
 
-const isBrowser = typeof window !== 'undefined';
+const isBrowser = typeof window !== "undefined";
 
 interface JWTPayload {
   userId: string;
@@ -12,44 +12,44 @@ interface JWTPayload {
 function verifyToken(token: string): JWTPayload | null {
   try {
     const decoded = jwtDecode<JWTPayload>(token);
-    
+
     // Validate the decoded token has the expected shape
     if (
       decoded &&
-      'userId' in decoded &&
-      'username' in decoded &&
-      'exp' in decoded
+      "userId" in decoded &&
+      "username" in decoded &&
+      "exp" in decoded
     ) {
       // Check if token is expired
       if (decoded.exp * 1000 < Date.now()) {
-        console.log('Token expired');
+        console.log("Token expired");
         return null;
       }
-      
+
       return decoded;
     }
-    
+
     return null;
   } catch (error) {
-    console.error('Token verification failed:', error);
+    console.error("Token verification failed:", error);
     return null;
   }
 }
 
 export function getAuthHeaders(): HeadersInit {
   if (!isBrowser) return {};
-  
-  const token = localStorage.getItem('token');
+
+  const token = localStorage.getItem("token");
   if (!token) return {};
 
   return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
   };
 }
 
 export async function fetchWithAuth(
-  url: string, 
+  url: string,
   options: RequestInit = {}
 ): Promise<Response> {
   const headers = {
@@ -65,8 +65,8 @@ export async function fetchWithAuth(
   // If we get a 401, clear the token and redirect to home
   if (response.status === 401) {
     if (isBrowser) {
-      localStorage.removeItem('token');
-      window.location.href = '/';
+      localStorage.removeItem("token");
+      window.location.href = "/";
     }
   }
 
@@ -75,25 +75,30 @@ export async function fetchWithAuth(
 
 export function logout() {
   if (!isBrowser) return;
-  localStorage.removeItem('token');
-  window.location.href = '/';
+  localStorage.removeItem("token");
+  window.location.href = "/";
 }
 
 export function getUserIdFromToken(token: string): string | null {
   try {
-    const decoded = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET!) as { userId: string };
+    const decoded = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET!) as {
+      userId: string;
+    };
     return decoded.userId;
   } catch (error) {
-    console.error('Error getting user ID from token:', error);
+    console.error("Error getting user ID from token:", error);
     return null;
   }
 }
 
-export function getUserFromToken(): { userId: string; username: string } | null {
+export function getUserFromToken(): {
+  userId: string;
+  username: string;
+} | null {
   try {
     if (!isBrowser) return null;
-    
-    const token = localStorage.getItem('token');
+
+    const token = localStorage.getItem("token");
     if (!token) return null;
 
     const decoded = verifyToken(token);
@@ -101,10 +106,10 @@ export function getUserFromToken(): { userId: string; username: string } | null 
 
     return {
       userId: decoded.userId,
-      username: decoded.username
+      username: decoded.username,
     };
   } catch (error) {
-    console.error('Error getting user from token:', error);
+    console.error("Error getting user from token:", error);
     return null;
   }
-} 
+}

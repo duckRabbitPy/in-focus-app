@@ -291,4 +291,6 @@ export const sharedStyles = {
       color: "#ccc",
     },
   },
+  green: "#047857",
+  grey: "#eaeaea",
 };

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { queryOne } from "@/utils/db";
 import bcrypt from "bcryptjs";
 
-const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret-key";
+const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET;
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,6 +11,11 @@ export default async function handler(
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  if (!JWT_SECRET) {
+    console.error("JWT_SECRET is not defined");
+    return res.status(500).json({ error: "Internal server error" });
   }
 
   try {

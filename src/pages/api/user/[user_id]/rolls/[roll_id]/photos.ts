@@ -9,6 +9,7 @@ import {
   updatePhotoLens,
   updatePhotoTags,
 } from "@/utils/updateTags";
+import { transformIfDropboxUrl } from "@/utils/server";
 
 export default async function handler(
   req: NextApiRequest,
@@ -127,7 +128,7 @@ export default async function handler(
           [
             parseInt(roll_id), // 1
             validatedInput.subject, // 2
-            validatedInput.photo_url, // 3
+            transformIfDropboxUrl(validatedInput.photo_url), // 3
             validatedInput.f_stop, // 4
             validatedInput.focal_distance, // 5
             validatedInput.shutter_speed, // 6

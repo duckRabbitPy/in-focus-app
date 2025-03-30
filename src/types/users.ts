@@ -13,4 +13,9 @@ export const ServerOnlyUserSchema = z.object({
   updated_at: z.string().datetime(),
 });
 
+export const UserRegistrationResponseSchema = z.object({
+  token: z.string(),
+  user_id: z.string(),
+});
+
 export type ClientUser = z.infer<typeof ClientUserSchema>;
