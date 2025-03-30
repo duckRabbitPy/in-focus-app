@@ -6,6 +6,7 @@ import { PageHead } from "@/components/PageHead";
 import Image from "next/image";
 import { sharedStyles } from "@/styles/shared";
 import { geistMono, geistSans } from "@/styles/font";
+import Link from "next/link";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -147,6 +148,9 @@ export default function LandingPage() {
             </button>
             {error && <p style={sharedStyles.error}>{error}</p>}
           </form>
+          <div>
+            <Link href="/register">Register</Link>
+          </div>
         </main>
         <footer style={sharedStyles.footer}>
           <a
