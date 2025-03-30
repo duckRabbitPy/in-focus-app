@@ -13,6 +13,7 @@ import {
   updatePhotoLens,
   updatePhotoTags,
 } from "@/utils/updateTags";
+import { transformIfDropboxUrl } from "@/utils/server";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id, roll_id, photo_id } = req.query;
@@ -121,7 +122,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           "UPDATE photos SET subject = $1, photo_url = $2, f_stop = $3, focal_distance = $4, shutter_speed = $5, exposure_value = $6, phone_light_meter = $7, stabilisation = $8, timer = $9, flash = $10, exposure_memory = $11, notes = $12 WHERE id = $13 AND roll_id = $14 AND roll_id IN (SELECT id FROM rolls WHERE user_id = $15) RETURNING *",
           [
             validatedInput.subject, // 1
-            validatedInput.photo_url, // 2
+            transformIfDropboxUrl(validatedInput.photo_url), // 2
             validatedInput.f_stop, // 3
             validatedInput.focal_distance, // 4
             validatedInput.shutter_speed, // 5
