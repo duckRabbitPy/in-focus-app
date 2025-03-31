@@ -17,6 +17,18 @@ function SearchPage() {
 
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
   // Initialize selected tags from URL query params when available
   useEffect(() => {
     if (queryParamTags) {
@@ -51,9 +63,13 @@ function SearchPage() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["photoSearch", user_id, selectedTags],
+    queryKey: ["photoSearch", user_id, selectedTags, debouncedSearchTerm],
     queryFn: () =>
-      searchPhotosByTags({ user_id: user_id as string, tags: selectedTags }),
+      searchPhotosByTags({
+        user_id: user_id as string,
+        tags: selectedTags,
+        searchTerm,
+      }),
     enabled: !!user_id && selectedTags.length > 0,
   });
 
@@ -83,13 +99,24 @@ function SearchPage() {
             <h1 style={sharedStyles.title}>Search Photos by Tags</h1>
           </div>
 
-          <TagPicker
-            selectedTags={selectedTags}
-            onTagsChange={handleTagsChange}
-            userId={user_id as string}
-            disableAdd
-          />
+          <div>
+            <TagPicker
+              selectedTags={selectedTags}
+              onTagsChange={handleTagsChange}
+              userId={user_id as string}
+              disableAdd
+            />
 
+            <input
+              type="text"
+              name="search"
+              onChange={(e) => {
+                setSearchTerm(e.target.value.trim());
+              }}
+              placeholder="Filter results by subject"
+              style={sharedStyles.input}
+            />
+          </div>
           {error && <p style={sharedStyles.error}>{error.message}</p>}
 
           <div style={{ overflowX: "auto", width: "100%", height: "40vh" }}>

@@ -4,14 +4,17 @@ import { fetchWithAuth } from "@/utils/auth";
 type SearchPhotosByTagsParams = {
   user_id: string;
   tags: string[];
+  searchTerm: string | null;
 };
 
 export const searchPhotosByTags = async ({
   user_id,
   tags,
+  searchTerm,
 }: SearchPhotosByTagsParams): Promise<SearchResponse> => {
   const queryParams = new URLSearchParams();
   tags.forEach((tag) => queryParams.append("tags", tag));
+  queryParams.append("searchTerm", searchTerm || "");
 
   const url = `/api/user/${user_id}/search?${queryParams}`;
   const response = await fetchWithAuth(url);

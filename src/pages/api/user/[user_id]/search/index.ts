@@ -1,5 +1,3 @@
-// search all photos, by user_id and tags
-
 import { NextApiResponse } from "next";
 import { query } from "@/utils/db";
 import {
@@ -53,6 +51,21 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       : [req.query.tags]
     : [];
 
+  const rawSearchTerm = Array.isArray(req.query.searchTerm)
+    ? req.query.searchTerm.join(" ") // Convert array to a single string
+    : req.query.searchTerm;
+
+  const searchTermEmpty = !rawSearchTerm || rawSearchTerm.trim() === "";
+
+  // Only format the search term if it's not empty
+  const formattedSearchTerm = !searchTermEmpty
+    ? rawSearchTerm
+        .trim()
+        .split(/\s+/)
+        .map((term) => `${term}:*`)
+        .join(" | ")
+    : undefined;
+
   try {
     if (user_id !== req.user?.userId) {
       return res.status(403).json({ error: "Unauthorized" });
@@ -62,9 +75,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       return res.json({ photos: [] });
     }
 
-    // Query photos that have any of the provided tags
-    const result = await query<DBPhotoResult>(
-      `
+    // Construct the query based on whether we have a search term
+    let queryText = `
       SELECT DISTINCT 
         p.id,
         p.roll_id,
@@ -85,6 +97,20 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           WHERE pt2.photo_id = p.id
             AND t2.name = ANY($2)
         )
+    `;
+
+    const queryParams = [user_id, tags];
+
+    // Only add the text search condition if we have a search term
+    if (!searchTermEmpty) {
+      queryText += `
+        AND to_tsvector('simple', p.subject) @@ to_tsquery('simple', $3)
+      `;
+      queryParams.push(formattedSearchTerm);
+    }
+
+    // Finish the query
+    queryText += `
       GROUP BY 
         p.id,
         p.roll_id,
@@ -93,9 +119,10 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         p.created_at,
         r.name
       ORDER BY p.created_at DESC
-    `,
-      [user_id, tags]
-    );
+    `;
+
+    // Query photos that have any of the provided tags
+    const result = await query<DBPhotoResult>(queryText, queryParams);
 
     // Transform results to match PhotoSearchResult
     const transformedPhotos = result.map(transformDBResultToSearchResult);
