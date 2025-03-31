@@ -107,15 +107,17 @@ function SearchPage() {
               disableAdd
             />
 
-            <input
-              type="text"
-              name="search"
-              onChange={(e) => {
-                setSearchTerm(e.target.value.trim());
-              }}
-              placeholder="Filter results by subject"
-              style={sharedStyles.input}
-            />
+            {selectedTags.length > 0 && (
+              <input
+                type="text"
+                name="search"
+                onChange={(e) => {
+                  setSearchTerm(e.target.value.trim());
+                }}
+                placeholder="Filter results by subject"
+                style={sharedStyles.input}
+              />
+            )}
           </div>
           {error && <p style={sharedStyles.error}>{error.message}</p>}
 
