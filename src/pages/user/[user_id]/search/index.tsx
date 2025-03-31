@@ -111,6 +111,12 @@ function SearchPage() {
               <input
                 type="text"
                 name="search"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    // Exit input field on Enter key press
+                    e.currentTarget.blur();
+                  }
+                }}
                 onChange={(e) => {
                   setSearchTerm(e.target.value.trim());
                 }}
