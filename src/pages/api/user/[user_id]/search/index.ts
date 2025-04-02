@@ -55,16 +55,9 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     ? req.query.searchTerm.join(" ") // Convert array to a single string
     : req.query.searchTerm;
 
-  const searchTermEmpty = !rawSearchTerm || rawSearchTerm.trim() === "";
+  const searchTermEmpty = !rawSearchTerm || rawSearchTerm.trim().length === 0;
 
-  // Only format the search term if it's not empty
-  const formattedSearchTerm = !searchTermEmpty
-    ? rawSearchTerm
-        .trim()
-        .split(/\s+/)
-        .map((term) => `${term}:*`)
-        .join(" | ")
-    : undefined;
+  const searchTerms = !searchTermEmpty ? rawSearchTerm.trim().split(/\s+/) : [];
 
   try {
     if (user_id !== req.user?.userId) {
@@ -75,41 +68,61 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       return res.json({ photos: [] });
     }
 
-    // Construct the query based on whether we have a search term
+    // See readme for details for detailed explanation of this query
     let queryText = `
-      SELECT DISTINCT 
-        p.id,
-        p.roll_id,
-        p.subject,
-        p.photo_url,
-        p.created_at,
-        r.name as roll_name,
-        ARRAY_AGG(t.name) as tags
-      FROM photos p
-      JOIN rolls r ON p.roll_id = r.id
-      JOIN photo_tags pt ON p.id = pt.photo_id
-      JOIN tags t ON pt.tag_id = t.id
-      WHERE r.user_id = $1
-        AND EXISTS (
-          SELECT 1 
-          FROM photo_tags pt2
-          JOIN tags t2 ON pt2.tag_id = t2.id
-          WHERE pt2.photo_id = p.id
-            AND t2.name = ANY($2)
-        )
-    `;
+    SELECT DISTINCT 
+      p.id,                      
+      p.roll_id,                  
+      p.subject,                  
+      p.photo_url,                
+      p.created_at,               
+      r.name as roll_name,        
+      ARRAY_AGG(t.name) as tags   
+    
+    FROM 
+      photos p                     
+      JOIN rolls r                 
+        ON p.roll_id = r.id
+      JOIN photo_tags pt           
+        ON p.id = pt.photo_id
+      JOIN tags t                  
+        ON pt.tag_id = t.id
+    
+    WHERE 
+      r.user_id = $1
+      AND EXISTS (
+        SELECT 1 
+        FROM photo_tags pt2
+        JOIN tags t2 ON pt2.tag_id = t2.id
+        WHERE 
+          pt2.photo_id = p.id     
+          AND t2.name = ANY($2)  
+      )
+  `;
 
     const queryParams = [user_id, tags];
 
-    // Only add the text search condition if we have a search term
-    if (!searchTermEmpty) {
-      queryText += `
-        AND to_tsvector('simple', p.subject) @@ to_tsquery('simple', $3)
-      `;
-      queryParams.push(formattedSearchTerm);
+    // Add search term conditions with ILIKE for partial matching
+    if (searchTerms.length > 0) {
+      queryText += ` AND (`;
+
+      const likeConditions = searchTerms.map((_, index) => {
+        // $3, $4, etc. for each search term
+        const paramIndex = index + 3;
+        return `p.subject ILIKE $${paramIndex}`;
+      });
+
+      queryText += likeConditions.join(" OR ");
+      queryText += `)`;
+
+      // Add each search term with wildcards to the parameters
+      searchTerms.forEach((term) => {
+        queryParams.push(`%${term}%`);
+      });
     }
 
-    // Finish the query
+    // SQL requires all non-aggregated columns in the SELECT statement to appear in the GROUP BY clause
+    // when using aggregate functions like ARRAY_AGG.
     queryText += `
       GROUP BY 
         p.id,

@@ -145,6 +145,14 @@ function SearchPage() {
                 </tr>
               </thead>
               <tbody>
+                {!isLoading &&
+                  !error &&
+                  photos?.length === 0 &&
+                  selectedTags.length > 0 && (
+                    <p style={{ ...sharedStyles.subtitle, marginTop: "1rem" }}>
+                      No photos found with the selected tags/search term
+                    </p>
+                  )}
                 {photos?.map((photo) => (
                   <tr key={photo.id} style={styles.tableRowStyle}>
                     <td style={styles.tableCellStyle}>
@@ -198,15 +206,6 @@ function SearchPage() {
               </tbody>
             </table>
           </div>
-
-          {!isLoading &&
-            !error &&
-            photos?.length === 0 &&
-            selectedTags.length > 0 && (
-              <p style={sharedStyles.subtitle}>
-                No photos found with the selected tags.
-              </p>
-            )}
         </main>
         <footer style={sharedStyles.footer}>
           <Link
