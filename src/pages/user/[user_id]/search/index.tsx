@@ -20,14 +20,17 @@ function SearchPage() {
   } = router.query;
 
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
   const [searchTerm, setSearchTerm] = useState<string>("");
-
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
+  const [page, setPage] = useState(1);
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
+
+      if (searchTerm !== debouncedSearchTerm) {
+        setPage(1);
+      }
       router.push(
         {
           pathname: router.pathname,
@@ -42,7 +45,7 @@ function SearchPage() {
     }, 500);
 
     return () => clearTimeout(handler);
-  }, [searchTerm, router]);
+  }, [searchTerm, router, debouncedSearchTerm]);
 
   // Initialize selected tags and search term from URL query params when available
   useEffect(() => {
@@ -79,16 +82,18 @@ function SearchPage() {
   };
 
   const {
-    data: { photos } = {},
+    data: { photos, pagination } = {},
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["photoSearch", user_id, selectedTags, debouncedSearchTerm],
+    queryKey: ["photoSearch", user_id, selectedTags, debouncedSearchTerm, page],
     queryFn: () =>
       searchPhotosByTags({
         user_id: user_id as string,
         tags: selectedTags,
         searchTerm,
+        page,
+        pageSize: 3,
       }),
     enabled: !!user_id,
   });
@@ -119,22 +124,49 @@ function SearchPage() {
             <h1 style={sharedStyles.title}>Search all Photos</h1>
           </div>
 
-          <input
-            type="text"
-            name="search"
-            value={searchTerm}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                // Exit input field on Enter key press
-                e.currentTarget.blur();
-              }
-            }}
-            onChange={(e) => {
-              setSearchTerm(e.target.value.trim());
-            }}
-            placeholder="Search by subject"
-            style={{ ...sharedStyles.input, width: "400px" }}
-          />
+          <div>
+            <input
+              type="text"
+              name="search"
+              value={searchTerm}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  // Exit input field on Enter key press
+                  e.currentTarget.blur();
+                }
+              }}
+              onChange={(e) => {
+                setSearchTerm(e.target.value.trim());
+              }}
+              placeholder="Search by subject"
+              style={{ ...sharedStyles.input, width: "400px" }}
+            />
+            <label
+              htmlFor="page"
+              style={{
+                ...sharedStyles.label,
+                marginLeft: "1rem",
+                marginRight: "1rem",
+              }}
+            >
+              Page
+            </label>
+            <select
+              name="page"
+              value={page}
+              onChange={(e) => {
+                setPage(Number(e.target.value));
+              }}
+              style={{ ...sharedStyles.input, width: "80px" }}
+            >
+              {pagination?.totalPages &&
+                Array.from({ length: pagination.totalPages }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+            </select>
+          </div>
 
           <div style={{ maxWidth: "200px" }}>
             <TagPicker
