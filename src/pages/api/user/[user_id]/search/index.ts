@@ -1,9 +1,9 @@
-import { NextApiResponse } from "next";
-import { query } from "@/utils/db";
 import {
-  WithApiAuthMiddleware,
   AuthenticatedRequest,
-} from "../../../../../requests/middleware";
+  WithApiAuthMiddleware,
+} from "@/requests/middleware";
+import { query } from "@/utils/db";
+import { NextApiResponse } from "next";
 
 interface DBPhotoResult {
   id: number;
@@ -51,120 +51,105 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       : [req.query.tags]
     : [];
 
-  // Extract pagination parameters
   let page = 1;
   let pageSize = 20;
 
   if (req.query.page && typeof req.query.page === "string") {
-    page = parseInt(req.query.page);
+    page = parseInt(req.query.page, 10);
   }
 
   if (req.query.pageSize && typeof req.query.pageSize === "string") {
-    pageSize = parseInt(req.query.pageSize);
+    pageSize = parseInt(req.query.pageSize, 10);
   }
 
-  // TODO add pagination
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const offset = (page - 1) * pageSize;
 
   const rawSearchTerm = Array.isArray(req.query.searchTerm)
     ? req.query.searchTerm.join(" ")
     : req.query.searchTerm;
 
-  const searchTermEmpty = !rawSearchTerm || rawSearchTerm.trim().length === 0;
-
-  const searchTerms = !searchTermEmpty ? rawSearchTerm.trim().split(/\s+/) : [];
+  const searchTerms = rawSearchTerm?.trim()
+    ? rawSearchTerm.trim().split(/\s+/)
+    : [];
 
   try {
-    if (user_id !== req.user?.userId) {
+    if (!user_id || user_id !== req.user?.userId) {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
-    let queryText = `
-    SELECT DISTINCT 
-      p.id,                      
-      p.roll_id,                  
-      p.subject,                  
-      p.photo_url,                
-      p.created_at,               
-      r.name as roll_name,        
-      ARRAY_REMOVE(ARRAY_AGG(t.name), NULL) as tags   
-    
-    FROM 
-      photos p                     
-      JOIN rolls r ON p.roll_id = r.id
-      LEFT JOIN photo_tags pt ON p.id = pt.photo_id
-      LEFT JOIN tags t ON pt.tag_id = t.id
-    
-    WHERE 
-      r.user_id = $1
-    `;
-
-    const queryParams = [user_id];
+    const queryParams: (string | number)[] = [user_id];
     let paramIndex = 2;
 
-    if (tags.length > 0) {
-      queryText += `
-        AND EXISTS (
-          SELECT 1 
-          FROM photo_tags pt2
-          JOIN tags t2 ON pt2.tag_id = t2.id
-          WHERE 
-            pt2.photo_id = p.id     
-            AND t2.name = ANY(ARRAY[${tags
-              .map((_, i) => `$${paramIndex + i}`)
-              .join(", ")}])
-        )
-      `;
+    let whereClause = `WHERE r.user_id = $1`;
 
-      tags.forEach((tag) => {
-        queryParams.push(tag);
-        paramIndex++;
-      });
+    if (tags.length > 0) {
+      whereClause += ` AND EXISTS (
+        SELECT 1 FROM photo_tags pt2
+        JOIN tags t2 ON pt2.tag_id = t2.id
+        WHERE pt2.photo_id = p.id 
+        AND t2.name = ANY($${paramIndex}::text[])
+      )`;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      queryParams.push(tags as any);
+      paramIndex++;
     }
 
-    // Add search term conditions with ILIKE for partial matching
     if (searchTerms.length > 0) {
-      queryText += ` AND (`;
-
+      whereClause += ` AND (`;
       const likeConditions = searchTerms.map((_, index) => {
         return `p.subject ILIKE $${paramIndex + index}`;
       });
+      whereClause += likeConditions.join(" OR ") + `)`;
 
-      queryText += likeConditions.join(" OR ");
-      queryText += `)`;
-
-      // Add each search term with wildcards to the parameters
       searchTerms.forEach((term) => {
         queryParams.push(`%${term}%`);
       });
+
+      paramIndex += searchTerms.length;
     }
 
-    // TODO: Add pagination
-    // const countResult = await query<{ count: string }>(
-    //   countQueryText,
-    //   queryParams
-    // );
-    // const totalCount = parseInt(countResult[0].count);
-    // const totalPages = Math.ceil(totalCount / pageSize);
-    const totalPages = 1; // Placeholder for total pages
-
-    // Group by and order by
-    queryText += `
-      GROUP BY 
-        p.id,
-        p.roll_id,
-        p.subject,
-        p.photo_url,
-        p.created_at,
-        r.name
-      ORDER BY p.created_at DESC
+    // Count query for pagination
+    const countQueryText = `
+      SELECT COUNT(DISTINCT p.id) AS total_count
+      FROM photos p
+      JOIN rolls r ON p.roll_id = r.id
+      LEFT JOIN photo_tags pt ON p.id = pt.photo_id
+      LEFT JOIN tags t ON pt.tag_id = t.id
+      ${whereClause}
     `;
 
-    // Query photos that match the criteria
-    const result = await query<DBPhotoResult>(queryText, queryParams);
+    const countResult = await query<{ total_count: string }>(
+      countQueryText,
+      queryParams
+    );
+    const totalCount = parseInt(countResult[0].total_count, 10);
+    const totalPages = Math.ceil(totalCount / pageSize);
 
-    // Transform results to match PhotoSearchResult
+    // Main data query
+    const queryText = `
+      SELECT DISTINCT 
+        p.id,                      
+        p.roll_id,                  
+        p.subject,                  
+        p.photo_url,                
+        p.created_at,               
+        r.name as roll_name,        
+        ARRAY_REMOVE(ARRAY_AGG(t.name), NULL) as tags   
+      FROM 
+        photos p                     
+        JOIN rolls r ON p.roll_id = r.id
+        LEFT JOIN photo_tags pt ON p.id = pt.photo_id
+        LEFT JOIN tags t ON pt.tag_id = t.id
+      ${whereClause}
+      GROUP BY 
+        p.id, p.roll_id, p.subject, p.photo_url, p.created_at, r.name
+      ORDER BY p.created_at DESC
+      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+    `;
+
+    queryParams.push(pageSize, offset);
+
+    const result = await query<DBPhotoResult>(queryText, queryParams);
     const transformedPhotos = result.map(transformDBResultToSearchResult);
 
     return res.json({
@@ -172,8 +157,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       pagination: {
         page,
         pageSize,
-        totalPages: 1,
-        totalCount: transformedPhotos.length,
+        totalPages,
+        totalCount,
         hasNextPage: page < totalPages,
         hasPreviousPage: page > 1,
       },

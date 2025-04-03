@@ -93,7 +93,7 @@ function SearchPage() {
         tags: selectedTags,
         searchTerm,
         page,
-        pageSize: 3,
+        pageSize: 10,
       }),
     enabled: !!user_id,
   });
@@ -124,57 +124,69 @@ function SearchPage() {
             <h1 style={sharedStyles.title}>Search all Photos</h1>
           </div>
 
-          <div>
-            <input
-              type="text"
-              name="search"
-              value={searchTerm}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  // Exit input field on Enter key press
-                  e.currentTarget.blur();
-                }
-              }}
-              onChange={(e) => {
-                setSearchTerm(e.target.value.trim());
-              }}
-              placeholder="Search by subject"
-              style={{ ...sharedStyles.input, width: "400px" }}
-            />
-            <label
-              htmlFor="page"
-              style={{
-                ...sharedStyles.label,
-                marginLeft: "1rem",
-                marginRight: "1rem",
-              }}
-            >
-              Page
-            </label>
-            <select
-              name="page"
-              value={page}
-              onChange={(e) => {
-                setPage(Number(e.target.value));
-              }}
-              style={{ ...sharedStyles.input, width: "80px" }}
-            >
-              {pagination?.totalPages &&
-                Array.from({ length: pagination.totalPages }, (_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-            </select>
-          </div>
+          <input
+            type="text"
+            name="search"
+            value={searchTerm}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                // Exit input field on Enter key press
+                e.currentTarget.blur();
+              }
+            }}
+            onChange={(e) => {
+              setSearchTerm(e.target.value.trim());
+            }}
+            placeholder="Search by subject"
+            style={{ ...sharedStyles.input, width: "400px" }}
+          />
 
-          <div style={{ maxWidth: "200px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <TagPicker
               selectedTags={selectedTags}
               onTagsChange={handleTagsChange}
               userId={user_id as string}
               disableAdd
             />
+
+            {(pagination?.totalPages || 0) > 1 && (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                }}
+              >
+                <label
+                  htmlFor="page"
+                  style={{
+                    ...sharedStyles.label,
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  Page
+                </label>
+                <select
+                  name="page"
+                  value={page}
+                  onChange={(e) => {
+                    setPage(Number(e.target.value));
+                  }}
+                  style={{
+                    ...sharedStyles.input,
+                    width: "50px",
+                    padding: "0.25rem",
+                  }}
+                >
+                  {pagination?.totalPages &&
+                    Array.from({ length: pagination.totalPages }, (_, i) => (
+                      <option key={i + 1} value={i + 1}>
+                        {i + 1}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
           </div>
           {error && <p style={sharedStyles.error}>{error.message}</p>}
 
