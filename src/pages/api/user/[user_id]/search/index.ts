@@ -51,6 +51,22 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       : [req.query.tags]
     : [];
 
+  // Extract pagination parameters
+  let page = 1;
+  let pageSize = 20;
+
+  if (req.query.page && typeof req.query.page === "string") {
+    page = parseInt(req.query.page);
+  }
+
+  if (req.query.pageSize && typeof req.query.pageSize === "string") {
+    pageSize = parseInt(req.query.pageSize);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // TODO
+  const offset = (page - 1) * pageSize;
+
   const rawSearchTerm = Array.isArray(req.query.searchTerm)
     ? req.query.searchTerm.join(" ")
     : req.query.searchTerm;
@@ -141,7 +157,18 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
     // Transform results to match PhotoSearchResult
     const transformedPhotos = result.map(transformDBResultToSearchResult);
-    return res.json({ photos: transformedPhotos });
+    const totalPages = 1;
+    return res.json({
+      photos: transformedPhotos,
+      pagination: {
+        page,
+        pageSize,
+        totalPages: 1,
+        totalCount: transformedPhotos.length,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    });
   } catch (error) {
     console.error("Search error:", error);
     return res.status(500).json({ error: "Failed to search photos" });
