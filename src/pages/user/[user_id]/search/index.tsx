@@ -135,10 +135,10 @@ function SearchPage() {
               }
             }}
             onChange={(e) => {
-              setSearchTerm(e.target.value.trim());
+              setSearchTerm(e.target.value);
             }}
             placeholder="Search by subject"
-            style={{ ...sharedStyles.input, width: "400px" }}
+            style={{ ...sharedStyles.input, width: "250px" }}
           />
 
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
