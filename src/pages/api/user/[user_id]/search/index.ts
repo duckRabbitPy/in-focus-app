@@ -63,8 +63,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     pageSize = parseInt(req.query.pageSize);
   }
 
+  // TODO add pagination
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // TODO
   const offset = (page - 1) * pageSize;
 
   const rawSearchTerm = Array.isArray(req.query.searchTerm)
@@ -140,6 +140,15 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       });
     }
 
+    // TODO: Add pagination
+    // const countResult = await query<{ count: string }>(
+    //   countQueryText,
+    //   queryParams
+    // );
+    // const totalCount = parseInt(countResult[0].count);
+    // const totalPages = Math.ceil(totalCount / pageSize);
+    const totalPages = 1; // Placeholder for total pages
+
     // Group by and order by
     queryText += `
       GROUP BY 
@@ -157,7 +166,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
     // Transform results to match PhotoSearchResult
     const transformedPhotos = result.map(transformDBResultToSearchResult);
-    const totalPages = 1;
+
     return res.json({
       photos: transformedPhotos,
       pagination: {
