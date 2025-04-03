@@ -13,7 +13,11 @@ import { useQuery } from "@tanstack/react-query";
 
 function SearchPage() {
   const router = useRouter();
-  const { user_id, tags: queryParamTags } = router.query;
+  const {
+    user_id,
+    tags: queryParamTags,
+    search: queryParamSearch,
+  } = router.query;
 
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -24,12 +28,23 @@ function SearchPage() {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
+      router.push(
+        {
+          pathname: router.pathname,
+          query: {
+            ...router.query,
+            search: searchTerm,
+          },
+        },
+        undefined,
+        { shallow: true }
+      );
     }, 500);
 
     return () => clearTimeout(handler);
-  }, [searchTerm]);
+  }, [searchTerm, router]);
 
-  // Initialize selected tags from URL query params when available
+  // Initialize selected tags and search term from URL query params when available
   useEffect(() => {
     if (queryParamTags) {
       const tagsArray = Array.isArray(queryParamTags)
@@ -37,7 +52,12 @@ function SearchPage() {
         : [queryParamTags];
       setSelectedTags(tagsArray);
     }
-  }, [queryParamTags]);
+
+    if (queryParamSearch && typeof queryParamSearch === "string") {
+      setSearchTerm(queryParamSearch);
+      setDebouncedSearchTerm(queryParamSearch);
+    }
+  }, [queryParamTags, queryParamSearch]);
 
   const handleTagsChange = (newTags: string[]) => {
     setSelectedTags(newTags);
@@ -70,7 +90,7 @@ function SearchPage() {
         tags: selectedTags,
         searchTerm,
       }),
-    enabled: !!user_id && selectedTags.length > 0,
+    enabled: !!user_id,
   });
 
   if (!user_id || Array.isArray(user_id)) {
@@ -79,12 +99,12 @@ function SearchPage() {
 
   return (
     <>
-      <PageHead title="Search" description="Search photos by tags" />
+      <PageHead title="Search" description="Search photos" />
       <div
         className={`${geistSans.variable} ${geistMono.variable}`}
         style={sharedStyles.page}
       >
-        <main style={sharedStyles.main}>
+        <main style={{ ...sharedStyles.main, gap: "1rem" }}>
           <div style={sharedStyles.breadcrumbs}>
             <Link href={`/user/${user_id}`} style={sharedStyles.link}>
               Home
@@ -96,46 +116,44 @@ function SearchPage() {
           </div>
 
           <div style={sharedStyles.header}>
-            <h1 style={sharedStyles.title}>Search Photos by Tags</h1>
+            <h1 style={sharedStyles.title}>Search all Photos</h1>
           </div>
 
-          <div>
+          <input
+            type="text"
+            name="search"
+            value={searchTerm}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                // Exit input field on Enter key press
+                e.currentTarget.blur();
+              }
+            }}
+            onChange={(e) => {
+              setSearchTerm(e.target.value.trim());
+            }}
+            placeholder="Search by subject"
+            style={{ ...sharedStyles.input, width: "400px" }}
+          />
+
+          <div style={{ maxWidth: "200px" }}>
             <TagPicker
               selectedTags={selectedTags}
               onTagsChange={handleTagsChange}
               userId={user_id as string}
               disableAdd
             />
-
-            {selectedTags.length > 0 && (
-              <input
-                type="text"
-                name="search"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    // Exit input field on Enter key press
-                    e.currentTarget.blur();
-                  }
-                }}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value.trim());
-                }}
-                placeholder="Filter results by subject"
-                style={sharedStyles.input}
-              />
-            )}
           </div>
           {error && <p style={sharedStyles.error}>{error.message}</p>}
 
-          <div style={{ overflowX: "auto", width: "100%", height: "40vh" }}>
+          <div style={{ overflowX: "auto", width: "100%", height: "50vh" }}>
             <table
               style={{
                 width: "100%",
                 borderCollapse: "collapse",
-                marginTop: "1rem",
               }}
             >
-              <thead>
+              <thead style={{ position: "sticky", top: 0 }}>
                 <tr>
                   <th style={styles.tableHeaderStyle}>Subject</th>
                   <th style={styles.tableHeaderStyle}>Preview</th>
@@ -207,16 +225,6 @@ function SearchPage() {
             </table>
           </div>
         </main>
-        <footer style={sharedStyles.footer}>
-          <Link
-            href="https://github.com/DuckRabbitPy"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={sharedStyles.link}
-          >
-            DuckRabbitPy
-          </Link>
-        </footer>
       </div>
     </>
   );
