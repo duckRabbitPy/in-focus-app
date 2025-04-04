@@ -10,15 +10,24 @@ import { formatDateString } from "@/utils/date";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteRoll } from "@/requests/mutations/rolls";
-import { deletePhoto } from "@/requests/mutations/photos";
+import { deletePhoto, updateUrlOnly } from "@/requests/mutations/photos";
 import { getPhotos } from "@/requests/queries/photos";
 import { exportRoll } from "@/utils/client";
+import { FullPhotoSettingsData } from "@/types/photos";
+import { Tag } from "@/types/tags";
+import { Lens } from "@/types/lenses";
 
 function RollPage() {
   const router = useRouter();
   const { user_id, roll_id } = router.query;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
+  const [editingUrlAtIndex, setEditingUrlAtIndex] = useState<number | null>(
+    null
+  );
+  const [photoUrls, setPhotoUrls] = useState<{ [photo_id: number]: string }>(
+    {}
+  );
 
   const queryClient = useQueryClient();
 
@@ -35,8 +44,61 @@ function RollPage() {
     mutationKey: ["deleteRoll", user_id, selectedPhotoId],
     mutationFn: deleteRoll,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rolls", user_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["photos", user_id, Number(roll_id)],
+      });
       setIsDeleteModalOpen(false);
+    },
+  });
+
+  const { mutate: updateUrlOnlyMutation } = useMutation({
+    mutationFn: updateUrlOnly,
+    onMutate: async (variables) => {
+      // avoid overwriting the optimistic update
+      await queryClient.cancelQueries({
+        queryKey: ["photos", user_id, Number(roll_id)],
+      });
+
+      const previousData = queryClient.getQueryData([
+        "photos",
+        user_id,
+        Number(roll_id),
+      ]);
+
+      // Optimistic update
+      queryClient.setQueryData(
+        ["photos", user_id, Number(roll_id)],
+        (oldData: {
+          photos: FullPhotoSettingsData[];
+          tags: Tag[];
+          lenses: Lens[];
+        }) => {
+          return {
+            ...oldData,
+            photos: oldData.photos.map((photo) =>
+              photo.id === variables.photo_id
+                ? { ...photo, photo_url: variables.photo_url }
+                : photo
+            ),
+          };
+        }
+      );
+
+      return { previousData };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousData) {
+        // rollback
+        queryClient.setQueryData(
+          ["photos", user_id, Number(roll_id)],
+          context.previousData
+        );
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["photos", user_id, Number(roll_id)],
+      });
     },
   });
 
@@ -190,7 +252,7 @@ function RollPage() {
             </div>
           ) : (
             <div style={sharedStyles.grid}>
-              {photos.map((photo) => (
+              {photos.map((photo, index) => (
                 <div key={photo.id} style={styles.card}>
                   <div style={styles.photoHeader}>
                     <Link
@@ -243,22 +305,87 @@ function RollPage() {
                       href={`/user/${user_id}/rolls/${roll_id}/${photo.id}/view`}
                     >
                       {photo.subject || "No subject"}
-
-                      {photo.photo_url && (
-                        <div style={{ marginTop: "0.5rem" }}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={photo.photo_url}
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              objectFit: "cover",
-                            }}
-                            alt={photo.subject}
-                          />
-                        </div>
-                      )}
                     </Link>
+
+                    {photo.photo_url ? (
+                      <div style={{ marginTop: "0.5rem" }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={photo.photo_url}
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                          }}
+                          alt={photo.subject}
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <input
+                          value={
+                            editingUrlAtIndex === index
+                              ? photoUrls[photo.id] || ""
+                              : photo.photo_url || ""
+                          }
+                          onChange={(e) => {
+                            setPhotoUrls({
+                              ...photoUrls,
+                              [photo.id]: e.target.value,
+                            });
+                          }}
+                          onClick={() => {
+                            setEditingUrlAtIndex(index);
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "0.5rem",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            marginTop: "0.5rem",
+                          }}
+                          placeholder="No photo URL"
+                        />
+                        {editingUrlAtIndex === index && (
+                          <div style={{ ...styles.actions, gap: "0.25rem" }}>
+                            <button
+                              style={{
+                                ...sharedStyles.secondaryButton,
+                                backgroundColor: sharedStyles.green,
+                                color: "white",
+                                border: "none",
+                                width: "80px",
+                                marginTop: "0.5rem",
+                              }}
+                              onClick={() => {
+                                setEditingUrlAtIndex(null);
+                                updateUrlOnlyMutation({
+                                  user_id: user_id as string,
+                                  roll_id: Number(roll_id),
+                                  photo_id: photo.id,
+                                  photo_url: photoUrls[photo.id],
+                                });
+                              }}
+                            >
+                              update
+                            </button>
+                            <button
+                              style={{
+                                ...sharedStyles.secondaryButton,
+                                border: "none",
+                                width: "20px",
+                                marginTop: "0.5rem",
+                              }}
+                              onClick={() => {
+                                setEditingUrlAtIndex(null);
+                              }}
+                            >
+                              X
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
