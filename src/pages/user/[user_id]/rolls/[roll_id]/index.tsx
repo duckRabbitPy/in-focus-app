@@ -359,8 +359,6 @@ function RollPage() {
                               }}
                               onClick={() => {
                                 setEditingUrlAtIndex(null);
-                                // remove the photoUrl from the state
-
                                 updateUrlOnlyMutation({
                                   user_id: user_id as string,
                                   roll_id: Number(roll_id),
