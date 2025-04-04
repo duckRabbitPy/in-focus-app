@@ -17,6 +17,7 @@ export const FstopSchema = z.union([
 ]);
 
 export const ShutterSpeedSchema = z.union([
+  z.literal("No meter"),
   z.literal("8"),
   z.literal("4"),
   z.literal("2"),

@@ -47,6 +47,7 @@ export const StabilisationOptions: Stabilisation[] = [
 ];
 
 export const PhoneLightMeterOptions: PhoneLightMeter[] = [
+  "No meter",
   "8",
   "4",
   "2",
