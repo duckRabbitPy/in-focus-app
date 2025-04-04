@@ -243,22 +243,50 @@ function RollPage() {
                       href={`/user/${user_id}/rolls/${roll_id}/${photo.id}/view`}
                     >
                       {photo.subject || "No subject"}
-
-                      {photo.photo_url && (
-                        <div style={{ marginTop: "0.5rem" }}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={photo.photo_url}
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              objectFit: "cover",
-                            }}
-                            alt={photo.subject}
-                          />
-                        </div>
-                      )}
                     </Link>
+
+                    {photo.photo_url ? (
+                      <div style={{ marginTop: "0.5rem" }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={photo.photo_url}
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                          }}
+                          alt={photo.subject}
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <input
+                          type="text"
+                          value={photo.photo_url}
+                          readOnly
+                          style={{
+                            width: "100%",
+                            padding: "0.5rem",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            marginTop: "0.5rem",
+                          }}
+                          placeholder="No photo URL"
+                        />
+                        {
+                          <button
+                            style={{
+                              ...sharedStyles.secondaryButton,
+                              width: "100px",
+                              marginTop: "0.5rem",
+                            }}
+                            onClick={() => {}}
+                          >
+                            Save url
+                          </button>
+                        }
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
