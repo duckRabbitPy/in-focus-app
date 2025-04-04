@@ -13,6 +13,9 @@ import { deleteRoll } from "@/requests/mutations/rolls";
 import { deletePhoto, updateUrlOnly } from "@/requests/mutations/photos";
 import { getPhotos } from "@/requests/queries/photos";
 import { exportRoll } from "@/utils/client";
+import { FullPhotoSettingsData } from "@/types/photos";
+import { Tag } from "@/types/tags";
+import { Lens } from "@/types/lenses";
 
 function RollPage() {
   const router = useRouter();
@@ -49,18 +52,56 @@ function RollPage() {
   });
 
   const { mutate: updateUrlOnlyMutation } = useMutation({
-    mutationKey: ["updateUrlOnly"],
     mutationFn: updateUrlOnly,
-    onSuccess: () => {
-      queryClient.refetchQueries({
+    onMutate: async (variables) => {
+      // avoid overwriting the optimistic update
+      await queryClient.cancelQueries({
         queryKey: ["photos", user_id, Number(roll_id)],
-        exact: true,
       });
-      console.log("Photo URL updated successfully");
-      setPhotoUrls({});
-      setEditingUrlAtIndex(null);
+
+      const previousData = queryClient.getQueryData([
+        "photos",
+        user_id,
+        Number(roll_id),
+      ]);
+
+      // Optimistic update
+      queryClient.setQueryData(
+        ["photos", user_id, Number(roll_id)],
+        (oldData: {
+          photos: FullPhotoSettingsData[];
+          tags: Tag[];
+          lenses: Lens[];
+        }) => {
+          return {
+            ...oldData,
+            photos: oldData.photos.map((photo) =>
+              photo.id === variables.photo_id
+                ? { ...photo, photo_url: variables.photo_url }
+                : photo
+            ),
+          };
+        }
+      );
+
+      return { previousData };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousData) {
+        // rollback
+        queryClient.setQueryData(
+          ["photos", user_id, Number(roll_id)],
+          context.previousData
+        );
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["photos", user_id, Number(roll_id)],
+      });
     },
   });
+
   const { mutate: deletePhotoMutation } = useMutation({
     mutationKey: ["deletePhoto", user_id, roll_id, selectedPhotoId],
     mutationFn: deletePhoto,
