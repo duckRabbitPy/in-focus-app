@@ -12,6 +12,13 @@ type CreatePhotoMutationParams = PhotoSettingsInput & {
   roll_id: number;
 };
 
+type UpdateUrlOnlyMutationParams = {
+  user_id: string;
+  roll_id: number;
+  photo_id: number;
+  photo_url: string;
+};
+
 export const createPhoto = async ({
   user_id,
   roll_id,
@@ -100,6 +107,28 @@ export const updatePhoto = async ({
       lens,
       tags,
       notes,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  return FullPhotoSettingsSchema.parse(await response.json());
+};
+
+export const updateUrlOnly = async ({
+  user_id,
+  roll_id,
+  photo_id,
+  photo_url,
+}: UpdateUrlOnlyMutationParams) => {
+  const url = `/api/user/${user_id}/rolls/${roll_id}/${photo_id}`;
+
+  const response = await fetchWithAuth(url, {
+    method: "PATCH",
+    body: JSON.stringify({
+      photo_url,
     }),
   });
 

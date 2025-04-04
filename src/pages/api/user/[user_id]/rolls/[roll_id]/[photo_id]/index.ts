@@ -171,6 +171,33 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         return res.status(500).json({ error: "Error updating photo" });
       }
 
+    case "PATCH":
+      try {
+        const { photo_url } = req.body;
+        if (!photo_url) {
+          return res.status(400).json({ error: "URL is required" });
+        }
+        const updatedPhoto = await queryOne<FullPhotoSettingsData>(
+          "UPDATE photos SET photo_url = $1 WHERE id = $2 AND roll_id = $3 AND roll_id IN (SELECT id FROM rolls WHERE user_id = $4) RETURNING *",
+          [photo_url, photoIdNum, parseInt(roll_id), user_id]
+        );
+        if (!updatedPhoto) {
+          return res.status(404).json({ error: "Photo not found" });
+        }
+
+        const tags = await getPhotoTags(photoIdNum);
+
+        // Add tags array to photo object
+        const photoWithTags = {
+          ...updatedPhoto,
+          tags,
+        };
+        return res.status(200).json(photoWithTags);
+      } catch (error) {
+        console.error("Error updating photo URL:", error);
+        return res.status(500).json({ error: "Failed to update photo URL" });
+      }
+
     case "DELETE":
       try {
         const result = await query(

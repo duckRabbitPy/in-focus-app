@@ -10,7 +10,7 @@ import { formatDateString } from "@/utils/date";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteRoll } from "@/requests/mutations/rolls";
-import { deletePhoto } from "@/requests/mutations/photos";
+import { deletePhoto, updateUrlOnly } from "@/requests/mutations/photos";
 import { getPhotos } from "@/requests/queries/photos";
 import { exportRoll } from "@/utils/client";
 
@@ -19,6 +19,12 @@ function RollPage() {
   const { user_id, roll_id } = router.query;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
+  const [editingUrlAtIndex, setEditingUrlAtIndex] = useState<number | null>(
+    null
+  );
+  const [photoUrls, setPhotoUrls] = useState<{ [photo_id: number]: string }>(
+    {}
+  );
 
   const queryClient = useQueryClient();
 
@@ -35,11 +41,26 @@ function RollPage() {
     mutationKey: ["deleteRoll", user_id, selectedPhotoId],
     mutationFn: deleteRoll,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rolls", user_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["photos", user_id, Number(roll_id)],
+      });
       setIsDeleteModalOpen(false);
     },
   });
 
+  const { mutate: updateUrlOnlyMutation } = useMutation({
+    mutationKey: ["updateUrlOnly"],
+    mutationFn: updateUrlOnly,
+    onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: ["photos", user_id, Number(roll_id)],
+        exact: true,
+      });
+      console.log("Photo URL updated successfully");
+      setPhotoUrls({});
+      setEditingUrlAtIndex(null);
+    },
+  });
   const { mutate: deletePhotoMutation } = useMutation({
     mutationKey: ["deletePhoto", user_id, roll_id, selectedPhotoId],
     mutationFn: deletePhoto,
@@ -190,7 +211,7 @@ function RollPage() {
             </div>
           ) : (
             <div style={sharedStyles.grid}>
-              {photos.map((photo) => (
+              {photos.map((photo, index) => (
                 <div key={photo.id} style={styles.card}>
                   <div style={styles.photoHeader}>
                     <Link
@@ -261,9 +282,20 @@ function RollPage() {
                     ) : (
                       <div>
                         <input
-                          type="text"
-                          value={photo.photo_url}
-                          readOnly
+                          value={
+                            editingUrlAtIndex === index
+                              ? photoUrls[photo.id] || ""
+                              : photo.photo_url || ""
+                          }
+                          onChange={(e) => {
+                            setPhotoUrls({
+                              ...photoUrls,
+                              [photo.id]: e.target.value,
+                            });
+                          }}
+                          onClick={() => {
+                            setEditingUrlAtIndex(index);
+                          }}
                           style={{
                             width: "100%",
                             padding: "0.5rem",
@@ -273,18 +305,46 @@ function RollPage() {
                           }}
                           placeholder="No photo URL"
                         />
-                        {
-                          <button
-                            style={{
-                              ...sharedStyles.secondaryButton,
-                              width: "100px",
-                              marginTop: "0.5rem",
-                            }}
-                            onClick={() => {}}
-                          >
-                            Save url
-                          </button>
-                        }
+                        {editingUrlAtIndex === index && (
+                          <div style={{ ...styles.actions, gap: "0.25rem" }}>
+                            <button
+                              style={{
+                                ...sharedStyles.secondaryButton,
+                                backgroundColor: sharedStyles.green,
+                                color: "white",
+                                border: "none",
+                                width: "80px",
+                                marginTop: "0.5rem",
+                              }}
+                              onClick={() => {
+                                setEditingUrlAtIndex(null);
+                                // remove the photoUrl from the state
+
+                                updateUrlOnlyMutation({
+                                  user_id: user_id as string,
+                                  roll_id: Number(roll_id),
+                                  photo_id: photo.id,
+                                  photo_url: photoUrls[photo.id],
+                                });
+                              }}
+                            >
+                              update
+                            </button>
+                            <button
+                              style={{
+                                ...sharedStyles.secondaryButton,
+                                border: "none",
+                                width: "20px",
+                                marginTop: "0.5rem",
+                              }}
+                              onClick={() => {
+                                setEditingUrlAtIndex(null);
+                              }}
+                            >
+                              X
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
