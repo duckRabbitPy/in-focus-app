@@ -123,7 +123,7 @@ export default function ItemPicker({
           display: "flex",
           flexWrap: "wrap",
           gap: "0.5rem",
-          marginBottom: "0.75rem",
+          marginBottom: "0.5rem",
         }}
       >
         {selectedItems.map((itemName) => (

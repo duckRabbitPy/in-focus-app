@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { useRouter } from "next/router";
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
@@ -10,6 +9,7 @@ import { PageHead } from "@/components/PageHead";
 import { searchPhotosByTags } from "@/requests/queries/search";
 import { useQuery } from "@tanstack/react-query";
 import PhotoTable from "@/components/PhotoTable";
+import { PaginationSelect } from "@/components/PaginationSelect";
 
 function SearchPage() {
   const router = useRouter();
@@ -149,47 +149,24 @@ function SearchPage() {
               disableAdd
             />
 
-            {(pagination?.totalPages || 0) > 1 && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-start",
-                }}
-              >
-                <label
-                  htmlFor="page"
-                  style={{
-                    ...sharedStyles.label,
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  Page
-                </label>
-                <select
-                  name="page"
-                  value={page}
-                  onChange={(e) => {
-                    setPage(Number(e.target.value));
-                  }}
-                  style={{
-                    ...sharedStyles.input,
-                    width:
-                      pagination && pagination?.totalPages > 99
-                        ? "80px"
-                        : "50px",
-                    padding: "0.25rem",
-                  }}
-                >
-                  {pagination?.totalPages &&
-                    Array.from({ length: pagination.totalPages }, (_, i) => (
-                      <option key={i + 1} value={i + 1}>
-                        {i + 1}
-                      </option>
-                    ))}
-                </select>
-              </div>
-            )}
+            <PaginationSelect
+              totalPages={pagination?.totalPages || 1}
+              currentPage={page}
+              onPageChange={(newPage) => {
+                setPage(newPage);
+                router.push(
+                  {
+                    pathname: router.pathname,
+                    query: {
+                      ...router.query,
+                      page: newPage,
+                    },
+                  },
+                  undefined,
+                  { shallow: true }
+                );
+              }}
+            />
           </div>
           {error && <p style={sharedStyles.error}>{error.message}</p>}
 
