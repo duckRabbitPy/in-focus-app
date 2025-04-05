@@ -1,10 +1,10 @@
 -- Delete existing test data
 DELETE FROM photo_tags;
+DELETE FROM photo_lenses;
 DELETE FROM photos;
 DELETE FROM rolls;
 DELETE FROM tags;
 DELETE FROM lenses;
-
 DELETE FROM users;
 
 -- Reset sequences for all tables with serial IDs
@@ -12,6 +12,7 @@ SELECT setval('tags_id_seq', COALESCE((SELECT MAX(id) FROM tags), 0) + 1);
 SELECT setval('rolls_id_seq', COALESCE((SELECT MAX(id) FROM rolls), 0) + 1);
 SELECT setval('photos_id_seq', COALESCE((SELECT MAX(id) FROM photos), 0) + 1);
 SELECT setval('lenses_id_seq', COALESCE((SELECT MAX(id) FROM lenses), 0) + 1);
+
 
 
 -- Insert test user

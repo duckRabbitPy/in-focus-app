@@ -8,8 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "db:seed:create": "bun seed.create.mts",
+    "db:schema": "psql -U postgres -d in_focus -f schema.sql",
     "db:seed": "psql -U postgres -d in_focus -f seed.sql",
-    "db:reset": "yarn db:migrate && yarn db:seed",
+    "db:reset": "yarn db:schema && yarn db:seed",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
