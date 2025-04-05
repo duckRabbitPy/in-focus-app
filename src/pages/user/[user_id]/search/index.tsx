@@ -64,7 +64,7 @@ function SearchPage() {
 
   const handleTagsChange = (newTags: string[]) => {
     setSelectedTags(newTags);
-
+    setPage(1);
     // Update the URL without reloading the page
     // This synchronizes the query params made in latest API call with query params in URL
     // allows user to share URL and initialize with the same tags
@@ -174,7 +174,10 @@ function SearchPage() {
                   }}
                   style={{
                     ...sharedStyles.input,
-                    width: "50px",
+                    width:
+                      pagination && pagination?.totalPages > 99
+                        ? "80px"
+                        : "50px",
                     padding: "0.25rem",
                   }}
                 >
