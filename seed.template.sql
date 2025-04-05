@@ -19,7 +19,7 @@ INSERT INTO users (id, username, password_hash)
 VALUES (
     '123e4567-e89b-12d3-a456-426614174000',
     'testuser',
-    '$2b$12$FTlQd8u22rD.DDQ0IN2jt.2cAkpCQ7hkfsHIX4vstoAjSwEa7sh3m'
+    '$TEST_USER_HASHED_PASSWORD_PLACEHOLDER'
 );
 
 -- Insert test tags
