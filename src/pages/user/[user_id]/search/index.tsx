@@ -6,10 +6,10 @@ import { withAuth } from "@/utils/withAuth";
 import { geistMono, geistSans } from "@/styles/font";
 import TagPicker from "@/components/UserItems/TagPicker";
 import { useState, useEffect } from "react";
-import { formatDateString } from "@/utils/date";
 import { PageHead } from "@/components/PageHead";
 import { searchPhotosByTags } from "@/requests/queries/search";
 import { useQuery } from "@tanstack/react-query";
+import PhotoTable from "@/components/PhotoTable";
 
 function SearchPage() {
   const router = useRouter();
@@ -194,82 +194,13 @@ function SearchPage() {
           {error && <p style={sharedStyles.error}>{error.message}</p>}
 
           <div style={{ overflowX: "auto", width: "100%", height: "50vh" }}>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-              }}
-            >
-              <thead style={{ position: "sticky", top: 0 }}>
-                <tr>
-                  <th style={styles.tableHeaderStyle}>Subject</th>
-                  <th style={styles.tableHeaderStyle}>Preview</th>
-                  <th style={styles.tableHeaderStyle}>Roll</th>
-                  <th style={styles.tableHeaderStyle}>Date</th>
-                  <th style={styles.tableHeaderStyle}>Tags</th>
-                </tr>
-              </thead>
-              <tbody>
-                {!isLoading &&
-                  !error &&
-                  photos?.length === 0 &&
-                  selectedTags.length > 0 && (
-                    <p style={{ ...sharedStyles.subtitle, marginTop: "1rem" }}>
-                      No photos found with the selected tags/search term
-                    </p>
-                  )}
-                {photos?.map((photo) => (
-                  <tr key={photo.id} style={styles.tableRowStyle}>
-                    <td style={styles.tableCellStyle}>
-                      <Link
-                        href={`/user/${user_id}/rolls/${photo.roll_id}/${photo.id}/view`}
-                        style={sharedStyles.link}
-                      >
-                        {photo.subject}
-                      </Link>
-                    </td>
-                    <td style={styles.tableCellStyle}>
-                      {photo.photo_url ? (
-                        <img
-                          src={photo.photo_url}
-                          alt={photo.subject}
-                          style={{ width: "50px", height: "auto" }}
-                        />
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    <td style={styles.tableCellStyle}>{photo.roll_name}</td>
-                    <td style={styles.tableCellStyle}>
-                      {formatDateString(photo.created_at)}
-                    </td>
-                    <td style={styles.tableCellStyle}>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: "0.5rem",
-                        }}
-                      >
-                        {photo.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            style={{
-                              backgroundColor: "#f3f4f6",
-                              padding: "0.25rem 0.5rem",
-                              borderRadius: "0.5rem",
-                              fontSize: "0.875rem",
-                            }}
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <PhotoTable
+              photos={photos}
+              isLoading={isLoading}
+              error={error}
+              selectedTags={selectedTags}
+              user_id={user_id}
+            />
           </div>
         </main>
       </div>
