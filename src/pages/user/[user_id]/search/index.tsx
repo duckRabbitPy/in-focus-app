@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { sharedStyles } from "@/styles/shared";
-import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import { geistMono, geistSans } from "@/styles/font";
 import TagPicker from "@/components/UserItems/TagPicker";
