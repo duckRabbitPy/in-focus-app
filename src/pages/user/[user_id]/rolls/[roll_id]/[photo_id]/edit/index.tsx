@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { updatePhoto } from "@/requests/mutations/photos";
 import { getPhoto } from "@/requests/queries/photos";
 import { getPhotoFromRollCache } from "@/utils/client";
+import { Breadcrumbs } from "@/components/BreadCrumbs";
 
 function EditPhotoSettingsPage() {
   const router = useRouter();
@@ -138,31 +139,20 @@ function EditPhotoSettingsPage() {
         style={sharedStyles.page}
       >
         <main style={sharedStyles.main}>
-          <div style={sharedStyles.breadcrumbs}>
-            <Link href={`/user/${user_id}`} style={sharedStyles.link}>
-              Home
-            </Link>
-            <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>
-              Rolls
-            </Link>
-            <span style={sharedStyles.separator}>/</span>
-            <Link
-              href={`/user/${user_id}/rolls/${roll_id}`}
-              style={sharedStyles.link}
-            >
-              Roll #{roll_id}
-            </Link>
-            <span style={sharedStyles.separator}>/</span>
-            <Link
-              href={`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`}
-              style={sharedStyles.link}
-            >
-              Photo #{photo_id}
-            </Link>
-            <span style={sharedStyles.separator}>/</span>
-            <span>Edit</span>
-          </div>
+          <Breadcrumbs
+            user_id={user_id as string}
+            roll_id={Number(roll_id)}
+            photo_id={Number(photo_id)}
+            routes={{
+              home: true,
+              search: false,
+              rolls: true,
+              roll: true,
+              photo: true,
+              edit: true,
+              view: false,
+            }}
+          />
 
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>{`Edit photo: ${

@@ -10,6 +10,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deletePhoto } from "@/requests/mutations/photos";
 
 import { getPhotoFromRollCache } from "@/utils/client";
+import { Breadcrumbs } from "@/components/BreadCrumbs";
 
 function ViewPhotoSettingsPage() {
   const router = useRouter();
@@ -128,25 +129,20 @@ function ViewPhotoSettingsPage() {
               maxWidth: "800px",
             }}
           >
-            <div style={sharedStyles.breadcrumbs}>
-              <Link href={`/user/${user_id}`} style={sharedStyles.link}>
-                Home
-              </Link>
-              <span style={sharedStyles.separator}>/</span>
-              <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>
-                Rolls
-              </Link>
-              <span style={sharedStyles.separator}>/</span>
-              <Link
-                href={`/user/${user_id}/rolls/${roll_id}`}
-                style={sharedStyles.link}
-              >
-                Roll #{roll_id}
-              </Link>
-              <span style={sharedStyles.separator}>/</span>
-              <span>Photo #{photo_id}</span>
-            </div>
-
+            <Breadcrumbs
+              user_id={user_id as string}
+              roll_id={Number(roll_id)}
+              photo_id={Number(photo_id)}
+              routes={{
+                home: true,
+                search: false,
+                rolls: true,
+                roll: true,
+                photo: true,
+                edit: false,
+                view: true,
+              }}
+            />
             <div style={sharedStyles.header}>
               <h1 style={sharedStyles.title}>{`View photo: ${
                 photo?.subject || "untitled"

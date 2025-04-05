@@ -9,6 +9,7 @@ import { geistMono, geistSans } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
 import { createPhoto } from "@/requests/mutations/photos";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Breadcrumbs } from "@/components/BreadCrumbs";
 
 function NewPhotoPage() {
   const router = useRouter();
@@ -65,24 +66,18 @@ function NewPhotoPage() {
         style={sharedStyles.page}
       >
         <main style={sharedStyles.main}>
-          <div style={sharedStyles.breadcrumbs}>
-            <Link href={`/user/${user_id}`} style={sharedStyles.link}>
-              Home
-            </Link>
-            <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>
-              Rolls
-            </Link>
-            <span style={sharedStyles.separator}>/</span>
-            <Link
-              href={`/user/${user_id}/rolls/${roll_id}`}
-              style={sharedStyles.link}
-            >
-              Roll #{roll_id}
-            </Link>
-            <span style={sharedStyles.separator}>/</span>
-            <span>New Photo</span>
-          </div>
+          <Breadcrumbs
+            user_id={user_id as string}
+            roll_id={Number(roll_id)}
+            photo_id={undefined}
+            routes={{
+              home: true,
+              search: false,
+              rolls: true,
+              roll: true,
+              new_photo: true,
+            }}
+          />
 
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>Add New Photo</h1>

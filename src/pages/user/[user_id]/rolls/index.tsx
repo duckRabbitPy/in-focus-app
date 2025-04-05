@@ -12,6 +12,7 @@ import { PageHead } from "@/components/PageHead";
 import { deleteRoll } from "@/requests/mutations/rolls";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getRolls } from "@/requests/queries/rolls";
+import { Breadcrumbs } from "@/components/BreadCrumbs";
 
 function RollsPage() {
   const router = useRouter();
@@ -98,13 +99,16 @@ function RollsPage() {
           message="Are you sure you want to delete this roll? This will also delete all photos in this roll. This action cannot be undone."
         />
         <main style={sharedStyles.main}>
-          <div style={sharedStyles.breadcrumbs}>
-            <Link href={`/user/${user_id}`} style={sharedStyles.link}>
-              Home
-            </Link>
-            <span style={sharedStyles.separator}>/</span>
-            <span>Rolls</span>
-          </div>
+          <Breadcrumbs
+            user_id={user_id as string}
+            photo_id={undefined}
+            roll_id={undefined}
+            routes={{
+              home: true,
+              search: false,
+              rolls: true,
+            }}
+          />
 
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>Film Rolls</h1>

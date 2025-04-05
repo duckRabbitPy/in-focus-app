@@ -10,6 +10,7 @@ import { searchPhotosByTags } from "@/requests/queries/search";
 import { useQuery } from "@tanstack/react-query";
 import PhotoTable from "@/components/PhotoTable";
 import { PaginationSelect } from "@/components/PaginationSelect";
+import { Breadcrumbs } from "@/components/BreadCrumbs";
 
 function SearchPage() {
   const router = useRouter();
@@ -110,15 +111,15 @@ function SearchPage() {
         style={sharedStyles.page}
       >
         <main style={{ ...sharedStyles.main, gap: "1rem" }}>
-          <div style={sharedStyles.breadcrumbs}>
-            <Link href={`/user/${user_id}`} style={sharedStyles.link}>
-              Home
-            </Link>
-            <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>
-              Rolls
-            </Link>
-          </div>
+          <Breadcrumbs
+            user_id={user_id as string}
+            roll_id={undefined}
+            photo_id={undefined}
+            routes={{
+              home: true,
+              search: true,
+            }}
+          />
 
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>Search all Photos</h1>

@@ -16,6 +16,7 @@ import { exportRoll } from "@/utils/client";
 import { FullPhotoSettingsData } from "@/types/photos";
 import { Tag } from "@/types/tags";
 import { Lens } from "@/types/lenses";
+import { Breadcrumbs } from "@/components/BreadCrumbs";
 
 function RollPage() {
   const router = useRouter();
@@ -200,17 +201,17 @@ function RollPage() {
           message="Are you sure you want to delete this photo? This action cannot be undone."
         />
         <main style={sharedStyles.main}>
-          <div style={sharedStyles.breadcrumbs}>
-            <Link href={`/user/${user_id}`} style={sharedStyles.link}>
-              Home
-            </Link>
-            <span style={sharedStyles.separator}>/</span>
-            <Link href={`/user/${user_id}/rolls`} style={sharedStyles.link}>
-              Rolls
-            </Link>
-            <span style={sharedStyles.separator}>/</span>
-            <span>Roll #{roll_id}</span>
-          </div>
+          <Breadcrumbs
+            user_id={user_id as string}
+            roll_id={Number(roll_id)}
+            photo_id={undefined}
+            routes={{
+              home: true,
+              search: false,
+              rolls: true,
+              roll: true,
+            }}
+          />
 
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>{title}</h1>
