@@ -42,7 +42,7 @@ INSERT INTO lenses (id, user_id, name) VALUES
     (2, '123e4567-e89b-12d3-a456-426614174000', 'Canon 24-70mm f/2.8'),
     (3, '123e4567-e89b-12d3-a456-426614174000', 'Nikon 50mm f/1.8');
 
--- Insert test roll
+-- Insert test rolls
 INSERT INTO rolls (id, user_id, name, film_type, iso)
 VALUES (
     1,
@@ -51,6 +51,25 @@ VALUES (
     'Kodak Portra',
     400
 );
+
+INSERT INTO rolls (id, user_id, name, film_type, iso)
+VALUES (
+    2,
+    '123e4567-e89b-12d3-a456-426614174000',
+    'Test Roll 2',
+    'Fujifilm Pro 400H',
+    200
+);
+
+INSERT INTO rolls (id, user_id, name, film_type, iso)
+VALUES (
+    3,
+    '123e4567-e89b-12d3-a456-426614174000',
+    'Test Roll 3',
+    'Ilford HP5 Plus',
+    400
+);
+
 
 
 -- [SCRIPT INSERT TEST PHOTOS]

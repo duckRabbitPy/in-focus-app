@@ -57,7 +57,6 @@ async function generatePhotoEntry(
   sequenceNumber: number
 ): Promise<string> {
   const photoUrl = await getRandomImageUrl();
-  console.log(`Generated photo URL: ${photoUrl}`);
   const fStop = [2.8, 4, 5.6, 8, 11, 16][Math.floor(Math.random() * 6)];
   const shutterSpeed = ["1/500", "1/250", "1/125", "1/60", "1/30", "1/15"][
     Math.floor(Math.random() * 6)
@@ -111,11 +110,22 @@ async function main() {
 
   // Add test photos
   let photoEntries = "";
-  const rollId = 1;
+  let rollId = 1;
   let sequenceNumber = 1;
 
   for (let i = 1; i <= NUM_PHOTOS; i++) {
     photoEntries += await generatePhotoEntry(i, rollId, sequenceNumber);
+
+    // start second roll after 1/3 of photos
+    if (i === Math.floor(NUM_PHOTOS / 3)) {
+      rollId++;
+    }
+
+    // start third roll after 2/3 of photos
+    if (i === Math.floor((NUM_PHOTOS * 2) / 3)) {
+      rollId++;
+    }
+
     sequenceNumber++;
   }
 
@@ -134,6 +144,7 @@ async function main() {
 
   fs.writeFileSync(OUTPUT_PATH, finalOutput);
   console.log(`✅ Wrote ${OUTPUT_PATH} with hashed TEST_USER_PASSWORD`);
+  console.log("Generated photos:", NUM_PHOTOS);
 }
 
 main();
