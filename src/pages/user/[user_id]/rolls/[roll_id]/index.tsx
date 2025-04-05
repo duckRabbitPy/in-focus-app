@@ -17,17 +17,17 @@ import { FullPhotoSettingsData } from "@/types/photos";
 import { Tag } from "@/types/tags";
 import { Lens } from "@/types/lenses";
 import { Breadcrumbs } from "@/components/BreadCrumbs";
+import { PhotoCard } from "@/components/PhotoCard";
 
 function RollPage() {
   const router = useRouter();
   const { user_id, roll_id } = router.query;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
+  const [selectedForDeletePhotoId, setSelectedForDeletePhotoId] = useState<
+    number | null
+  >(null);
   const [editingUrlAtIndex, setEditingUrlAtIndex] = useState<number | null>(
     null
-  );
-  const [photoUrls, setPhotoUrls] = useState<{ [photo_id: number]: string }>(
-    {}
   );
 
   const queryClient = useQueryClient();
@@ -42,7 +42,7 @@ function RollPage() {
   const roll = data?.roll;
 
   const { mutate: deleteRollMutation } = useMutation({
-    mutationKey: ["deleteRoll", user_id, selectedPhotoId],
+    mutationKey: ["deleteRoll", user_id, selectedForDeletePhotoId],
     mutationFn: deleteRoll,
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -104,14 +104,14 @@ function RollPage() {
   });
 
   const { mutate: deletePhotoMutation } = useMutation({
-    mutationKey: ["deletePhoto", user_id, roll_id, selectedPhotoId],
+    mutationKey: ["deletePhoto", user_id, roll_id, selectedForDeletePhotoId],
     mutationFn: deletePhoto,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["photos", user_id, Number(roll_id)],
       });
       setIsDeleteModalOpen(false);
-      setSelectedPhotoId(null);
+      setSelectedForDeletePhotoId(null);
     },
     onError: (err) => {
       console.error("Error deleting photo:", err);
@@ -124,7 +124,7 @@ function RollPage() {
   };
 
   const handleDeletePhoto = async (photoId: number) => {
-    if (typeof user_id !== "string" || !selectedPhotoId) return;
+    if (typeof user_id !== "string" || !selectedForDeletePhotoId) return;
     deletePhotoMutation({
       user_id,
       roll_id: Number(roll_id),
@@ -178,24 +178,24 @@ function RollPage() {
         style={sharedStyles.page}
       >
         <ConfirmModal
-          isOpen={isDeleteModalOpen && !selectedPhotoId}
+          isOpen={isDeleteModalOpen && !selectedForDeletePhotoId}
           onClose={() => setIsDeleteModalOpen(false)}
           onConfirm={handleDeleteRoll}
           title="Delete Roll"
           message="Are you sure you want to delete this roll? This will also delete all photos in this roll. This action cannot be undone."
         />
         <ConfirmModal
-          isOpen={isDeleteModalOpen && selectedPhotoId !== null}
+          isOpen={isDeleteModalOpen && selectedForDeletePhotoId !== null}
           onClose={() => {
             setIsDeleteModalOpen(false);
-            setSelectedPhotoId(null);
+            setSelectedForDeletePhotoId(null);
           }}
           onConfirm={() => {
-            if (selectedPhotoId) {
-              handleDeletePhoto(selectedPhotoId);
+            if (selectedForDeletePhotoId) {
+              handleDeletePhoto(selectedForDeletePhotoId);
             }
             setIsDeleteModalOpen(false);
-            setSelectedPhotoId(null);
+            setSelectedForDeletePhotoId(null);
           }}
           title="Delete Photo"
           message="Are you sure you want to delete this photo? This action cannot be undone."
@@ -254,141 +254,20 @@ function RollPage() {
           ) : (
             <div style={sharedStyles.grid}>
               {photos.map((photo, index) => (
-                <div key={photo.id} style={styles.card}>
-                  <div style={styles.photoHeader}>
-                    <Link
-                      href={`/user/${user_id}/rolls/${roll_id}/${photo.id}/view`}
-                    >
-                      <span style={styles.photoId}>
-                        Photo #{photo.sequence_number}
-                      </span>
-                    </Link>
-                    <div style={styles.actions}>
-                      <Link
-                        href={`/user/${user_id}/rolls/${roll_id}/${photo.id}/edit`}
-                      >
-                        <button style={styles.editButton}>Edit</button>
-                      </Link>
-                      <button
-                        onClick={() => {
-                          setSelectedPhotoId(photo.id);
-                          setIsDeleteModalOpen(true);
-                        }}
-                        style={{
-                          ...sharedStyles.secondaryButton,
-                          color: "#dc2626",
-                          border: "2px solid #dc2626",
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.backgroundColor =
-                            "rgba(220, 38, 38, 0.1)";
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.backgroundColor = "transparent";
-                        }}
-                        aria-label="Delete photo"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      backgroundColor: "#f5f5f5",
-                      borderRadius: "4px",
-                      padding: "1rem",
-                      fontFamily: "var(--font-geist-sans)",
-                      fontSize: "0.9rem",
-                      color: "#666",
-                    }}
-                  >
-                    <Link
-                      href={`/user/${user_id}/rolls/${roll_id}/${photo.id}/view`}
-                    >
-                      {photo.subject || "No subject"}
-                    </Link>
-
-                    {photo.photo_url ? (
-                      <div style={{ marginTop: "0.5rem" }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={photo.photo_url}
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
-                          }}
-                          alt={photo.subject}
-                        />
-                      </div>
-                    ) : (
-                      <div>
-                        <input
-                          value={
-                            editingUrlAtIndex === index
-                              ? photoUrls[photo.id] || ""
-                              : photo.photo_url || ""
-                          }
-                          onChange={(e) => {
-                            setPhotoUrls({
-                              ...photoUrls,
-                              [photo.id]: e.target.value,
-                            });
-                          }}
-                          onClick={() => {
-                            setEditingUrlAtIndex(index);
-                          }}
-                          style={{
-                            width: "100%",
-                            padding: "0.5rem",
-                            borderRadius: "4px",
-                            border: "1px solid #ccc",
-                            marginTop: "0.5rem",
-                          }}
-                          placeholder="No photo URL"
-                        />
-                        {editingUrlAtIndex === index && (
-                          <div style={{ ...styles.actions, gap: "0.25rem" }}>
-                            <button
-                              style={{
-                                ...sharedStyles.secondaryButton,
-                                backgroundColor: sharedStyles.green,
-                                color: "white",
-                                border: "none",
-                                width: "80px",
-                                marginTop: "0.5rem",
-                              }}
-                              onClick={() => {
-                                setEditingUrlAtIndex(null);
-                                updateUrlOnlyMutation({
-                                  user_id: user_id as string,
-                                  roll_id: Number(roll_id),
-                                  photo_id: photo.id,
-                                  photo_url: photoUrls[photo.id],
-                                });
-                              }}
-                            >
-                              update
-                            </button>
-                            <button
-                              style={{
-                                ...sharedStyles.secondaryButton,
-                                border: "none",
-                                width: "20px",
-                                marginTop: "0.5rem",
-                              }}
-                              onClick={() => {
-                                setEditingUrlAtIndex(null);
-                              }}
-                            >
-                              X
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <PhotoCard
+                  key={photo.id}
+                  photo={photo}
+                  index={index}
+                  user_id={user_id as string}
+                  roll_id={Number(roll_id)}
+                  isEditing={editingUrlAtIndex === index}
+                  setEditingIndex={(i) => setEditingUrlAtIndex(i)}
+                  onUpdateUrl={updateUrlOnlyMutation}
+                  onDelete={() => {
+                    setSelectedForDeletePhotoId(photo.id);
+                    setIsDeleteModalOpen(true);
+                  }}
+                />
               ))}
             </div>
           )}
@@ -397,39 +276,5 @@ function RollPage() {
     </>
   );
 }
-
-const styles = {
-  card: {
-    ...sharedStyles.card,
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "1rem",
-    cursor: "default",
-  },
-  photoHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  photoId: {
-    ...sharedStyles.subtitle,
-    fontFamily: "var(--font-geist-mono)",
-    fontSize: "1rem",
-  },
-  actions: {
-    display: "flex",
-    gap: "0.5rem",
-    alignItems: "stretch",
-  },
-  viewButton: {
-    ...sharedStyles.secondaryButton,
-    padding: "0.5rem 1rem",
-    fontSize: "0.9rem",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-  },
-  editButton: sharedStyles.button,
-};
 
 export default withAuth(RollPage);
