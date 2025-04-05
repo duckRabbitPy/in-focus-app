@@ -386,16 +386,6 @@ function ViewPhotoSettingsPage() {
             </div>
           )}
         </main>
-        <footer style={sharedStyles.footer}>
-          <Link
-            href="https://github.com/DuckRabbitPy"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={sharedStyles.link}
-          >
-            DuckRabbitPy
-          </Link>
-        </footer>
       </div>
     </>
   );

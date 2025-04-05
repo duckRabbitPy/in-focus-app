@@ -222,17 +222,6 @@ export const sharedStyles = {
       fontSize: "0.9rem",
     },
   },
-  footer: {
-    padding: "1rem",
-    textAlign: "center" as const,
-    borderTop: "1px solid #eaeaea",
-    "@media (minWidth: 640px)": {
-      padding: "1.5rem",
-    },
-    "@media (minWidth: 768px)": {
-      padding: "2rem",
-    },
-  },
   link: {
     color: "#333",
     textDecoration: "none",

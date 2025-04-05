@@ -10,11 +10,9 @@ import {
   updatePhotoTags,
 } from "@/utils/updateTags";
 import { transformIfDropboxUrl } from "@/utils/server";
+import { WithApiAuthMiddleware } from "@/requests/middleware";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { roll_id, user_id } = req.query;
 
   // Validate basic UUID format (5 groups of hex chars separated by hyphens)
@@ -182,3 +180,5 @@ export default async function handler(
       return res.status(405).json({ error: "Method not allowed" });
   }
 }
+
+export default WithApiAuthMiddleware(handler);

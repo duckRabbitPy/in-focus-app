@@ -2,7 +2,6 @@ import { PhotoSettingsInput } from "@/types/photos";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { sharedStyles } from "@/styles/shared";
-import Link from "next/link";
 import { withAuth } from "@/utils/withAuth";
 import PhotoForm from "@/components/PhotoForm/PhotoForm";
 import { geistMono, geistSans } from "@/styles/font";
@@ -94,16 +93,6 @@ function NewPhotoPage() {
             isSubmitting={isPending}
           />
         </main>
-        <footer style={sharedStyles.footer}>
-          <Link
-            href="https://github.com/DuckRabbitPy"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={sharedStyles.link}
-          >
-            DuckRabbitPy
-          </Link>
-        </footer>
       </div>
     </>
   );
