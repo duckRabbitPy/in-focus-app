@@ -222,17 +222,6 @@ export const sharedStyles = {
       fontSize: "0.9rem",
     },
   },
-  footer: {
-    padding: "1rem",
-    textAlign: "center" as const,
-    borderTop: "1px solid #eaeaea",
-    "@media (minWidth: 640px)": {
-      padding: "1.5rem",
-    },
-    "@media (minWidth: 768px)": {
-      padding: "2rem",
-    },
-  },
   link: {
     color: "#333",
     textDecoration: "none",
@@ -261,27 +250,6 @@ export const sharedStyles = {
       gap: "1rem",
       alignItems: "center",
       width: "auto",
-    },
-  },
-  breadcrumbs: {
-    display: "flex",
-    flexWrap: "wrap" as const,
-    gap: "0.5rem",
-    alignItems: "center",
-    fontSize: "0.9rem",
-    color: "#666",
-    marginBottom: "1.5rem",
-    padding: "0.75rem",
-    backgroundColor: "#f5f5f5",
-    borderRadius: "4px",
-    overflowX: "auto" as const,
-    "@media (minWidth: 640px)": {
-      marginBottom: "2rem",
-      padding: "1rem",
-    },
-    "@media (prefersColorScheme: dark)": {
-      backgroundColor: "#1a1a1a",
-      color: "#ccc",
     },
   },
   separator: {

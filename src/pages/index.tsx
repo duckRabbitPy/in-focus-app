@@ -152,16 +152,6 @@ export default function LandingPage() {
             <Link href="/register">Register</Link>
           </div>
         </main>
-        <footer style={sharedStyles.footer}>
-          <a
-            href="https://github.com/DuckRabbitPy"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={sharedStyles.link}
-          >
-            DuckRabbitPy
-          </a>
-        </footer>
       </div>
     </>
   );

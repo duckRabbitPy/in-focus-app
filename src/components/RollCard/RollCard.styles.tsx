@@ -3,11 +3,11 @@ import { sharedStyles } from "@/styles/shared";
 export const rollCardStyles = {
   card: {
     ...sharedStyles.card,
-    display: "flex",
+    display: "flex" as const,
     flexDirection: "column" as const,
     gap: "1rem",
     cursor: "default",
-    overflow: "scroll",
+    overflowX: "auto" as const,
   },
   header: {
     display: "flex",

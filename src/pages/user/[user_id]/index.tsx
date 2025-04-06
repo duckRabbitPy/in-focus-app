@@ -2,12 +2,14 @@ import { useRouter } from "next/router";
 
 import { sharedStyles } from "@/styles/shared";
 import Link from "next/link";
-import { withAuth } from "@/utils/withAuth";
+// import { withAuth } from "@/utils/withAuth";
 import { logout } from "@/utils/auth";
 import { geistSans, geistMono } from "@/styles/font";
 import { PageHead } from "@/components/PageHead";
 import { useQuery } from "@tanstack/react-query";
 import { getUser } from "@/requests/queries/user";
+import { Breadcrumbs } from "@/components/BreadCrumbs";
+import { withAuth } from "@/utils/withAuth";
 
 function UserPage() {
   const router = useRouter();
@@ -64,10 +66,14 @@ function UserPage() {
         style={sharedStyles.page}
       >
         <main style={sharedStyles.main}>
-          <div style={sharedStyles.breadcrumbs}>
-            <span>Account home</span>
-          </div>
-
+          <Breadcrumbs
+            user_id={user_id as string}
+            roll_id={undefined}
+            photo_id={undefined}
+            routes={{
+              home: true,
+            }}
+          />
           <div style={sharedStyles.header}>
             <h1 style={sharedStyles.title}>Account Home</h1>
             <div
@@ -141,16 +147,6 @@ function UserPage() {
             </div>
           </div>
         </main>
-        <footer style={sharedStyles.footer}>
-          <Link
-            href="https://github.com/DuckRabbitPy"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={sharedStyles.link}
-          >
-            DuckRabbitPy
-          </Link>
-        </footer>
       </div>
     </>
   );

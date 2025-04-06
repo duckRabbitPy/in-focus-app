@@ -1,23 +1,26 @@
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { getUserFromToken } from './auth';
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { getUserFromToken } from "./auth";
+import { Footer } from "@/components/Footer";
 
-export function withAuth<P extends object>(WrappedComponent: React.ComponentType<P>) {
+export function withAuth<P extends object>(
+  WrappedComponent: React.ComponentType<P>
+) {
   return function WithAuthComponent(props: P) {
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        router.push('/');
+        router.push("/");
         return;
       }
 
       const user = getUserFromToken();
       if (!user) {
-        localStorage.removeItem('token');
-        router.push('/');
+        localStorage.removeItem("token");
+        router.push("/");
         return;
       }
 
@@ -28,6 +31,11 @@ export function withAuth<P extends object>(WrappedComponent: React.ComponentType
       return null;
     }
 
-    return <WrappedComponent {...props} />;
+    return (
+      <div>
+        <WrappedComponent {...props} />
+        <Footer />
+      </div>
+    );
   };
-} 
+}
