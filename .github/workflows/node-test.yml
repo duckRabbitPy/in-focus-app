@@ -1,0 +1,35 @@
+name: Node.js CI
+
+on:
+  pull_request:
+    # This will run on PRs to any branch
+    branches:
+      - "*"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        env:
+          JWT_SECRET: ci_test_secret_key
+          NEXT_PUBLIC_JWT_SECRET: ci_test_secret_key
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci_test_pg_password
+          POSTGRES_HOST: ci_localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: ci_in_focus
+        run: npm test
