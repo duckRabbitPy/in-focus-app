@@ -12,7 +12,7 @@ import {
 import { transformIfDropboxUrl } from "@/utils/server";
 import { WithApiAuthMiddleware } from "@/requests/middleware";
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { roll_id, user_id } = req.query;
 
   // Validate basic UUID format (5 groups of hex chars separated by hyphens)

@@ -5,7 +5,7 @@ import {
   AuthenticatedRequest,
 } from "../../../requests/middleware";
 
-async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
+export async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
