@@ -7,7 +7,7 @@ export const rollCardStyles = {
     flexDirection: "column" as const,
     gap: "1rem",
     cursor: "default",
-    overflow: "scroll",
+    overflowX: "auto",
   },
   header: {
     display: "flex",
