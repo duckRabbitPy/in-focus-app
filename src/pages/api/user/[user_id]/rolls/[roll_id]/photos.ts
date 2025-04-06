@@ -61,7 +61,6 @@ export async function handler(req: NextApiRequest, res: NextApiResponse) {
           photos.map((photo) => photo.id)
         );
 
-        // Map the photos with their tags
         const photosWithTags = photos.map((photo) => ({
           ...photo,
           tags: tagsByPhotoId[photo.id] || [],
