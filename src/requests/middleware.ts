@@ -38,13 +38,13 @@ export function WithApiAuthMiddleware(
           userId: decoded.userId,
           username: decoded.username,
         };
-
-        // Call the handler
-        return handler(req, res);
       } catch (error) {
+        console.log("!!!");
         console.error("Token verification failed:", error);
         return res.status(401).json({ error: "Invalid authentication token" });
       }
+
+      return handler(req, res);
     } catch (error) {
       console.error("Auth middleware error:", error);
       return res.status(500).json({ error: "Internal server error" });
