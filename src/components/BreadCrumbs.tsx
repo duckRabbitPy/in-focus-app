@@ -32,7 +32,7 @@ const BreadcrumbItem = ({ label, path, isEnabled }: BreadcrumbItemProps) => {
 
   if (!isEnabled) return null;
 
-  const isTerminal = currentPath === path;
+  const isTerminal = currentPath.split("?")[0] === path.split("?")[0];
 
   return (
     <>
@@ -91,7 +91,7 @@ export const Breadcrumbs = <R extends Route>({
 
       <BreadcrumbItem
         label={`Photo #${photo_id}`}
-        path={`/user/${user_id}/rolls/${roll_id}/${photo_id}`}
+        path={`/user/${user_id}/rolls/${roll_id}/${photo_id}/view`}
         isEnabled={routes.photo}
       />
 
