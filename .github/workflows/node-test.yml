@@ -18,10 +18,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
+          cache: "yarn"
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install
 
       - name: Run tests
         env:
@@ -32,4 +32,4 @@ jobs:
           POSTGRES_HOST: ci_localhost
           POSTGRES_PORT: 5432
           POSTGRES_DB: ci_in_focus
-        run: npm test
+        run: yarn test
