@@ -39,7 +39,6 @@ export function WithApiAuthMiddleware(
           username: decoded.username,
         };
       } catch (error) {
-        console.log("!!!");
         console.error("Token verification failed:", error);
         return res.status(401).json({ error: "Invalid authentication token" });
       }
