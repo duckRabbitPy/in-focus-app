@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// support numbers and strings for fstop TODO: fix this
 export const FstopSchema = z.union([
   z.literal("1.4"),
   z.literal("1.7"),
