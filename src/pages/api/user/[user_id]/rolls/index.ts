@@ -8,7 +8,7 @@ import {
 import { Roll } from "@/types/rolls";
 import { generateShortId } from "@/utils/shared";
 
-async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
+export async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id } = req.query;
 
   // Verify that the requested user_id matches the authenticated user's ID

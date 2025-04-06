@@ -5,14 +5,14 @@ import {
   PhotoSettingsInputSchema,
 } from "@/types/photos";
 import {
-  getPhotoTags,
+  getTagsForPhotos,
   updatePhotoLens,
   updatePhotoTags,
 } from "@/utils/updateTags";
 import { transformIfDropboxUrl } from "@/utils/server";
 import { WithApiAuthMiddleware } from "@/requests/middleware";
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { roll_id, user_id } = req.query;
 
   // Validate basic UUID format (5 groups of hex chars separated by hyphens)
@@ -57,13 +57,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           [parseInt(roll_id)]
         );
 
-        // TODO: Optional enhancement: fetch tags for all photos in one go
-        const photosWithTags = await Promise.all(
-          photos.map(async (photo) => {
-            const tags = await getPhotoTags(photo.id);
-            return { ...photo, tags };
-          })
+        const tagsByPhotoId = await getTagsForPhotos(
+          photos.map((photo) => photo.id)
         );
+
+        const photosWithTags = photos.map((photo) => ({
+          ...photo,
+          tags: tagsByPhotoId[photo.id] || [],
+        }));
 
         return res.status(200).json({
           roll: rollInfo,

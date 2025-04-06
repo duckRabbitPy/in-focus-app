@@ -15,7 +15,7 @@ import {
 } from "@/utils/updateTags";
 import { transformIfDropboxUrl } from "@/utils/server";
 
-async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
+export async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id, roll_id, photo_id } = req.query;
 
   // Verify that the requested user_id matches the authenticated user's ID

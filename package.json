@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "bun ./scripts/security-audit && next dev",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "jest",
+    "test": "ts-node ./scripts/security-audit && jest",
     "lint": "next lint",
     "db:seed:create": "bun seed.create.mts",
     "db:schema": "psql -U postgres -d in_focus -f schema.sql",

@@ -6,7 +6,7 @@ import {
 } from "../../../../../requests/middleware";
 import { Tag } from "@/types/tags";
 
-async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
+export async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   const { user_id } = req.query;
 
   // Verify that the requested user_id matches the authenticated user's ID

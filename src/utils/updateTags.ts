@@ -117,6 +117,33 @@ export async function getPhotoTags(photoId: number): Promise<string[]> {
   return tagResults.map((tag) => tag.name);
 }
 
+export async function getTagsForPhotos(
+  photoIds: number[]
+): Promise<Record<number, string[]>> {
+  if (photoIds.length === 0) return {};
+
+  const tagResults = await query<{ photo_id: number; name: string }>(
+    `SELECT pt.photo_id, t.name
+     FROM tags t
+     JOIN photo_tags pt ON t.id = pt.tag_id
+     WHERE pt.photo_id = ANY($1)
+     ORDER BY pt.photo_id, t.name`,
+    [photoIds]
+  );
+
+  const tagsByPhotoId: Record<number, string[]> = {};
+
+  photoIds.forEach((id) => {
+    tagsByPhotoId[id] = [];
+  });
+
+  tagResults.forEach((row) => {
+    tagsByPhotoId[row.photo_id].push(row.name);
+  });
+
+  return tagsByPhotoId;
+}
+
 /**
  * Fetches the lens for a photo
  * @param photoId - The ID of the photo
