@@ -179,7 +179,12 @@ export async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         }
         const updatedPhoto = await queryOne<FullPhotoSettingsData>(
           "UPDATE photos SET photo_url = $1 WHERE id = $2 AND roll_id = $3 AND roll_id IN (SELECT id FROM rolls WHERE user_id = $4) RETURNING *",
-          [photo_url, photoIdNum, parseInt(roll_id), user_id]
+          [
+            transformIfDropboxUrl(photo_url),
+            photoIdNum,
+            parseInt(roll_id),
+            user_id,
+          ]
         );
         if (!updatedPhoto) {
           return res.status(404).json({ error: "Photo not found" });
