@@ -194,6 +194,8 @@ export default function PhotoForm<T extends boolean>({
 
         <div style={formStyles.group}>
           <label style={formStyles.label}>Exposure Value</label>
+          <p>+1 = overexposure</p>
+          <p>+1 = 400 to 200 iso</p>
           <div
             style={{
               ...formStyles.segmentedControl,
