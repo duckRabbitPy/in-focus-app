@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret-key";
+const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET
 
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: {
@@ -25,6 +25,10 @@ export function WithApiAuthMiddleware(
       const token = authHeader.split(" ")[1];
       if (!token) {
         return res.status(401).json({ error: "Invalid authentication format" });
+      }
+
+      if (!JWT_SECRET) {
+        return res.status(500).json({ error: "JWT_SECRET is not set" });
       }
 
       try {
